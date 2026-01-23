@@ -3,8 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US2 - Us for Two | Carga Mental Compartida</title>
+    <title>US2 - Compartamos nuestro futuro</title>
     <meta name="description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://us2-seven.vercel.app/">
+    <meta property="og:title" content="US2 - Compartamos nuestro futuro">
+    <meta property="og:description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
+    <meta property="og:image" content="https://us2-seven.vercel.app/og-image.png">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="US2 - Compartamos nuestro futuro">
+    <meta name="twitter:description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -239,6 +251,27 @@
             from { transform: scale(1) rotate(-2deg); }
             to { transform: scale(1.1) rotate(2deg); }
         }
+
+        /* CTA Button Animation */
+        .cta-pulse {
+            animation: ctaPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+        }
+
+        @keyframes ctaPulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+
+        .animate-bounce-x {
+            animation: bounceX 1s ease-in-out infinite;
+        }
+
+        @keyframes bounceX {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body class="bg-offwhite font-sans text-warm-gray min-h-screen">
@@ -298,11 +331,14 @@
                 </div>
 
                 <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-                    <button onclick="startTest()" class="px-8 py-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105" data-i18n="home_cta_start">
-                        Comenzar el Test
+                <div class="flex flex-col gap-4 justify-center items-center mb-8">
+                    <button onclick="startTest()" class="cta-pulse px-10 py-5 bg-gradient-to-r from-purple-500 to-teal-dark text-white text-xl font-bold rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110 flex items-center gap-3">
+                        <span data-i18n="home_cta_start">Comenzar el Test</span>
+                        <svg class="w-6 h-6 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
                     </button>
-                    <button onclick="showSection('blog')" class="px-8 py-4 bg-white text-teal-dark font-semibold rounded-full shadow-md hover:shadow-lg transition-all border-2 border-teal-soft hover:border-teal-dark" data-i18n="home_cta_learn">
+                    <button onclick="showSection('blog')" class="px-6 py-3 text-teal-dark font-medium hover:text-purple-500 transition-colors" data-i18n="home_cta_learn">
                         Conocer Más
                     </button>
                 </div>
@@ -468,9 +504,16 @@
                             </div>
                         </div>
 
-                        <button onclick="copyInviteMessage()" class="w-full p-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-xl hover:shadow-lg transition-all" data-i18n="copy_message_btn">
-                            Copiar mensaje de invitación
-                        </button>
+                        <div class="flex gap-3">
+                            <button onclick="copyInviteMessage()" class="flex-1 p-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-xl hover:shadow-lg transition-all" data-i18n="copy_message_btn">
+                                Copiar mensaje de invitación
+                            </button>
+                            <button onclick="shareInviteWhatsApp()" class="px-5 py-4 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 hover:shadow-lg transition-all flex items-center gap-2">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                            </button>
+                        </div>
 
                         <p id="copy-feedback" class="text-sm text-green-600 mt-3 hidden" data-i18n="copy_success">¡Copiado al portapapeles!</p>
 
@@ -811,6 +854,25 @@
                     </div>
                 </div>
 
+                <!-- ========== TEST HISTORY ========== -->
+                <div id="history-section" class="bg-white p-8 rounded-2xl shadow-sm mb-12 hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                            <span>📊</span>
+                            <span data-i18n="history_title">Historial de Tests</span>
+                        </h3>
+                        <span id="history-count" class="text-sm text-gray-500"></span>
+                    </div>
+
+                    <div id="history-list" class="space-y-4">
+                        <!-- Dynamic history items -->
+                    </div>
+
+                    <div id="history-empty" class="text-center py-8 text-gray-400 hidden">
+                        <p data-i18n="history_empty">Completen el test más veces para ver su evolución</p>
+                    </div>
+                </div>
+
                 <!-- Affiliate Banners -->
                 <div class="mb-12">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center" data-i18n="affiliates_title">Herramientas Recomendadas</h3>
@@ -895,38 +957,200 @@
 
         <!-- ========== BLOG SECTION ========== -->
         <section id="section-blog" class="py-12 hidden">
-            <div class="max-w-3xl mx-auto text-center fade-in">
-                <div class="w-20 h-20 bg-lavender rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="blog_title">Blog & Recursos</h2>
-                <p class="text-gray-600 mb-8" data-i18n="blog_coming_soon">Próximamente: artículos, guías y herramientas para construir un hogar más equilibrado.</p>
+            <div class="max-w-4xl mx-auto fade-in">
 
-                <div class="bg-white p-8 rounded-2xl shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="blog_subscribe_title">Suscríbete para recibir novedades</h3>
-                    <div class="flex gap-3 max-w-md mx-auto">
-                        <input type="email" placeholder="tu@email.com" class="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-soft">
-                        <button class="px-6 py-3 bg-teal-soft text-white rounded-xl hover:bg-teal-dark transition-colors font-medium" data-i18n="subscribe_btn">
-                            Suscribir
-                        </button>
+                <!-- Blog List View -->
+                <div id="blog-list">
+                    <div class="text-center mb-12">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="blog_title">Blog & Recursos</h1>
+                        <p class="text-gray-600" data-i18n="blog_subtitle">Artículos y guías para construir un hogar más equilibrado</p>
+                    </div>
+
+                    <!-- AdSense - Blog Header -->
+                    <div class="adsense-placeholder mb-8 py-4">
+                        <span>Ad Space - Blog Header</span>
+                    </div>
+
+                    <!-- Article Cards -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-12">
+                        <!-- Article 1 - Active -->
+                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle('carga-mental')">
+                            <div class="h-48 bg-gradient-to-br from-teal-soft to-lavender flex items-center justify-center">
+                                <span class="text-6xl">🧠</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="px-2 py-1 bg-teal-soft/20 text-teal-dark text-xs rounded-full" data-i18n="blog_tag_featured">Destacado</span>
+                                    <span class="text-xs text-gray-400">5 min</span>
+                                </div>
+                                <h2 class="font-bold text-gray-800 text-lg group-hover:text-teal-dark transition-colors" data-i18n="article_1_title">Carga Mental: Por qué sentís que trabajás más</h2>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="article_1_desc">Descubrí qué es la gestión invisible del hogar y cómo afecta tu relación.</p>
+                            </div>
+                        </article>
+
+                        <!-- Article 2 - Coming Soon -->
+                        <article class="bg-white rounded-2xl shadow-sm overflow-hidden opacity-60">
+                            <div class="h-48 bg-gray-100 flex items-center justify-center">
+                                <span class="text-4xl text-gray-300">💬</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-400 text-xs rounded-full" data-i18n="coming_soon">Próximamente</span>
+                                </div>
+                                <h2 class="font-bold text-gray-400 text-lg" data-i18n="article_2_title">5 Conversaciones Clave</h2>
+                                <p class="text-sm text-gray-400 mt-2" data-i18n="article_2_desc">Cómo hablar de distribución de tareas sin conflicto.</p>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="bg-gradient-to-r from-lavender/50 to-teal-soft/30 p-8 rounded-2xl">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 text-center" data-i18n="blog_subscribe_title">Suscribite para recibir novedades</h3>
+                        <p class="text-sm text-gray-600 mb-4 text-center" data-i18n="blog_subscribe_desc">Nuevos artículos y tips directamente en tu email</p>
+                        <div class="flex gap-3 max-w-md mx-auto">
+                            <input type="email" id="newsletter-email" placeholder="tu@email.com" class="flex-1 p-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-teal-soft">
+                            <button onclick="subscribeNewsletter()" class="px-6 py-3 bg-teal-soft text-white rounded-xl hover:bg-teal-dark transition-colors font-medium" data-i18n="subscribe_btn">
+                                Suscribir
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Placeholder articles -->
-                <div class="grid md:grid-cols-2 gap-6 mt-12">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm text-left opacity-60">
-                        <div class="h-32 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400" data-i18n="coming_soon">Próximamente</div>
-                        <h4 class="font-semibold text-gray-800" data-i18n="article_1_title">¿Qué es la Carga Mental?</h4>
-                        <p class="text-sm text-gray-500 mt-2" data-i18n="article_1_desc">Una guía completa sobre el trabajo invisible del hogar.</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm text-left opacity-60">
-                        <div class="h-32 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400" data-i18n="coming_soon">Próximamente</div>
-                        <h4 class="font-semibold text-gray-800" data-i18n="article_2_title">5 Conversaciones Clave</h4>
-                        <p class="text-sm text-gray-500 mt-2" data-i18n="article_2_desc">Cómo hablar de distribución de tareas sin conflicto.</p>
+                <!-- Article View (Hidden by default) -->
+                <div id="blog-article" class="hidden">
+                    <!-- Back button -->
+                    <button onclick="showBlogList()" class="flex items-center gap-2 text-teal-dark hover:text-teal-soft mb-6 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        <span data-i18n="blog_back">Volver al Blog</span>
+                    </button>
+
+                    <!-- Article Content -->
+                    <article class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                        <!-- Header Image -->
+                        <div class="h-64 bg-gradient-to-br from-teal-soft to-lavender flex items-center justify-center">
+                            <span class="text-8xl">🧠</span>
+                        </div>
+
+                        <div class="p-8 md:p-12">
+                            <!-- Meta -->
+                            <div class="flex items-center gap-4 mb-6 text-sm text-gray-500">
+                                <span class="px-3 py-1 bg-teal-soft/20 text-teal-dark rounded-full" data-i18n="blog_tag_featured">Destacado</span>
+                                <span>5 min</span>
+                                <span>•</span>
+                                <span data-i18n="blog_author">Equipo US2</span>
+                            </div>
+
+                            <!-- Title -->
+                            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight" data-i18n="article_1_full_title">
+                                Carga Mental: Por qué sentís que trabajás más que tu pareja (aunque no sea cierto)
+                            </h1>
+
+                            <!-- AdSense - Article Top -->
+                            <div class="adsense-placeholder my-8 py-4">
+                                <span>Ad Space - Article Top</span>
+                            </div>
+
+                            <!-- Article Body -->
+                            <div class="prose prose-lg max-w-none text-gray-700">
+                                <p class="text-xl text-gray-600 mb-8 leading-relaxed" data-i18n="article_1_intro">
+                                    ¿Alguna vez sentiste que sos la única persona en la casa que sabe cuándo se acaba el detergente, cuándo hay que vacunar al perro o qué talle de zapatillas calzan tus hijos hoy?
+                                </p>
+
+                                <p class="text-lg mb-8" data-i18n="article_1_hook">
+                                    <strong>Eso que sentís no es cansancio físico; es Carga Mental.</strong>
+                                </p>
+
+                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_1">¿Qué es exactamente la Carga Mental?</h2>
+
+                                <p class="mb-4" data-i18n="article_1_validation">
+                                    <strong>Y no, no estás exagerando.</strong> Esto tiene nombre, está estudiado, y afecta a millones de parejas.
+                                </p>
+
+                                <p class="mb-6" data-i18n="article_1_p1">
+                                    La mayoría de las parejas pelean por quién lavó más platos o quién sacó la basura. Pero el problema real no es la ejecución, sino la gestión.
+                                </p>
+
+                                <div class="bg-offwhite p-6 rounded-xl my-8 border-l-4 border-teal-soft">
+                                    <p class="mb-2" data-i18n="article_1_example1"><strong>Ejecutar</strong> es lavar el plato.</p>
+                                    <p data-i18n="article_1_example2"><strong>Gestionar</strong> es notar que el plato está sucio, saber dónde está la esponja, revisar si queda detergente y planificar en qué momento del día se va a lavar para que la cocina esté lista para la cena.</p>
+                                </div>
+
+                                <p class="mb-6" data-i18n="article_1_p2">
+                                    En la mayoría de los hogares, una persona actúa como "Director de Orquesta" y la otra como "Ejecutivo". El problema es que el Director nunca descansa. Su cerebro está siempre encendido, procesando una lista interminable de tareas invisibles.
+                                </p>
+
+                                <!-- AdSense - Article Middle -->
+                                <div class="adsense-placeholder my-8 py-4">
+                                    <span>Ad Space - Article Middle</span>
+                                </div>
+
+                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_2">El riesgo del Burnout Relacional</h2>
+
+                                <p class="mb-6" data-i18n="article_1_p3">
+                                    Cuando uno de los dos lleva toda la gestión, el amor empieza a pesar. Aparece el resentimiento y esa frase típica de: <em>"Si me lo pedías, lo hacía"</em>. Pero tener que pedir ayuda ya es un trabajo en sí mismo.
+                                </p>
+
+                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_3">¿Cómo solucionarlo?</h2>
+
+                                <p class="mb-6" data-i18n="article_1_p4">
+                                    El primer paso es hacer visible lo invisible. No podés arreglar lo que no podés medir. Por eso creamos US2.
+                                </p>
+
+                                <p class="mb-8" data-i18n="article_1_p5">
+                                    Nuestro test está diseñado para que ambos puedan ver, con números y gráficos reales, cómo se siente el otro y qué tareas están quedando en un "punto ciego".
+                                </p>
+
+                                <!-- Insight Box -->
+                                <div class="bg-gradient-to-r from-purple-50 to-teal-soft/20 p-6 rounded-xl my-8 border border-purple-100">
+                                    <p class="font-semibold text-purple-700" data-i18n="article_1_insight">
+                                        💡 Dato US2: Las parejas que logran equilibrar la gestión mental suelen tener conversaciones más productivas y menos discusiones sobre "quién hace más".
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- CTA Box -->
+                            <div class="bg-gradient-to-br from-teal-soft to-teal-dark p-8 rounded-2xl mt-12 text-center text-white">
+                                <h3 class="text-2xl font-bold mb-2" data-i18n="article_1_cta_title">¿Querés analizar tu caso?</h3>
+                                <p class="mb-6 opacity-90" data-i18n="article_1_cta_desc">El test toma 3 minutos y puede cambiar la conversación.</p>
+                                <button onclick="startTest()" class="px-8 py-4 bg-white text-teal-dark font-bold rounded-full hover:shadow-lg transition-all hover:scale-105">
+                                    <span data-i18n="article_1_cta_btn">HACER EL TEST DE CARGA MENTAL US2</span>
+                                </button>
+                            </div>
+
+                            <!-- AdSense - Article Bottom -->
+                            <div class="adsense-placeholder mt-12 py-4">
+                                <span>Ad Space - Article Bottom</span>
+                            </div>
+
+                            <!-- Share -->
+                            <div class="mt-12 pt-8 border-t border-gray-100">
+                                <p class="text-center text-gray-600 mb-4" data-i18n="article_share">¿Te sirvió este artículo? Compartilo:</p>
+                                <div class="flex justify-center gap-3">
+                                    <button onclick="shareArticleWhatsApp()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                        WhatsApp
+                                    </button>
+                                    <button onclick="shareArticleTwitter()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                        X
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Related Articles -->
+                    <div class="mt-12">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6" data-i18n="blog_related">Seguí leyendo</h3>
+                        <div class="bg-white rounded-xl shadow-sm p-6 opacity-60">
+                            <span class="text-sm text-gray-400" data-i18n="coming_soon">Próximamente</span>
+                            <h4 class="font-semibold text-gray-500 mt-2" data-i18n="article_2_title">5 Conversaciones Clave</h4>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </section>
 
@@ -1213,7 +1437,49 @@
                 goal_proposed_toast: "¡Objetivo propuesto! Tu pareja debe aprobarlo.",
                 goal_approved_toast: "¡Objetivo aceptado! A trabajar juntos.",
                 goal_progress_toast: "¡+25% de progreso!",
-                goal_complete_toast: "🎉 ¡Objetivo completado!"
+                goal_complete_toast: "🎉 ¡Objetivo completado!",
+
+                // Test History
+                history_title: "Historial de Tests",
+                history_empty: "Completen el test más veces para ver su evolución",
+                history_count: "tests completados",
+                history_date: "Fecha",
+                history_scores: "Puntajes",
+                history_gap: "Brecha",
+                history_improved: "Mejoró",
+                history_same: "Igual",
+                history_worse: "Empeoró",
+                history_first: "Primer test",
+
+                // Blog
+                blog_subtitle: "Artículos y guías para construir un hogar más equilibrado",
+                blog_tag_featured: "Destacado",
+                blog_subscribe_desc: "Nuevos artículos y tips directamente en tu email",
+                blog_back: "Volver al Blog",
+                blog_author: "Equipo US2",
+                blog_related: "Seguí leyendo",
+                article_share: "¿Te sirvió este artículo? Compartilo:",
+                article_1_title: "Carga Mental: Por qué sentís que trabajás más",
+                article_1_desc: "Descubrí qué es la gestión invisible del hogar y cómo afecta tu relación.",
+                article_1_full_title: "Carga Mental: Por qué sentís que trabajás más que tu pareja (aunque no sea cierto)",
+                article_1_intro: "¿Alguna vez sentiste que sos la única persona en la casa que sabe cuándo se acaba el detergente, cuándo hay que vacunar al perro o qué talle de zapatillas calzan tus hijos hoy?",
+                article_1_hook: "<strong>Eso que sentís no es cansancio físico; es Carga Mental.</strong>",
+                article_1_h2_1: "¿Qué es exactamente la Carga Mental?",
+                article_1_validation: "<strong>Y no, no estás exagerando.</strong> Esto tiene nombre, está estudiado, y afecta a millones de parejas.",
+                article_1_p1: "La mayoría de las parejas pelean por quién lavó más platos o quién sacó la basura. Pero el problema real no es la ejecución, sino la gestión.",
+                article_1_example1: "<strong>Ejecutar</strong> es lavar el plato.",
+                article_1_example2: "<strong>Gestionar</strong> es notar que el plato está sucio, saber dónde está la esponja, revisar si queda detergente y planificar en qué momento del día se va a lavar para que la cocina esté lista para la cena.",
+                article_1_p2: "En la mayoría de los hogares, una persona actúa como \"Director de Orquesta\" y la otra como \"Ejecutivo\". El problema es que el Director nunca descansa. Su cerebro está siempre encendido, procesando una lista interminable de tareas invisibles.",
+                article_1_h2_2: "El riesgo del Burnout Relacional",
+                article_1_p3: "Cuando uno de los dos lleva toda la gestión, el amor empieza a pesar. Aparece el resentimiento y esa frase típica de: <em>\"Si me lo pedías, lo hacía\"</em>. Pero tener que pedir ayuda ya es un trabajo en sí mismo.",
+                article_1_h2_3: "¿Cómo solucionarlo?",
+                article_1_p4: "El primer paso es hacer visible lo invisible. No podés arreglar lo que no podés medir. Por eso creamos US2.",
+                article_1_p5: "Nuestro test está diseñado para que ambos puedan ver, con números y gráficos reales, cómo se siente el otro y qué tareas están quedando en un \"punto ciego\".",
+                article_1_insight: "💡 Dato US2: Las parejas que logran equilibrar la gestión mental suelen tener conversaciones más productivas y menos discusiones sobre \"quién hace más\".",
+                article_1_cta_title: "¿Querés analizar tu caso?",
+                article_1_cta_desc: "El test toma 3 minutos y puede cambiar la conversación.",
+                article_1_cta_btn: "HACER EL TEST DE CARGA MENTAL US2",
+                newsletter_success: "¡Gracias por suscribirte!"
             },
             en: {
                 // Navigation
@@ -1462,7 +1728,49 @@
                 goal_proposed_toast: "Goal proposed! Your partner must approve it.",
                 goal_approved_toast: "Goal accepted! Time to work together.",
                 goal_progress_toast: "+25% progress!",
-                goal_complete_toast: "🎉 Goal completed!"
+                goal_complete_toast: "🎉 Goal completed!",
+
+                // Test History
+                history_title: "Test History",
+                history_empty: "Complete the test more times to see your evolution",
+                history_count: "tests completed",
+                history_date: "Date",
+                history_scores: "Scores",
+                history_gap: "Gap",
+                history_improved: "Improved",
+                history_same: "Same",
+                history_worse: "Worse",
+                history_first: "First test",
+
+                // Blog
+                blog_subtitle: "Articles and guides to build a more balanced home",
+                blog_tag_featured: "Featured",
+                blog_subscribe_desc: "New articles and tips directly to your inbox",
+                blog_back: "Back to Blog",
+                blog_author: "US2 Team",
+                blog_related: "Keep reading",
+                article_share: "Did this article help you? Share it:",
+                article_1_title: "Mental Load: Why you feel like you're doing more",
+                article_1_desc: "Discover what the invisible management of the home is and how it affects your relationship.",
+                article_1_full_title: "Mental Load: The Invisible Work That's Exhausting Your Relationship",
+                article_1_intro: "Have you ever felt like the only person in the house who knows when the dish soap is running out, when the dog needs its shots, or what shoe size your kids are wearing today?",
+                article_1_hook: "<strong>What you're feeling isn't physical exhaustion; it's Mental Load.</strong>",
+                article_1_h2_1: "What exactly is Mental Load?",
+                article_1_validation: "<strong>And no, you're not exaggerating.</strong> This has a name, it's been studied, and it affects millions of couples.",
+                article_1_p1: "Most couples fight over who washed more dishes or who took out the trash. But the real issue isn't execution; it's management.",
+                article_1_example1: "<strong>Execution</strong> is washing the dish.",
+                article_1_example2: "<strong>Management</strong> is noticing the dish is dirty, knowing where the sponge is, checking if there's soap left, and planning when to wash it so the kitchen is ready for dinner.",
+                article_1_p2: "In most households, one person acts as the \"Orchestra Director\" and the other as the \"Executive.\" The problem is that the Director never rests. Their brain is always on, processing an endless list of invisible tasks.",
+                article_1_h2_2: "The Risk of Relationship Burnout",
+                article_1_p3: "When one partner carries all the management, love starts to feel heavy. Resentment grows, leading to the classic: <em>\"If you had asked, I would have done it.\"</em> But having to ask for help is a job in itself.",
+                article_1_h2_3: "How to fix it?",
+                article_1_p4: "The first step is to make the invisible, visible. You can't fix what you can't measure. That's why we created US2.",
+                article_1_p5: "Our test is designed so that both of you can see, with real numbers and charts, how the other feels and which tasks are falling into a \"blind spot.\"",
+                article_1_insight: "💡 US2 Insight: Couples who manage to balance their mental load tend to have more productive conversations and fewer arguments about \"who does more.\"",
+                article_1_cta_title: "Want to analyze your situation?",
+                article_1_cta_desc: "The test takes 3 minutes and can change the conversation.",
+                article_1_cta_btn: "TAKE THE US2 MENTAL LOAD TEST",
+                newsletter_success: "Thanks for subscribing!"
             }
         };
 
@@ -1626,6 +1934,13 @@
         // TEST LOGIC
         // ==========================================
         function startTest() {
+            // Check for saved progress
+            const savedProgress = getTestProgress();
+            if (savedProgress && savedProgress.answers.length > 0) {
+                showResumeModal(savedProgress);
+                return;
+            }
+
             showSection('test');
             document.getElementById('test-intro').classList.remove('hidden');
             document.getElementById('test-questions').classList.add('hidden');
@@ -1688,6 +2003,9 @@
                 points: points
             });
 
+            // Save progress to localStorage
+            saveTestProgress();
+
             // Visual feedback
             const buttons = document.querySelectorAll('.option-btn');
             const selectedIndex = 3 - points; // A=3, B=2, C=1, D=0
@@ -1705,7 +2023,67 @@
             }, 300);
         }
 
+        // ==========================================
+        // TEST PERSISTENCE
+        // ==========================================
+
+        function saveTestProgress() {
+            const progress = {
+                pairID: pairID,
+                currentUser: currentUser,
+                currentQuestion: currentQuestion,
+                answers: answers,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('us2_test_progress', JSON.stringify(progress));
+        }
+
+        function getTestProgress() {
+            const saved = localStorage.getItem('us2_test_progress');
+            return saved ? JSON.parse(saved) : null;
+        }
+
+        function clearTestProgress() {
+            localStorage.removeItem('us2_test_progress');
+        }
+
+        function resumeTest(progress) {
+            pairID = progress.pairID;
+            currentUser = progress.currentUser;
+            currentQuestion = progress.currentQuestion + 1; // Next question after last answered
+            answers = progress.answers;
+
+            showSection('test');
+            document.getElementById('test-intro').classList.add('hidden');
+            document.getElementById('test-questions').classList.remove('hidden');
+            document.getElementById('test-waiting').classList.add('hidden');
+
+            if (currentQuestion < questions.length) {
+                displayQuestion(currentQuestion);
+                showToast('📝', 'success', currentLang === 'es' ? '¡Test retomado!' : 'Test resumed!');
+            } else {
+                completeTest();
+            }
+        }
+
+        function showResumeModal(progress) {
+            const questionsAnswered = progress.answers.length;
+            const message = currentLang === 'es'
+                ? `Tenés un test en progreso (${questionsAnswered}/15 preguntas). ¿Querés continuarlo?`
+                : `You have a test in progress (${questionsAnswered}/15 questions). Want to continue?`;
+
+            if (confirm(message)) {
+                resumeTest(progress);
+            } else {
+                clearTestProgress();
+                beginQuestions();
+            }
+        }
+
         function completeTest() {
+            // Clear saved progress
+            clearTestProgress();
+
             // Calculate total score
             const totalScore = answers.reduce((sum, a) => sum + a.points, 0);
 
@@ -1783,6 +2161,13 @@
             showCopyFeedback();
         }
 
+        function shareInviteWhatsApp() {
+            const link = document.getElementById('invite-link').value;
+            const message = translations[currentLang].invite_message + ' ' + link;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        }
+
         function showCopyFeedback() {
             const feedback = document.getElementById('copy-feedback');
             feedback.classList.remove('hidden');
@@ -1828,6 +2213,7 @@
             // Load achievements and goals
             loadAchievements();
             loadGoals();
+            renderTestHistory();
 
             // Initialize gamification systems
             renderBadges();
@@ -1870,6 +2256,81 @@
 
                 localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(history));
             }
+        }
+
+        function renderTestHistory() {
+            const historySection = document.getElementById('history-section');
+            const historyList = document.getElementById('history-list');
+            const historyEmpty = document.getElementById('history-empty');
+            const historyCount = document.getElementById('history-count');
+
+            if (!historySection) return;
+
+            const history = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            if (history.length <= 1) {
+                historySection.classList.add('hidden');
+                return;
+            }
+
+            historySection.classList.remove('hidden');
+            historyCount.textContent = `${history.length} ${translations[currentLang].history_count}`;
+
+            // Sort by date (newest first for display)
+            const sortedHistory = [...history].reverse();
+
+            historyList.innerHTML = sortedHistory.map((test, index) => {
+                const date = new Date(test.savedAt);
+                const dateStr = date.toLocaleDateString(currentLang === 'es' ? 'es-AR' : 'en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                const gap = Math.abs(test.userA.score - test.userB.score);
+                const prevTest = sortedHistory[index + 1];
+
+                let trend = '';
+                let trendClass = '';
+                let trendIcon = '';
+
+                if (prevTest) {
+                    const prevGap = Math.abs(prevTest.userA.score - prevTest.userB.score);
+                    if (gap < prevGap) {
+                        trend = translations[currentLang].history_improved;
+                        trendClass = 'text-green-600 bg-green-50';
+                        trendIcon = '📈';
+                    } else if (gap > prevGap) {
+                        trend = translations[currentLang].history_worse;
+                        trendClass = 'text-orange-600 bg-orange-50';
+                        trendIcon = '📉';
+                    } else {
+                        trend = translations[currentLang].history_same;
+                        trendClass = 'text-gray-500 bg-gray-50';
+                        trendIcon = '➡️';
+                    }
+                } else {
+                    trend = translations[currentLang].history_first;
+                    trendClass = 'text-purple-600 bg-purple-50';
+                    trendIcon = '🎯';
+                }
+
+                return `
+                    <div class="flex items-center justify-between p-4 bg-offwhite rounded-xl">
+                        <div class="flex items-center gap-4">
+                            <div class="text-sm text-gray-500">${dateStr}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 bg-teal-soft/30 text-teal-dark rounded text-sm font-medium">A: ${test.userA.score}</span>
+                                <span class="px-2 py-1 bg-lavender/50 text-purple-600 rounded text-sm font-medium">B: ${test.userB.score}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm text-gray-500">${translations[currentLang].history_gap}: ${gap}</span>
+                            <span class="px-2 py-1 ${trendClass} rounded text-xs font-medium">${trendIcon} ${trend}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function getProfile(score) {
@@ -2848,6 +3309,57 @@
             const url = getShareUrl();
             navigator.clipboard.writeText(url);
             showToast('🔗', 'success', translations[currentLang].link_copied);
+        }
+
+        // ==========================================
+        // BLOG FUNCTIONS
+        // ==========================================
+
+        function showArticle(articleId) {
+            document.getElementById('blog-list').classList.add('hidden');
+            document.getElementById('blog-article').classList.remove('hidden');
+
+            // Scroll to top of article
+            document.getElementById('section-blog').scrollIntoView({ behavior: 'smooth' });
+
+            // Update translations for the article content
+            setLanguage(currentLang);
+        }
+
+        function showBlogList() {
+            document.getElementById('blog-article').classList.add('hidden');
+            document.getElementById('blog-list').classList.remove('hidden');
+        }
+
+        function shareArticleWhatsApp() {
+            const title = translations[currentLang].article_1_full_title;
+            const url = window.location.origin + '/#blog';
+            const message = encodeURIComponent(`${title} - ${url}`);
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+        function shareArticleTwitter() {
+            const title = encodeURIComponent(translations[currentLang].article_1_full_title);
+            const url = encodeURIComponent(window.location.origin + '/#blog');
+            window.open(`https://twitter.com/intent/tweet?text=${title}&url=${url}`, '_blank');
+        }
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletter-email').value.trim();
+            if (!email || !email.includes('@')) {
+                showToast('⚠️', 'info', currentLang === 'es' ? 'Ingresá un email válido' : 'Enter a valid email');
+                return;
+            }
+
+            // Store email locally (for future export/integration)
+            const subscribers = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
+            if (!subscribers.includes(email)) {
+                subscribers.push(email);
+                localStorage.setItem('us2_newsletter', JSON.stringify(subscribers));
+            }
+
+            document.getElementById('newsletter-email').value = '';
+            showToast('📧', 'success', translations[currentLang].newsletter_success);
         }
 
         // ==========================================
