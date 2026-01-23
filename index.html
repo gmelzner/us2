@@ -283,9 +283,9 @@
                 <!-- Logo -->
                 <a href="#" onclick="showSection('home')" class="flex items-center gap-2 group">
                     <div class="w-10 h-10 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">U2</span>
+                        <span class="text-white font-bold text-lg">S2</span>
                     </div>
-                    <span class="text-xl font-semibold text-gray-800 group-hover:text-teal-dark transition-colors">US2</span>
+                    <span class="text-xl font-semibold text-gray-800 group-hover:text-teal-dark transition-colors" data-i18n="logo_tagline">Somos un equipo</span>
                 </a>
 
                 <!-- Navigation Links -->
@@ -340,13 +340,6 @@
                     </button>
                     <button onclick="showSection('blog')" class="px-6 py-3 text-teal-dark font-medium hover:text-purple-500 transition-colors" data-i18n="home_cta_learn">
                         Conocer Más
-                    </button>
-                </div>
-
-                <!-- Demo Mode -->
-                <div class="mb-16">
-                    <button onclick="loadDemoMode()" class="px-6 py-2 text-sm text-gray-400 hover:text-teal-dark transition-colors">
-                        🧪 <span data-i18n="demo_mode_btn">Probar Modo Demo</span>
                     </button>
                 </div>
 
@@ -415,8 +408,59 @@
         <section id="section-test" class="py-12 hidden">
             <div class="max-w-2xl mx-auto">
 
+                <!-- Onboarding -->
+                <div id="test-onboarding" class="fade-in">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center" data-i18n="onboarding_title">Antes de comenzar...</h2>
+                    <p class="text-gray-600 mb-8 text-center" data-i18n="onboarding_desc">Contanos un poco sobre tu situación para personalizar el test.</p>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm space-y-6">
+                        <!-- Nombre -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2" data-i18n="onboarding_name_label">¿Cómo te llamás?</label>
+                            <input type="text" id="onboarding-name" class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-teal-soft focus:outline-none transition-colors" placeholder="Tu nombre" data-i18n-placeholder="onboarding_name_placeholder">
+                        </div>
+
+                        <!-- Convivencia -->
+                        <div data-onboarding-section="living">
+                            <label class="block text-gray-700 font-medium mb-3" data-i18n="onboarding_living_label">¿Conviven actualmente?</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" onclick="selectLivingOption(true)" class="living-option p-4 border-2 border-gray-200 rounded-xl hover:border-teal-soft transition-colors text-center" data-value="true">
+                                    <span class="text-2xl mb-1 block">🏠</span>
+                                    <span data-i18n="onboarding_living_yes">Sí, vivimos juntos</span>
+                                </button>
+                                <button type="button" onclick="selectLivingOption(false)" class="living-option p-4 border-2 border-gray-200 rounded-xl hover:border-teal-soft transition-colors text-center" data-value="false">
+                                    <span class="text-2xl mb-1 block">🏘️</span>
+                                    <span data-i18n="onboarding_living_no">No, por ahora no</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hijos/Mascotas -->
+                        <div data-onboarding-section="dependents">
+                            <label class="block text-gray-700 font-medium mb-3" data-i18n="onboarding_dependents_label">¿Tienen hijos o mascotas en común?</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" onclick="toggleDependentOption('kids')" class="dependent-option p-4 border-2 border-gray-200 rounded-xl hover:border-teal-soft transition-colors text-center" data-value="kids">
+                                    <span class="text-2xl mb-1 block">👶</span>
+                                    <span data-i18n="onboarding_dependents_kids">Hijos</span>
+                                </button>
+                                <button type="button" onclick="toggleDependentOption('pets')" class="dependent-option p-4 border-2 border-gray-200 rounded-xl hover:border-teal-soft transition-colors text-center" data-value="pets">
+                                    <span class="text-2xl mb-1 block">🐾</span>
+                                    <span data-i18n="onboarding_dependents_pets">Mascotas</span>
+                                </button>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2 text-center" data-i18n="onboarding_dependents_hint">Podés seleccionar ambas, una, o ninguna</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <button onclick="completeOnboarding()" id="onboarding-continue-btn" class="px-8 py-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100" disabled data-i18n="onboarding_continue">
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Test Intro -->
-                <div id="test-intro" class="text-center fade-in">
+                <div id="test-intro" class="text-center fade-in hidden">
                     <h2 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="test_intro_title">Test de Carga Mental</h2>
                     <p class="text-gray-600 mb-8" data-i18n="test_intro_desc">15 preguntas para entender cómo se distribuye la gestión invisible en tu hogar. Responde con honestidad, no hay respuestas correctas.</p>
 
@@ -550,16 +594,32 @@
                         </svg>
                     </div>
                     <h2 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="dashboard_title">¡Completaron US2!</h2>
-                    <p class="text-gray-600" data-i18n="dashboard_subtitle">Aquí está el mapa de su carga mental compartida</p>
+                    <p class="text-gray-600 mb-6" data-i18n="dashboard_subtitle">Aquí está el mapa de su carga mental compartida</p>
+
+                    <!-- Share Button -->
+                    <div class="flex justify-center gap-3">
+                        <button onclick="shareResults()" class="px-6 py-3 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-medium rounded-full shadow-md hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                            </svg>
+                            <span data-i18n="share_results">Compartir Resultados</span>
+                        </button>
+                        <button onclick="retakeTest()" class="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-full hover:border-teal-soft hover:text-teal-dark transition-all flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span data-i18n="retake_test">Volver a Hacer el Test</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Profiles Summary -->
                 <div class="grid md:grid-cols-2 gap-6 mb-12">
                     <div class="bg-white p-6 rounded-2xl shadow-sm">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-teal-soft rounded-full flex items-center justify-center text-white font-bold">A</div>
+                            <div id="avatar-a" class="w-12 h-12 bg-teal-soft rounded-full flex items-center justify-center text-white font-bold">A</div>
                             <div>
-                                <p class="text-sm text-gray-500" data-i18n="user_a_label">Usuario A</p>
+                                <p id="name-a" class="text-sm text-gray-500" data-i18n="user_a_label">Usuario A</p>
                                 <p id="profile-a" class="text-lg font-semibold text-gray-800">Director/a de Orquesta</p>
                             </div>
                         </div>
@@ -571,9 +631,9 @@
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-12 h-12 bg-lavender rounded-full flex items-center justify-center text-gray-700 font-bold">B</div>
+                            <div id="avatar-b" class="w-12 h-12 bg-lavender rounded-full flex items-center justify-center text-gray-700 font-bold">B</div>
                             <div>
-                                <p class="text-sm text-gray-500" data-i18n="user_b_label">Usuario B</p>
+                                <p id="name-b" class="text-sm text-gray-500" data-i18n="user_b_label">Usuario B</p>
                                 <p id="profile-b" class="text-lg font-semibold text-gray-800">Ejecutivo/a</p>
                             </div>
                         </div>
@@ -680,15 +740,166 @@
                     </div>
                 </div>
 
+                <!-- ========== TEAM LEVEL & XP ========== -->
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-8 rounded-2xl shadow-lg mb-12 text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div id="level-badge" class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                <span id="level-icon" class="text-3xl">🚀</span>
+                            </div>
+                            <div>
+                                <p class="text-white/80 text-sm" data-i18n="level_label">Nivel de Pareja</p>
+                                <h3 id="level-name" class="text-2xl font-bold">Tripulación Nueva</h3>
+                                <p class="text-white/70 text-sm">Nivel <span id="level-number">1</span> / 5</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-3xl font-bold" id="total-xp">0</p>
+                            <p class="text-white/70 text-sm">XP</p>
+                        </div>
+                    </div>
+
+                    <!-- XP Progress Bar -->
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="text-white/80" data-i18n="xp_to_next">XP para siguiente nivel</span>
+                            <span id="xp-progress-text" class="font-medium">0 / 100</span>
+                        </div>
+                        <div class="h-4 bg-white/20 rounded-full overflow-hidden">
+                            <div id="xp-progress-bar" class="h-full bg-gradient-to-r from-yellow-400 to-orange-400 progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- XP Sources Info -->
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-white/10 rounded-lg p-3">
+                            <p class="text-xl font-bold" id="xp-from-achievements">0</p>
+                            <p class="text-xs text-white/70" data-i18n="xp_achievements">Logros</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-3">
+                            <p class="text-xl font-bold" id="xp-from-badges">0</p>
+                            <p class="text-xs text-white/70" data-i18n="xp_badges">Badges</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-3">
+                            <p class="text-xl font-bold" id="xp-from-challenges">0</p>
+                            <p class="text-xs text-white/70" data-i18n="xp_challenges">Desafíos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== REWARDS SYSTEM ========== -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm mb-12 border-2 border-dashed border-purple-200">
+                    <div class="flex items-start justify-between mb-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                <span>🎁</span>
+                                <span data-i18n="rewards_title">Recompensas de Equipo</span>
+                            </h3>
+                            <p class="text-gray-500 text-sm mt-1" data-i18n="rewards_subtitle">Elijan una meta y celébrenla juntos</p>
+                        </div>
+                        <!-- Help tooltip -->
+                        <div class="relative group">
+                            <button class="w-6 h-6 bg-gray-100 rounded-full text-gray-400 text-sm hover:bg-gray-200">?</button>
+                            <div class="absolute right-0 top-8 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <p data-i18n="rewards_help">Seleccionen una recompensa y definan cuántos logros necesitan para alcanzarla. Cuando lleguen a la meta, ¡celebren juntos!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Reward Selection -->
+                    <div class="bg-gradient-to-r from-purple-50 to-teal-50 p-6 rounded-xl mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-medium text-gray-600" data-i18n="current_reward">Recompensa actual:</span>
+                            <button onclick="openRewardSelector()" class="text-sm text-purple-600 hover:text-purple-800 font-medium" data-i18n="change_reward">Cambiar</button>
+                        </div>
+
+                        <div class="flex items-center gap-4 mb-4">
+                            <span id="reward-icon" class="text-4xl">🎬</span>
+                            <div class="flex-1">
+                                <p id="current-reward-name" class="text-lg font-semibold text-gray-800">Noche de Cita</p>
+                                <p class="text-sm text-gray-500">
+                                    <span data-i18n="reward_goal">Meta:</span>
+                                    <span id="reward-target">20</span>
+                                    <span data-i18n="approved_achievements">logros aprobados</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Reward Progress -->
+                        <div class="mb-2">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600" data-i18n="progress">Progreso</span>
+                                <span id="reward-progress-text" class="font-medium text-purple-600">0/20</span>
+                            </div>
+                            <div class="h-4 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="reward-progress-bar" class="h-full bg-gradient-to-r from-purple-400 to-pink-400 progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Claim Reward Button (hidden until goal reached) -->
+                        <button id="claim-reward-btn" onclick="claimReward()" class="hidden w-full mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all font-medium text-lg animate-pulse">
+                            🎉 <span data-i18n="claim_reward">¡Reclamar Recompensa!</span>
+                        </button>
+                    </div>
+
+                    <!-- Adjust Goal -->
+                    <div class="flex items-center gap-4 mb-6">
+                        <label class="text-sm text-gray-600 whitespace-nowrap" data-i18n="adjust_goal">Ajustar meta:</label>
+                        <input type="range" id="reward-goal-slider" min="10" max="100" step="5" value="20" onchange="updateRewardGoal(this.value)" class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <span id="reward-goal-display" class="text-sm font-medium text-gray-800 w-12 text-center">20</span>
+                    </div>
+
+                    <!-- Rewards History -->
+                    <div class="border-t border-gray-100 pt-4">
+                        <p class="text-sm font-medium text-gray-600 mb-3 flex items-center gap-2">
+                            <span>🏅</span>
+                            <span data-i18n="rewards_history">Recompensas obtenidas:</span>
+                            <span id="rewards-count" class="text-purple-600">0</span>
+                        </p>
+                        <div id="rewards-history-list" class="flex flex-wrap gap-2">
+                            <span class="text-sm text-gray-400" data-i18n="no_rewards_yet">Aún no han obtenido recompensas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Selector Modal -->
+                <div id="reward-selector-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-800" data-i18n="select_reward">Seleccionar Recompensa</h3>
+                                <button onclick="closeRewardSelector()" class="text-gray-400 hover:text-gray-600">✕</button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <!-- Predefined Rewards -->
+                            <div id="rewards-list" class="space-y-3 mb-6">
+                                <!-- Dynamic rewards will be inserted here -->
+                            </div>
+
+                            <!-- Custom Reward -->
+                            <div class="border-t border-gray-100 pt-4">
+                                <p class="text-sm font-medium text-gray-600 mb-3" data-i18n="create_custom">Crear recompensa personalizada:</p>
+                                <div class="flex gap-2">
+                                    <input type="text" id="custom-reward-input" placeholder="Ej: Escapada de fin de semana" class="flex-1 p-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-purple-400" data-i18n-placeholder="custom_reward_placeholder">
+                                    <button onclick="addCustomReward()" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 text-sm" data-i18n="add_btn">Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- AdSense Post-Chart -->
                 <div class="adsense-placeholder mb-12 py-6">
                     <span>Ad Space - Post Chart</span>
                 </div>
 
-                <!-- 5 Golden Tips -->
+                <!-- Golden Tips -->
                 <div class="mb-12">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center" data-i18n="tips_title">5 Tips de Oro</h3>
-                    <div class="space-y-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center" data-i18n="tips_title">Tips de Oro</h3>
+
+                    <!-- Main 5 Tips -->
+                    <div id="tips-main" class="space-y-4">
                         <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-teal-soft">
                             <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_1_title">🔥 Reconocer es Combustible</h4>
                             <p class="text-gray-600 text-sm" data-i18n="tip_1_desc">Reconocer el trabajo invisible del otro es el combustible de la colaboración. Un "gracias por acordarte" vale oro.</p>
@@ -709,6 +920,19 @@
                             <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_5_title">💬 Definir Estándares</h4>
                             <p class="text-gray-600 text-sm" data-i18n="tip_5_desc">Hablen de qué significa "limpio" o "organizado" para cada uno. Los estándares implícitos generan conflictos.</p>
                         </div>
+                    </div>
+
+                    <!-- Expandable Tips (6-20) -->
+                    <div id="tips-expanded" class="hidden space-y-4 mt-4">
+                        <!-- Tips 6-20 rendered dynamically -->
+                    </div>
+
+                    <!-- Show More Button -->
+                    <div class="text-center mt-6">
+                        <button onclick="toggleMoreTips()" id="tips-toggle-btn" class="px-6 py-2 text-teal-dark border border-teal-dark rounded-full hover:bg-teal-dark hover:text-white transition-colors text-sm font-medium">
+                            <span data-i18n="tips_show_more">Ver más tips</span>
+                            <span class="ml-1">↓</span>
+                        </button>
                     </div>
                 </div>
 
@@ -854,6 +1078,17 @@
                     </div>
                 </div>
 
+                <!-- ========== INSIGHTS ========== -->
+                <div id="insights-section" class="bg-gradient-to-br from-purple-50 to-teal-50 p-8 rounded-2xl shadow-sm mb-12 hidden">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                        <span>💡</span>
+                        <span data-i18n="insights_title">Insights del Equipo</span>
+                    </h3>
+                    <div id="insights-list" class="grid md:grid-cols-2 gap-4">
+                        <!-- Dynamic insights -->
+                    </div>
+                </div>
+
                 <!-- ========== TEST HISTORY ========== -->
                 <div id="history-section" class="bg-white p-8 rounded-2xl shadow-sm mb-12 hidden">
                     <div class="flex items-center justify-between mb-6">
@@ -862,6 +1097,28 @@
                             <span data-i18n="history_title">Historial de Tests</span>
                         </h3>
                         <span id="history-count" class="text-sm text-gray-500"></span>
+                    </div>
+
+                    <!-- Evolution Chart -->
+                    <div id="evolution-chart-container" class="mb-8 hidden">
+                        <h4 class="text-md font-medium text-gray-700 mb-4" data-i18n="evolution_title">Evolución de Puntajes</h4>
+                        <div class="h-64">
+                            <canvas id="evolutionChart"></canvas>
+                        </div>
+                        <div class="flex justify-center gap-6 mt-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-teal-500"></div>
+                                <span id="evolution-label-a" class="text-gray-600">Usuario A</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                                <span id="evolution-label-b" class="text-gray-600">Usuario B</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                                <span class="text-gray-600" data-i18n="evolution_gap">Brecha</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div id="history-list" class="space-y-4">
@@ -973,8 +1230,8 @@
 
                     <!-- Article Cards -->
                     <div class="grid md:grid-cols-2 gap-6 mb-12">
-                        <!-- Article 1 - Active -->
-                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle('carga-mental')">
+                        <!-- Article 1 - Carga Mental -->
+                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle(1)">
                             <div class="h-48 bg-gradient-to-br from-teal-soft to-lavender flex items-center justify-center">
                                 <span class="text-6xl">🧠</span>
                             </div>
@@ -988,17 +1245,48 @@
                             </div>
                         </article>
 
-                        <!-- Article 2 - Coming Soon -->
-                        <article class="bg-white rounded-2xl shadow-sm overflow-hidden opacity-60">
-                            <div class="h-48 bg-gray-100 flex items-center justify-center">
-                                <span class="text-4xl text-gray-300">💬</span>
+                        <!-- Article 2 - 5 Conversaciones -->
+                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle(2)">
+                            <div class="h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                                <span class="text-6xl">💬</span>
                             </div>
                             <div class="p-6">
                                 <div class="flex items-center gap-2 mb-3">
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-400 text-xs rounded-full" data-i18n="coming_soon">Próximamente</span>
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded-full" data-i18n="blog_tag_guide">Guía</span>
+                                    <span class="text-xs text-gray-400">7 min</span>
                                 </div>
-                                <h2 class="font-bold text-gray-400 text-lg" data-i18n="article_2_title">5 Conversaciones Clave</h2>
-                                <p class="text-sm text-gray-400 mt-2" data-i18n="article_2_desc">Cómo hablar de distribución de tareas sin conflicto.</p>
+                                <h2 class="font-bold text-gray-800 text-lg group-hover:text-purple-600 transition-colors" data-i18n="article_2_title">5 Conversaciones Clave</h2>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="article_2_desc">Cómo hablar de distribución de tareas sin conflicto.</p>
+                            </div>
+                        </article>
+
+                        <!-- Article 3 - El Mito del 50/50 -->
+                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle(3)">
+                            <div class="h-48 bg-gradient-to-br from-orange-200 to-yellow-200 flex items-center justify-center">
+                                <span class="text-6xl">⚖️</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-600 text-xs rounded-full" data-i18n="blog_tag_insight">Insight</span>
+                                    <span class="text-xs text-gray-400">4 min</span>
+                                </div>
+                                <h2 class="font-bold text-gray-800 text-lg group-hover:text-orange-600 transition-colors" data-i18n="article_3_title">El Mito del 50/50</h2>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="article_3_desc">Por qué dividir todo a la mitad puede ser injusto.</p>
+                            </div>
+                        </article>
+
+                        <!-- Article 4 - Tutorial US2 -->
+                        <article class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden cursor-pointer group" onclick="showArticle(4)">
+                            <div class="h-48 bg-gradient-to-br from-green-200 to-teal-200 flex items-center justify-center">
+                                <span class="text-6xl">📖</span>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded-full" data-i18n="blog_tag_tutorial">Tutorial</span>
+                                    <span class="text-xs text-gray-400">6 min</span>
+                                </div>
+                                <h2 class="font-bold text-gray-800 text-lg group-hover:text-green-600 transition-colors" data-i18n="article_4_title">Cómo Usar US2 en Pareja</h2>
+                                <p class="text-sm text-gray-500 mt-2" data-i18n="article_4_desc">Guía paso a paso para sacar el máximo provecho de la herramienta.</p>
                             </div>
                         </article>
                     </div>
@@ -1026,129 +1314,11 @@
                         <span data-i18n="blog_back">Volver al Blog</span>
                     </button>
 
-                    <!-- Article Content -->
-                    <article class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                        <!-- Header Image -->
-                        <div class="h-64 bg-gradient-to-br from-teal-soft to-lavender flex items-center justify-center">
-                            <span class="text-8xl">🧠</span>
-                        </div>
-
-                        <div class="p-8 md:p-12">
-                            <!-- Meta -->
-                            <div class="flex items-center gap-4 mb-6 text-sm text-gray-500">
-                                <span class="px-3 py-1 bg-teal-soft/20 text-teal-dark rounded-full" data-i18n="blog_tag_featured">Destacado</span>
-                                <span>5 min</span>
-                                <span>•</span>
-                                <span data-i18n="blog_author">Equipo US2</span>
-                            </div>
-
-                            <!-- Title -->
-                            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight" data-i18n="article_1_full_title">
-                                Carga Mental: Por qué sentís que trabajás más que tu pareja (aunque no sea cierto)
-                            </h1>
-
-                            <!-- AdSense - Article Top -->
-                            <div class="adsense-placeholder my-8 py-4">
-                                <span>Ad Space - Article Top</span>
-                            </div>
-
-                            <!-- Article Body -->
-                            <div class="prose prose-lg max-w-none text-gray-700">
-                                <p class="text-xl text-gray-600 mb-8 leading-relaxed" data-i18n="article_1_intro">
-                                    ¿Alguna vez sentiste que sos la única persona en la casa que sabe cuándo se acaba el detergente, cuándo hay que vacunar al perro o qué talle de zapatillas calzan tus hijos hoy?
-                                </p>
-
-                                <p class="text-lg mb-8" data-i18n="article_1_hook">
-                                    <strong>Eso que sentís no es cansancio físico; es Carga Mental.</strong>
-                                </p>
-
-                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_1">¿Qué es exactamente la Carga Mental?</h2>
-
-                                <p class="mb-4" data-i18n="article_1_validation">
-                                    <strong>Y no, no estás exagerando.</strong> Esto tiene nombre, está estudiado, y afecta a millones de parejas.
-                                </p>
-
-                                <p class="mb-6" data-i18n="article_1_p1">
-                                    La mayoría de las parejas pelean por quién lavó más platos o quién sacó la basura. Pero el problema real no es la ejecución, sino la gestión.
-                                </p>
-
-                                <div class="bg-offwhite p-6 rounded-xl my-8 border-l-4 border-teal-soft">
-                                    <p class="mb-2" data-i18n="article_1_example1"><strong>Ejecutar</strong> es lavar el plato.</p>
-                                    <p data-i18n="article_1_example2"><strong>Gestionar</strong> es notar que el plato está sucio, saber dónde está la esponja, revisar si queda detergente y planificar en qué momento del día se va a lavar para que la cocina esté lista para la cena.</p>
-                                </div>
-
-                                <p class="mb-6" data-i18n="article_1_p2">
-                                    En la mayoría de los hogares, una persona actúa como "Director de Orquesta" y la otra como "Ejecutivo". El problema es que el Director nunca descansa. Su cerebro está siempre encendido, procesando una lista interminable de tareas invisibles.
-                                </p>
-
-                                <!-- AdSense - Article Middle -->
-                                <div class="adsense-placeholder my-8 py-4">
-                                    <span>Ad Space - Article Middle</span>
-                                </div>
-
-                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_2">El riesgo del Burnout Relacional</h2>
-
-                                <p class="mb-6" data-i18n="article_1_p3">
-                                    Cuando uno de los dos lleva toda la gestión, el amor empieza a pesar. Aparece el resentimiento y esa frase típica de: <em>"Si me lo pedías, lo hacía"</em>. Pero tener que pedir ayuda ya es un trabajo en sí mismo.
-                                </p>
-
-                                <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4" data-i18n="article_1_h2_3">¿Cómo solucionarlo?</h2>
-
-                                <p class="mb-6" data-i18n="article_1_p4">
-                                    El primer paso es hacer visible lo invisible. No podés arreglar lo que no podés medir. Por eso creamos US2.
-                                </p>
-
-                                <p class="mb-8" data-i18n="article_1_p5">
-                                    Nuestro test está diseñado para que ambos puedan ver, con números y gráficos reales, cómo se siente el otro y qué tareas están quedando en un "punto ciego".
-                                </p>
-
-                                <!-- Insight Box -->
-                                <div class="bg-gradient-to-r from-purple-50 to-teal-soft/20 p-6 rounded-xl my-8 border border-purple-100">
-                                    <p class="font-semibold text-purple-700" data-i18n="article_1_insight">
-                                        💡 Dato US2: Las parejas que logran equilibrar la gestión mental suelen tener conversaciones más productivas y menos discusiones sobre "quién hace más".
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- CTA Box -->
-                            <div class="bg-gradient-to-br from-teal-soft to-teal-dark p-8 rounded-2xl mt-12 text-center text-white">
-                                <h3 class="text-2xl font-bold mb-2" data-i18n="article_1_cta_title">¿Querés analizar tu caso?</h3>
-                                <p class="mb-6 opacity-90" data-i18n="article_1_cta_desc">El test toma 3 minutos y puede cambiar la conversación.</p>
-                                <button onclick="startTest()" class="px-8 py-4 bg-white text-teal-dark font-bold rounded-full hover:shadow-lg transition-all hover:scale-105">
-                                    <span data-i18n="article_1_cta_btn">HACER EL TEST DE CARGA MENTAL US2</span>
-                                </button>
-                            </div>
-
-                            <!-- AdSense - Article Bottom -->
-                            <div class="adsense-placeholder mt-12 py-4">
-                                <span>Ad Space - Article Bottom</span>
-                            </div>
-
-                            <!-- Share -->
-                            <div class="mt-12 pt-8 border-t border-gray-100">
-                                <p class="text-center text-gray-600 mb-4" data-i18n="article_share">¿Te sirvió este artículo? Compartilo:</p>
-                                <div class="flex justify-center gap-3">
-                                    <button onclick="shareArticleWhatsApp()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                        WhatsApp
-                                    </button>
-                                    <button onclick="shareArticleTwitter()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center gap-2">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                                        X
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
+                    <!-- Dynamic Article Content -->
+                    <div id="article-content"></div>
 
                     <!-- Related Articles -->
-                    <div class="mt-12">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6" data-i18n="blog_related">Seguí leyendo</h3>
-                        <div class="bg-white rounded-xl shadow-sm p-6 opacity-60">
-                            <span class="text-sm text-gray-400" data-i18n="coming_soon">Próximamente</span>
-                            <h4 class="font-semibold text-gray-500 mt-2" data-i18n="article_2_title">5 Conversaciones Clave</h4>
-                        </div>
-                    </div>
+                    <div id="related-articles" class="mt-12"></div>
                 </div>
 
             </div>
@@ -1162,9 +1332,9 @@
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center">
-                        <span class="text-white font-bold text-sm">U2</span>
+                        <span class="text-white font-bold text-sm">S2</span>
                     </div>
-                    <span class="text-gray-800 font-medium">US2</span>
+                    <span class="text-gray-800 font-medium" data-i18n="logo_tagline">Somos un equipo</span>
                 </div>
 
                 <div class="flex items-center gap-6 text-sm text-gray-500">
@@ -1191,14 +1361,17 @@
         // ==========================================
         const translations = {
             es: {
+                // Logo
+                logo_tagline: "Somos un equipo",
+
                 // Navigation
                 nav_home: "Inicio",
                 nav_test: "Test",
                 nav_blog: "Blog",
 
                 // Home
-                home_title: "La Carga Mental<br>se comparte mejor en equipo",
-                home_subtitle: "US2 te ayuda a visibilizar la gestión invisible del hogar. Porque cuando ambos ven, ambos pueden actuar.",
+                home_title: "Juntos hacemos<br>que todo funcione",
+                home_subtitle: "US2 te ayuda a visibilizar la gestión invisible del hogar.<br>Porque cuando ambos ven, ambos pueden actuar.",
                 home_cta_start: "Comenzar el Test",
                 home_cta_learn: "Conocer Más",
 
@@ -1215,6 +1388,22 @@
                 step_1: "Completás el test",
                 step_2: "Invitás a tu pareja",
                 step_3: "Ven resultados juntos",
+
+                // Onboarding
+                onboarding_title: "Antes de comenzar...",
+                onboarding_title_b: "¡Hola! Una última cosa...",
+                onboarding_desc: "Contanos un poco sobre tu situación para personalizar el test.",
+                onboarding_desc_b: "Tu pareja ya completó su parte. Solo necesitamos tu nombre para continuar.",
+                onboarding_name_label: "¿Cómo te llamás?",
+                onboarding_name_placeholder: "Tu nombre",
+                onboarding_living_label: "¿Conviven actualmente?",
+                onboarding_living_yes: "Sí, vivimos juntos",
+                onboarding_living_no: "No, por ahora no",
+                onboarding_dependents_label: "¿Tienen hijos o mascotas en común?",
+                onboarding_dependents_kids: "Hijos",
+                onboarding_dependents_pets: "Mascotas",
+                onboarding_dependents_hint: "Podés seleccionar ambas, una, o ninguna",
+                onboarding_continue: "Continuar",
 
                 // Test
                 test_intro_title: "Test de Carga Mental",
@@ -1271,6 +1460,9 @@
                 // Dashboard
                 dashboard_title: "¡Completaron US2!",
                 dashboard_subtitle: "Aquí está el mapa de su carga mental compartida",
+                share_results: "Compartir Resultados",
+                retake_test: "Volver a Hacer el Test",
+                share_message: "Hicimos el test de US2 para ver cómo nos distribuimos la carga mental del hogar. ¡Te lo recomiendo!",
                 user_a_label: "Usuario A",
                 user_b_label: "Usuario B",
                 radar_title: "Comparativa por Categorías",
@@ -1283,7 +1475,9 @@
                 profile_director: "Director/a de Orquesta",
 
                 // Tips
-                tips_title: "5 Tips de Oro",
+                tips_title: "Tips de Oro",
+                tips_show_more: "Ver más tips",
+                tips_show_less: "Ver menos",
                 tip_1_title: "🔥 Reconocer es Combustible",
                 tip_1_desc: "Reconocer el trabajo invisible del otro es el combustible de la colaboración. Un 'gracias por acordarte' vale oro.",
                 tip_2_title: "📦 Delegar Proyectos Completos",
@@ -1294,6 +1488,36 @@
                 tip_4_desc: "Acordar estándares realistas reduce la fricción. No todo tiene que estar perfecto, tiene que estar hecho.",
                 tip_5_title: "💬 Definir Estándares",
                 tip_5_desc: "Hablen de qué significa 'limpio' o 'organizado' para cada uno. Los estándares implícitos generan conflictos.",
+                tip_6_title: "🎯 Hacer Visible lo Invisible",
+                tip_6_desc: "Escriban todas las tareas del hogar, incluidas las mentales. Lo que no se ve, no se puede repartir.",
+                tip_7_title: "🔄 Rotar Responsabilidades",
+                tip_7_desc: "Intercambien roles cada tanto. El que nunca cocinó no dimensiona lo que implica planificar menús.",
+                tip_8_title: "📱 Usar Listas Compartidas",
+                tip_8_desc: "Apps como Todoist o AnyList permiten que ambos vean y agreguen tareas. Elimina el 'no sabía'.",
+                tip_9_title: "⏰ Respetar los Tiempos del Otro",
+                tip_9_desc: "Si acordaron que uno hace algo, darle espacio para hacerlo a su manera y tiempo.",
+                tip_10_title: "🚫 Evitar el Gatekeeping",
+                tip_10_desc: "No critiquen cómo el otro hace las cosas. Si está hecho, está bien. El perfeccionismo mata la colaboración.",
+                tip_11_title: "💭 Preguntar Antes de Asumir",
+                tip_11_desc: "En lugar de 'nunca hacés nada', preguntar '¿cómo te sentís con la distribución actual?'",
+                tip_12_title: "🎉 Celebrar los Pequeños Logros",
+                tip_12_desc: "Un 'lo logramos' al final del día refuerza el trabajo en equipo.",
+                tip_13_title: "📊 Revisar Mensualmente",
+                tip_13_desc: "Una vez al mes, repasen cómo se sintieron con la distribución. Ajusten antes de que haya resentimiento.",
+                tip_14_title: "🧘 Pedir Ayuda Sin Culpa",
+                tip_14_desc: "Pedir ayuda no es debilidad. Es comunicación. Y es mejor que el silencio resentido.",
+                tip_15_title: "🤝 Negociar, No Imponer",
+                tip_15_desc: "Las reglas funcionan cuando ambos las acuerdan. Lo impuesto genera resistencia.",
+                tip_16_title: "📝 Documentar Acuerdos",
+                tip_16_desc: "Lo que se habla se olvida. Escriban los acuerdos importantes en un lugar visible.",
+                tip_17_title: "⚡ Actuar Sin que te Pidan",
+                tip_17_desc: "Si ves algo que hay que hacer, hacelo. No esperes a que te lo pidan. Eso también es carga mental.",
+                tip_18_title: "🌙 No Discutir Cansados",
+                tip_18_desc: "Las conversaciones sobre distribución requieren energía. Elijan un momento donde ambos estén disponibles.",
+                tip_19_title: "💪 Ser Pacientes con el Proceso",
+                tip_19_desc: "Cambiar dinámicas de años lleva tiempo. Celebren el progreso, no solo la perfección.",
+                tip_20_title: "❤️ Recordar el Objetivo Común",
+                tip_20_desc: "No se trata de ganar. Se trata de que ambos se sientan valorados y en equipo.",
 
                 // Flight Log
                 flight_log_title: "Bitácora Diaria",
@@ -1451,9 +1675,27 @@
                 history_worse: "Empeoró",
                 history_first: "Primer test",
 
+                // Insights
+                insights_title: "Insights del Equipo",
+                insight_strongest: "Tu categoría más equilibrada",
+                insight_opportunity: "Mayor oportunidad de mejora",
+                insight_trend_positive: "¡Van por buen camino! La brecha se redujo",
+                insight_trend_negative: "La brecha aumentó. ¿Hora de conversar?",
+                insight_trend_stable: "Brecha estable. ¡Sigan así!",
+                insight_balance_great: "¡Excelente equilibrio en general!",
+                insight_balance_good: "Buen equilibrio, hay espacio para mejorar",
+                insight_balance_work: "Hay trabajo por hacer, pero están en el camino",
+
+                // Evolution Chart
+                evolution_title: "Evolución de Puntajes",
+                evolution_gap: "Brecha",
+
                 // Blog
                 blog_subtitle: "Artículos y guías para construir un hogar más equilibrado",
                 blog_tag_featured: "Destacado",
+                blog_tag_guide: "Guía",
+                blog_tag_insight: "Insight",
+                blog_tag_tutorial: "Tutorial",
                 blog_subscribe_desc: "Nuevos artículos y tips directamente en tu email",
                 blog_back: "Volver al Blog",
                 blog_author: "Equipo US2",
@@ -1479,17 +1721,144 @@
                 article_1_cta_title: "¿Querés analizar tu caso?",
                 article_1_cta_desc: "El test toma 3 minutos y puede cambiar la conversación.",
                 article_1_cta_btn: "HACER EL TEST DE CARGA MENTAL US2",
-                newsletter_success: "¡Gracias por suscribirte!"
+
+                // Article 2 - 5 Conversaciones Clave
+                article_2_title: "5 Conversaciones Clave",
+                article_2_desc: "Cómo hablar de distribución de tareas sin que termine en pelea.",
+                article_2_full_title: "5 Conversaciones que Toda Pareja Necesita Tener (Sin que Terminen en Pelea)",
+                article_2_intro: "Hablar de quién hace qué en casa suele activar defensas. Pero con las preguntas correctas, pueden transformar una discusión en una alianza.",
+                article_2_hook: "<strong>No se trata de quién hace más. Se trata de quién nota qué.</strong>",
+                article_2_h2_1: "Por qué estas conversaciones son difíciles",
+                article_2_p1: "Cuando uno siente que hace más, cualquier conversación sobre tareas se vuelve una acusación implícita. El otro se pone a la defensiva. Resultado: ninguno escucha, ambos pierden.",
+                article_2_p2: "La clave es cambiar el enfoque: en lugar de 'vos no hacés nada', preguntar '¿cómo nos organizamos mejor?'",
+                article_2_h2_2: "Las 5 Conversaciones",
+                article_2_conv1_title: "1. La Conversación del Inventario",
+                article_2_conv1_desc: "Hagan una lista de TODAS las tareas del hogar. No solo las visibles (lavar, cocinar) sino las invisibles (acordarse de turnos médicos, planificar comidas, saber cuándo hay que comprar detergente).",
+                article_2_conv1_tip: "💡 Tip: Usen el test de US2 como punto de partida. Revela las tareas que uno ni sabía que el otro hacía.",
+                article_2_conv2_title: "2. La Conversación de los Estándares",
+                article_2_conv2_desc: "¿Qué significa 'limpio' para cada uno? ¿Cada cuánto hay que cambiar las sábanas? Muchos conflictos vienen de estándares implícitos diferentes.",
+                article_2_conv2_tip: "💡 Tip: No hay estándar 'correcto'. El objetivo es acordar uno que funcione para ambos.",
+                article_2_conv3_title: "3. La Conversación de los Proyectos",
+                article_2_conv3_desc: "En lugar de dividir tareas sueltas, dividan áreas completas. Uno se encarga de TODO lo relacionado con mascotas. El otro de TODO lo relacionado con mantenimiento del auto.",
+                article_2_conv3_tip: "💡 Tip: Esto elimina el 'tengo que pedirte que...'. Cada uno es dueño de su área.",
+                article_2_conv4_title: "4. La Conversación del Sync Semanal",
+                article_2_conv4_desc: "15 minutos los domingos para revisar la semana que viene. ¿Quién lleva a los chicos? ¿Hay algún evento? ¿Qué hay que comprar?",
+                article_2_conv4_tip: "💡 Tip: Ponerlo en el calendario como cita fija. Sin el sync, vuelven los malentendidos.",
+                article_2_conv5_title: "5. La Conversación del Reconocimiento",
+                article_2_conv5_desc: "Agradecer específicamente las tareas invisibles. 'Gracias por acordarte del turno del pediatra' vale más que 'gracias por todo'.",
+                article_2_conv5_tip: "💡 Tip: El reconocimiento no es debilidad. Es el pegamento de los equipos que funcionan.",
+                article_2_h2_3: "El Error Más Común",
+                article_2_p3: "Esperar que el otro 'se dé cuenta'. Si algo te molesta, decilo. Pero decilo como pedido, no como reclamo.",
+                article_2_cta_title: "¿Listos para su primera conversación?",
+                article_2_cta_desc: "El test les da datos concretos para empezar a hablar.",
+
+                // Article 3 - El Mito del 50/50
+                article_3_title: "El Mito del 50/50",
+                article_3_desc: "Por qué dividir todo a la mitad puede ser injusto.",
+                article_3_full_title: "El Mito del 50/50: Por qué la Equidad no es Siempre Igualdad",
+                article_3_intro: "Suena justo: cada uno hace la mitad. Pero la vida real no se divide en mitades iguales. Y pretender que sí puede generar más conflictos.",
+                article_3_hook: "<strong>Equidad no significa que ambos hagan lo mismo. Significa que ambos sientan que es justo.</strong>",
+                article_3_h2_1: "Por qué el 50/50 no funciona",
+                article_3_p1: "Los trabajos no son iguales. Cocinar lleva más tiempo que sacar la basura. Planificar las vacaciones es más agotador mentalmente que reservar el restaurante.",
+                article_3_p2: "Además, las circunstancias cambian. Si uno tiene una semana de mucho trabajo, pretender que siga haciendo 'su mitad' es injusto.",
+                article_3_h2_2: "El Modelo 100/100",
+                article_3_p3: "En lugar de dividir, pensar que ambos dan el 100% según sus posibilidades del momento. Algunas semanas uno dará 70% y el otro 30%. La siguiente se invierte.",
+                article_3_p4: "La clave es la flexibilidad y la comunicación constante sobre cómo se siente cada uno.",
+                article_3_h2_3: "Señales de que el Balance está Mal",
+                article_3_signal1: "• Uno siempre está pensando en 'lo que falta hacer'",
+                article_3_signal2: "• El otro solo actúa cuando se le pide explícitamente",
+                article_3_signal3: "• Hay resentimiento silencioso acumulándose",
+                article_3_signal4: "• Las discusiones empiezan con 'siempre' o 'nunca'",
+                article_3_h2_4: "Cómo Recalibrar",
+                article_3_p5: "Primero, hacer visible quién hace qué (ahí entra US2). Segundo, hablar de lo que cada uno PUEDE hacer esta semana. Tercero, revisar semanalmente si el balance se siente justo para ambos.",
+                article_3_cta_title: "¿Cómo está su balance actual?",
+                article_3_cta_desc: "El test revela la distribución real, sin suposiciones.",
+
+                // Article 4 - Tutorial US2
+                article_4_title: "Cómo Usar US2 en Pareja",
+                article_4_desc: "Guía paso a paso para sacar el máximo provecho de la herramienta.",
+                article_4_full_title: "Guía Completa: Cómo Usar US2 para Mejorar tu Relación",
+                article_4_intro: "US2 no es solo un test. Es una herramienta para abrir conversaciones, trackear progreso y celebrar logros juntos. Así es como sacarle el máximo provecho.",
+                article_4_hook: "<strong>3 minutos de test pueden cambiar meses de dinámicas.</strong>",
+                article_4_h2_1: "Paso 1: El Test Inicial",
+                article_4_step1_p1: "Cada uno completa el test por separado. Es importante ser honesto, no responder lo que 'debería' ser sino lo que realmente pasa.",
+                article_4_step1_p2: "El test evalúa 9 categorías de gestión del hogar y genera un perfil único para cada uno.",
+                article_4_step1_tip: "💡 Tip: No miren las respuestas del otro hasta que ambos terminen.",
+                article_4_h2_2: "Paso 2: El Dashboard Comparativo",
+                article_4_step2_p1: "Una vez que ambos completaron el test, ven el radar chart con las diferencias. Las áreas con mayor brecha son los 'puntos ciegos' donde hay que trabajar.",
+                article_4_step2_p2: "El análisis de gap muestra específicamente dónde hay más diferencia de percepción.",
+                article_4_step2_tip: "💡 Tip: Usen los insights como punto de partida para conversar, no como arma para atacar.",
+                article_4_h2_3: "Paso 3: Los Logros Invisibles",
+                article_4_step3_p1: "Cada día, registren las pequeñas tareas que normalmente pasan desapercibidas. El otro las aprueba y suman puntos.",
+                article_4_step3_p2: "Esto hace visible el trabajo invisible y genera un hábito de reconocimiento mutuo.",
+                article_4_step3_tip: "💡 Tip: Sean específicos. 'Recordé comprar leche' es mejor que 'fui al super'.",
+                article_4_h2_4: "Paso 4: Objetivos y Recompensas",
+                article_4_step4_p1: "Definan objetivos juntos y elijan una recompensa para cuando los alcancen. Puede ser una cena especial, un día de spa, o lo que quieran.",
+                article_4_step4_p2: "Celebrar los logros juntos refuerza el trabajo en equipo.",
+                article_4_h2_5: "Paso 5: Repetir y Comparar",
+                article_4_step5_p1: "Hagan el test de nuevo cada mes o dos. El gráfico de evolución mostrará si la brecha se está cerrando.",
+                article_4_step5_p2: "Cada badge y desafío completado es un recordatorio de que están progresando juntos.",
+                article_4_cta_title: "¿Listos para empezar?",
+                article_4_cta_desc: "El primer paso es siempre el más importante.",
+
+                newsletter_success: "¡Gracias por suscribirte!",
+
+                // Level System
+                level_label: "Nivel de Pareja",
+                level_1: "Tripulación Nueva",
+                level_2: "Compañeros de Vuelo",
+                level_3: "Equipo Coordinado",
+                level_4: "CoPilotos Expertos",
+                level_5: "Capitanes del Hogar",
+                xp_to_next: "XP para siguiente nivel",
+                xp_achievements: "Logros",
+                xp_badges: "Badges",
+                xp_challenges: "Desafíos",
+                level_up_toast: "¡Subieron de nivel!",
+
+                // Rewards System
+                rewards_title: "Recompensas de Equipo",
+                rewards_subtitle: "Elijan una meta y celébrenla juntos",
+                rewards_help: "Seleccionen una recompensa y definan cuántos logros necesitan para alcanzarla. Cuando lleguen a la meta, ¡celebren juntos!",
+                current_reward: "Recompensa actual:",
+                change_reward: "Cambiar",
+                reward_goal: "Meta:",
+                approved_achievements: "logros aprobados",
+                progress: "Progreso",
+                claim_reward: "¡Reclamar Recompensa!",
+                adjust_goal: "Ajustar meta:",
+                rewards_history: "Recompensas obtenidas:",
+                no_rewards_yet: "Aún no han obtenido recompensas",
+                select_reward: "Seleccionar Recompensa",
+                create_custom: "Crear recompensa personalizada:",
+                custom_reward_placeholder: "Ej: Escapada de fin de semana",
+                add_btn: "Agregar",
+                reward_claimed_toast: "🎉 ¡Recompensa reclamada! A celebrar juntos.",
+
+                // Predefined Rewards
+                reward_date_night: "Noche de Cita",
+                reward_date_night_desc: "Una salida especial a cenar o al cine",
+                reward_spa_day: "Día de Spa",
+                reward_spa_day_desc: "Un día de relajación y autocuidado",
+                reward_special_dinner: "Cena Especial",
+                reward_special_dinner_desc: "Cocinar algo especial juntos o pedir comida favorita",
+                reward_weekend_trip: "Escapada de Fin de Semana",
+                reward_weekend_trip_desc: "Una mini-vacación para reconectar",
+                reward_free_day: "Día Libre",
+                reward_free_day_desc: "Un día completo sin responsabilidades del hogar"
             },
             en: {
+                // Logo
+                logo_tagline: "We are a team",
+
                 // Navigation
                 nav_home: "Home",
                 nav_test: "Test",
                 nav_blog: "Blog",
 
                 // Home
-                home_title: "Mental Load<br>is better shared as a team",
-                home_subtitle: "US2 helps you visualize the invisible management of your home. Because when both see, both can act.",
+                home_title: "Together we make<br>everything work",
+                home_subtitle: "US2 helps you visualize the invisible management of your home.<br>Because when both see, both can act.",
                 home_cta_start: "Start the Test",
                 home_cta_learn: "Learn More",
 
@@ -1506,6 +1875,22 @@
                 step_1: "Complete the test",
                 step_2: "Invite your partner",
                 step_3: "See results together",
+
+                // Onboarding
+                onboarding_title: "Before we start...",
+                onboarding_title_b: "Hi! One last thing...",
+                onboarding_desc: "Tell us a bit about your situation to personalize the test.",
+                onboarding_desc_b: "Your partner already completed their part. We just need your name to continue.",
+                onboarding_name_label: "What's your name?",
+                onboarding_name_placeholder: "Your name",
+                onboarding_living_label: "Do you currently live together?",
+                onboarding_living_yes: "Yes, we live together",
+                onboarding_living_no: "No, not right now",
+                onboarding_dependents_label: "Do you have kids or pets together?",
+                onboarding_dependents_kids: "Kids",
+                onboarding_dependents_pets: "Pets",
+                onboarding_dependents_hint: "You can select both, one, or neither",
+                onboarding_continue: "Continue",
 
                 // Test
                 test_intro_title: "Mental Load Test",
@@ -1562,6 +1947,9 @@
                 // Dashboard
                 dashboard_title: "You completed US2!",
                 dashboard_subtitle: "Here's the map of your shared mental load",
+                share_results: "Share Results",
+                retake_test: "Retake Test",
+                share_message: "We took the US2 test to see how we share the mental load at home. I recommend it!",
                 user_a_label: "User A",
                 user_b_label: "User B",
                 radar_title: "Comparison by Categories",
@@ -1574,7 +1962,9 @@
                 profile_director: "Orchestra Director",
 
                 // Tips
-                tips_title: "5 Golden Tips",
+                tips_title: "Golden Tips",
+                tips_show_more: "Show more tips",
+                tips_show_less: "Show less",
                 tip_1_title: "🔥 Recognition is Fuel",
                 tip_1_desc: "Recognizing the other's invisible work is the fuel of collaboration. A 'thanks for remembering' is worth gold.",
                 tip_2_title: "📦 Hand Over Projects",
@@ -1585,6 +1975,36 @@
                 tip_4_desc: "Agreeing on realistic standards reduces friction. Not everything has to be perfect, it has to be done.",
                 tip_5_title: "💬 Define Standard of Care",
                 tip_5_desc: "Talk about what 'clean' or 'organized' means to each of you. Implicit standards create conflicts.",
+                tip_6_title: "🎯 Make the Invisible Visible",
+                tip_6_desc: "Write down all household tasks, including mental ones. What isn't seen can't be divided.",
+                tip_7_title: "🔄 Rotate Responsibilities",
+                tip_7_desc: "Switch roles sometimes. The one who never cooked doesn't understand what meal planning involves.",
+                tip_8_title: "📱 Use Shared Lists",
+                tip_8_desc: "Apps like Todoist or AnyList let both see and add tasks. Eliminates 'I didn't know'.",
+                tip_9_title: "⏰ Respect Each Other's Timing",
+                tip_9_desc: "If you agreed someone does something, give them space to do it their way and time.",
+                tip_10_title: "🚫 Avoid Gatekeeping",
+                tip_10_desc: "Don't criticize how the other does things. If it's done, it's good. Perfectionism kills collaboration.",
+                tip_11_title: "💭 Ask Before Assuming",
+                tip_11_desc: "Instead of 'you never do anything', ask 'how do you feel about the current distribution?'",
+                tip_12_title: "🎉 Celebrate Small Wins",
+                tip_12_desc: "A 'we did it' at the end of the day reinforces teamwork.",
+                tip_13_title: "📊 Review Monthly",
+                tip_13_desc: "Once a month, review how you felt about the distribution. Adjust before resentment builds.",
+                tip_14_title: "🧘 Ask for Help Without Guilt",
+                tip_14_desc: "Asking for help isn't weakness. It's communication. And it's better than resentful silence.",
+                tip_15_title: "🤝 Negotiate, Don't Impose",
+                tip_15_desc: "Rules work when both agree to them. What's imposed creates resistance.",
+                tip_16_title: "📝 Document Agreements",
+                tip_16_desc: "What's talked about gets forgotten. Write important agreements somewhere visible.",
+                tip_17_title: "⚡ Act Without Being Asked",
+                tip_17_desc: "If you see something that needs doing, do it. Don't wait to be asked. That's also mental load.",
+                tip_18_title: "🌙 Don't Discuss When Tired",
+                tip_18_desc: "Distribution conversations need energy. Choose a time when both are available.",
+                tip_19_title: "💪 Be Patient with the Process",
+                tip_19_desc: "Changing years of dynamics takes time. Celebrate progress, not just perfection.",
+                tip_20_title: "❤️ Remember the Common Goal",
+                tip_20_desc: "It's not about winning. It's about both feeling valued and like a team.",
 
                 // Flight Log
                 flight_log_title: "Daily Flight Log",
@@ -1742,9 +2162,27 @@
                 history_worse: "Worse",
                 history_first: "First test",
 
+                // Insights
+                insights_title: "Team Insights",
+                insight_strongest: "Your most balanced category",
+                insight_opportunity: "Biggest improvement opportunity",
+                insight_trend_positive: "You're on track! The gap decreased",
+                insight_trend_negative: "The gap increased. Time to talk?",
+                insight_trend_stable: "Gap is stable. Keep it up!",
+                insight_balance_great: "Excellent overall balance!",
+                insight_balance_good: "Good balance, room for improvement",
+                insight_balance_work: "Work to be done, but you're on the path",
+
+                // Evolution Chart
+                evolution_title: "Score Evolution",
+                evolution_gap: "Gap",
+
                 // Blog
                 blog_subtitle: "Articles and guides to build a more balanced home",
                 blog_tag_featured: "Featured",
+                blog_tag_guide: "Guide",
+                blog_tag_insight: "Insight",
+                blog_tag_tutorial: "Tutorial",
                 blog_subscribe_desc: "New articles and tips directly to your inbox",
                 blog_back: "Back to Blog",
                 blog_author: "US2 Team",
@@ -1770,7 +2208,131 @@
                 article_1_cta_title: "Want to analyze your situation?",
                 article_1_cta_desc: "The test takes 3 minutes and can change the conversation.",
                 article_1_cta_btn: "TAKE THE US2 MENTAL LOAD TEST",
-                newsletter_success: "Thanks for subscribing!"
+
+                // Article 2 - 5 Key Conversations
+                article_2_title: "5 Key Conversations",
+                article_2_desc: "How to talk about task distribution without fighting.",
+                article_2_full_title: "5 Conversations Every Couple Needs to Have (Without Fighting)",
+                article_2_intro: "Talking about who does what at home usually triggers defenses. But with the right questions, you can turn an argument into an alliance.",
+                article_2_hook: "<strong>It's not about who does more. It's about who notices what.</strong>",
+                article_2_h2_1: "Why these conversations are hard",
+                article_2_p1: "When one person feels they do more, any conversation about tasks becomes an implicit accusation. The other gets defensive. Result: no one listens, both lose.",
+                article_2_p2: "The key is to change the focus: instead of 'you don't do anything', ask 'how can we organize better?'",
+                article_2_h2_2: "The 5 Conversations",
+                article_2_conv1_title: "1. The Inventory Conversation",
+                article_2_conv1_desc: "Make a list of ALL household tasks. Not just visible ones (washing, cooking) but invisible ones (remembering medical appointments, meal planning, knowing when to buy detergent).",
+                article_2_conv1_tip: "💡 Tip: Use the US2 test as a starting point. It reveals tasks one didn't even know the other was doing.",
+                article_2_conv2_title: "2. The Standards Conversation",
+                article_2_conv2_desc: "What does 'clean' mean to each of you? How often should sheets be changed? Many conflicts come from different implicit standards.",
+                article_2_conv2_tip: "💡 Tip: There's no 'correct' standard. The goal is to agree on one that works for both.",
+                article_2_conv3_title: "3. The Projects Conversation",
+                article_2_conv3_desc: "Instead of dividing loose tasks, divide complete areas. One handles EVERYTHING pet-related. The other handles EVERYTHING car maintenance-related.",
+                article_2_conv3_tip: "💡 Tip: This eliminates the 'I have to ask you to...'. Each person owns their area.",
+                article_2_conv4_title: "4. The Weekly Sync Conversation",
+                article_2_conv4_desc: "15 minutes on Sundays to review the upcoming week. Who takes the kids? Any events? What needs to be bought?",
+                article_2_conv4_tip: "💡 Tip: Put it in the calendar as a fixed appointment. Without the sync, misunderstandings return.",
+                article_2_conv5_title: "5. The Recognition Conversation",
+                article_2_conv5_desc: "Specifically thank invisible tasks. 'Thanks for remembering the pediatrician appointment' means more than 'thanks for everything'.",
+                article_2_conv5_tip: "💡 Tip: Recognition isn't weakness. It's the glue of teams that work.",
+                article_2_h2_3: "The Most Common Mistake",
+                article_2_p3: "Expecting the other to 'just realize'. If something bothers you, say it. But say it as a request, not as a complaint.",
+                article_2_cta_title: "Ready for your first conversation?",
+                article_2_cta_desc: "The test gives you concrete data to start talking.",
+
+                // Article 3 - The 50/50 Myth
+                article_3_title: "The 50/50 Myth",
+                article_3_desc: "Why splitting everything in half can be unfair.",
+                article_3_full_title: "The 50/50 Myth: Why Equity Isn't Always Equality",
+                article_3_intro: "It sounds fair: each person does half. But real life doesn't divide into equal halves. And pretending it does can create more conflict.",
+                article_3_hook: "<strong>Equity doesn't mean both do the same thing. It means both feel it's fair.</strong>",
+                article_3_h2_1: "Why 50/50 doesn't work",
+                article_3_p1: "Jobs aren't equal. Cooking takes more time than taking out the trash. Planning vacation is more mentally exhausting than booking a restaurant.",
+                article_3_p2: "Plus, circumstances change. If one has a heavy work week, expecting them to still do 'their half' is unfair.",
+                article_3_h2_2: "The 100/100 Model",
+                article_3_p3: "Instead of dividing, think that both give 100% according to their current capacity. Some weeks one gives 70% and the other 30%. The next week it reverses.",
+                article_3_p4: "The key is flexibility and constant communication about how each person feels.",
+                article_3_h2_3: "Signs the Balance is Off",
+                article_3_signal1: "• One is always thinking about 'what still needs to be done'",
+                article_3_signal2: "• The other only acts when explicitly asked",
+                article_3_signal3: "• Silent resentment is building up",
+                article_3_signal4: "• Arguments start with 'always' or 'never'",
+                article_3_h2_4: "How to Recalibrate",
+                article_3_p5: "First, make visible who does what (that's where US2 comes in). Second, talk about what each person CAN do this week. Third, review weekly if the balance feels fair to both.",
+                article_3_cta_title: "How's your current balance?",
+                article_3_cta_desc: "The test reveals the real distribution, no assumptions.",
+
+                // Article 4 - US2 Tutorial
+                article_4_title: "How to Use US2 as a Couple",
+                article_4_desc: "Step-by-step guide to get the most out of the tool.",
+                article_4_full_title: "Complete Guide: How to Use US2 to Improve Your Relationship",
+                article_4_intro: "US2 isn't just a test. It's a tool to open conversations, track progress, and celebrate achievements together. Here's how to get the most out of it.",
+                article_4_hook: "<strong>3 minutes of testing can change months of dynamics.</strong>",
+                article_4_h2_1: "Step 1: The Initial Test",
+                article_4_step1_p1: "Each person takes the test separately. It's important to be honest, not answer what 'should' be but what actually happens.",
+                article_4_step1_p2: "The test evaluates 9 categories of household management and generates a unique profile for each person.",
+                article_4_step1_tip: "💡 Tip: Don't look at each other's answers until both have finished.",
+                article_4_h2_2: "Step 2: The Comparative Dashboard",
+                article_4_step2_p1: "Once both complete the test, you see the radar chart with the differences. Areas with the biggest gap are the 'blind spots' that need work.",
+                article_4_step2_p2: "The gap analysis shows specifically where there's the most difference in perception.",
+                article_4_step2_tip: "💡 Tip: Use the insights as a starting point for conversation, not as weapons to attack.",
+                article_4_h2_3: "Step 3: Invisible Achievements",
+                article_4_step3_p1: "Each day, log the small tasks that usually go unnoticed. The other approves them and you earn points.",
+                article_4_step3_p2: "This makes invisible work visible and creates a habit of mutual recognition.",
+                article_4_step3_tip: "💡 Tip: Be specific. 'Remembered to buy milk' is better than 'went to the store'.",
+                article_4_h2_4: "Step 4: Goals and Rewards",
+                article_4_step4_p1: "Set goals together and choose a reward for when you reach them. It could be a special dinner, a spa day, or whatever you want.",
+                article_4_step4_p2: "Celebrating achievements together reinforces teamwork.",
+                article_4_h2_5: "Step 5: Repeat and Compare",
+                article_4_step5_p1: "Take the test again every month or two. The evolution chart will show if the gap is closing.",
+                article_4_step5_p2: "Each badge and completed challenge is a reminder that you're progressing together.",
+                article_4_cta_title: "Ready to start?",
+                article_4_cta_desc: "The first step is always the most important.",
+
+                newsletter_success: "Thanks for subscribing!",
+
+                // Level System
+                level_label: "Team Level",
+                level_1: "New Crew",
+                level_2: "Flight Partners",
+                level_3: "Coordinated Team",
+                level_4: "Expert CoPilots",
+                level_5: "Home Captains",
+                xp_to_next: "XP to next level",
+                xp_achievements: "Achievements",
+                xp_badges: "Badges",
+                xp_challenges: "Challenges",
+                level_up_toast: "Level up!",
+
+                // Rewards System
+                rewards_title: "Team Rewards",
+                rewards_subtitle: "Choose a goal and celebrate together",
+                rewards_help: "Select a reward and set how many achievements you need to reach it. When you hit the goal, celebrate together!",
+                current_reward: "Current reward:",
+                change_reward: "Change",
+                reward_goal: "Goal:",
+                approved_achievements: "approved achievements",
+                progress: "Progress",
+                claim_reward: "Claim Reward!",
+                adjust_goal: "Adjust goal:",
+                rewards_history: "Rewards earned:",
+                no_rewards_yet: "No rewards earned yet",
+                select_reward: "Select Reward",
+                create_custom: "Create custom reward:",
+                custom_reward_placeholder: "E.g., Weekend getaway",
+                add_btn: "Add",
+                reward_claimed_toast: "🎉 Reward claimed! Time to celebrate together.",
+
+                // Predefined Rewards
+                reward_date_night: "Date Night",
+                reward_date_night_desc: "A special dinner out or movie night",
+                reward_spa_day: "Spa Day",
+                reward_spa_day_desc: "A day of relaxation and self-care",
+                reward_special_dinner: "Special Dinner",
+                reward_special_dinner_desc: "Cook something special together or order favorite food",
+                reward_weekend_trip: "Weekend Getaway",
+                reward_weekend_trip_desc: "A mini-vacation to reconnect",
+                reward_free_day: "Free Day",
+                reward_free_day_desc: "A full day with no household responsibilities"
             }
         };
 
@@ -1816,7 +2378,7 @@
         // ==========================================
         // QUESTIONS DATA
         // ==========================================
-        const questions = [
+        const allQuestions = [
             { category: 'cat_hogar', textKey: 'q1' },
             { category: 'cat_hogar', textKey: 'q2' },
             { category: 'cat_hogar', textKey: 'q3' },
@@ -1826,13 +2388,29 @@
             { category: 'cat_salud', textKey: 'q7' },
             { category: 'cat_admin', textKey: 'q8' },
             { category: 'cat_admin', textKey: 'q9' },
-            { category: 'cat_cuidado', textKey: 'q10' },
-            { category: 'cat_cuidado', textKey: 'q11' },
+            { category: 'cat_cuidado', textKey: 'q10', requires: 'hasDependents' }, // Hijos o mascotas
+            { category: 'cat_cuidado', textKey: 'q11', requires: 'hasKids' }, // Talles de ropa (más relevante con hijos)
             { category: 'cat_mant', textKey: 'q12' },
             { category: 'cat_logistica', textKey: 'q13' },
             { category: 'cat_limpieza', textKey: 'q14' },
             { category: 'cat_emocional', textKey: 'q15' }
         ];
+
+        // Filtered questions based on context
+        let questions = [];
+
+        function filterQuestionsForContext() {
+            questions = allQuestions.filter(q => {
+                if (!q.requires) return true;
+                if (q.requires === 'hasDependents') {
+                    return userContext.hasKids || userContext.hasPets;
+                }
+                if (q.requires === 'hasKids') {
+                    return userContext.hasKids;
+                }
+                return true;
+            });
+        }
 
         // ==========================================
         // STATE MANAGEMENT
@@ -1842,6 +2420,14 @@
         let pairID = null;
         let currentUser = 'A';
         let radarChart = null;
+
+        // Onboarding state
+        let userContext = {
+            name: '',
+            livingTogether: null,
+            hasKids: false,
+            hasPets: false
+        };
 
         // ==========================================
         // INITIALIZATION
@@ -1870,8 +2456,15 @@
                     if (pairData.userB) {
                         showDashboard(pairData);
                     } else {
-                        // Show test for User B
+                        // Pre-load shared context from User A
+                        if (pairData.sharedContext) {
+                            userContext.livingTogether = pairData.sharedContext.livingTogether;
+                            userContext.hasKids = pairData.sharedContext.hasKids;
+                            userContext.hasPets = pairData.sharedContext.hasPets;
+                        }
+                        // Show test for User B (will show onboarding first)
                         showSection('test');
+                        showOnboardingForUserB();
                     }
                 } else {
                     // Invalid or expired link
@@ -1897,6 +2490,12 @@
                     }
                 }
                 showSection('home');
+            }
+
+            // Add event listener for onboarding name input
+            const nameInput = document.getElementById('onboarding-name');
+            if (nameInput) {
+                nameInput.addEventListener('input', validateOnboarding);
             }
         }
 
@@ -1941,10 +2540,121 @@
                 return;
             }
 
+            // Reset onboarding state
+            userContext = {
+                name: '',
+                livingTogether: null,
+                hasKids: false,
+                hasPets: false
+            };
+
             showSection('test');
-            document.getElementById('test-intro').classList.remove('hidden');
+            document.getElementById('test-onboarding').classList.remove('hidden');
+            document.getElementById('test-intro').classList.add('hidden');
             document.getElementById('test-questions').classList.add('hidden');
             document.getElementById('test-waiting').classList.add('hidden');
+
+            // Reset onboarding UI
+            document.getElementById('onboarding-name').value = '';
+            document.querySelectorAll('.living-option').forEach(btn => btn.classList.remove('selected', 'border-teal-soft', 'bg-teal-soft/20'));
+            document.querySelectorAll('.dependent-option').forEach(btn => btn.classList.remove('selected', 'border-teal-soft', 'bg-teal-soft/20'));
+            document.getElementById('onboarding-continue-btn').disabled = true;
+        }
+
+        // ==========================================
+        // ONBOARDING FUNCTIONS
+        // ==========================================
+        function selectLivingOption(value) {
+            userContext.livingTogether = value;
+
+            // Update UI
+            document.querySelectorAll('.living-option').forEach(btn => {
+                const btnValue = btn.getAttribute('data-value') === 'true';
+                if (btnValue === value) {
+                    btn.classList.add('selected', 'border-teal-soft', 'bg-teal-soft/20');
+                } else {
+                    btn.classList.remove('selected', 'border-teal-soft', 'bg-teal-soft/20');
+                }
+            });
+
+            validateOnboarding();
+        }
+
+        function toggleDependentOption(type) {
+            if (type === 'kids') {
+                userContext.hasKids = !userContext.hasKids;
+            } else if (type === 'pets') {
+                userContext.hasPets = !userContext.hasPets;
+            }
+
+            // Update UI
+            document.querySelectorAll('.dependent-option').forEach(btn => {
+                const btnValue = btn.getAttribute('data-value');
+                const isSelected = (btnValue === 'kids' && userContext.hasKids) ||
+                                   (btnValue === 'pets' && userContext.hasPets);
+                if (isSelected) {
+                    btn.classList.add('selected', 'border-teal-soft', 'bg-teal-soft/20');
+                } else {
+                    btn.classList.remove('selected', 'border-teal-soft', 'bg-teal-soft/20');
+                }
+            });
+
+            validateOnboarding();
+        }
+
+        function validateOnboarding() {
+            const nameInput = document.getElementById('onboarding-name');
+            const name = nameInput.value.trim();
+            const continueBtn = document.getElementById('onboarding-continue-btn');
+
+            // For User B, only need name (context is pre-loaded)
+            // For User A, need name AND living option selected
+            if (currentUser === 'B') {
+                continueBtn.disabled = name.length < 2;
+            } else {
+                if (name.length >= 2 && userContext.livingTogether !== null) {
+                    continueBtn.disabled = false;
+                } else {
+                    continueBtn.disabled = true;
+                }
+            }
+        }
+
+        function completeOnboarding() {
+            const name = document.getElementById('onboarding-name').value.trim();
+            userContext.name = name;
+
+            // Hide onboarding and go directly to questions
+            document.getElementById('test-onboarding').classList.add('hidden');
+            beginQuestions();
+        }
+
+        function showOnboardingForUserB() {
+            // Show onboarding but hide living/dependents questions (already answered by User A)
+            document.getElementById('test-onboarding').classList.remove('hidden');
+            document.getElementById('test-intro').classList.add('hidden');
+            document.getElementById('test-questions').classList.add('hidden');
+            document.getElementById('test-waiting').classList.add('hidden');
+
+            // Hide the living together and dependents sections for User B
+            const onboardingContainer = document.querySelector('#test-onboarding .bg-white');
+            const livingSection = onboardingContainer.querySelector('[data-onboarding-section="living"]');
+            const dependentsSection = onboardingContainer.querySelector('[data-onboarding-section="dependents"]');
+
+            if (livingSection) livingSection.classList.add('hidden');
+            if (dependentsSection) dependentsSection.classList.add('hidden');
+
+            // Update title/description for User B
+            const title = document.querySelector('#test-onboarding h2');
+            const desc = document.querySelector('#test-onboarding p');
+            title.setAttribute('data-i18n', 'onboarding_title_b');
+            desc.setAttribute('data-i18n', 'onboarding_desc_b');
+            title.textContent = translations[currentLang].onboarding_title_b || translations[currentLang].onboarding_title;
+            desc.textContent = translations[currentLang].onboarding_desc_b || translations[currentLang].onboarding_desc;
+
+            // Reset name input
+            document.getElementById('onboarding-name').value = '';
+            validateOnboarding();
         }
 
         function beginQuestions() {
@@ -1952,6 +2662,9 @@
             if (currentUser === 'A') {
                 pairID = generatePairID();
             }
+
+            // Filter questions based on user context
+            filterQuestionsForContext();
 
             currentQuestion = 0;
             answers = [];
@@ -1967,15 +2680,16 @@
         }
 
         function displayQuestion(index) {
+            const totalQuestions = questions.length;
             const question = questions[index];
             const categoryText = translations[currentLang][question.category] || question.category;
             const questionText = translations[currentLang][question.textKey] || question.textKey;
 
             document.getElementById('question-category').textContent = categoryText;
-            document.getElementById('question-number').textContent = `${index + 1}/15`;
+            document.getElementById('question-number').textContent = `${index + 1}/${totalQuestions}`;
             document.getElementById('question-text').textContent = questionText;
-            document.getElementById('progress-text').textContent = `${index + 1}/15`;
-            document.getElementById('progress-bar').style.width = `${((index + 1) / 15) * 100}%`;
+            document.getElementById('progress-text').textContent = `${index + 1}/${totalQuestions}`;
+            document.getElementById('progress-bar').style.width = `${((index + 1) / totalQuestions) * 100}%`;
 
             // Update answer buttons text
             document.querySelectorAll('.option-btn').forEach(btn => {
@@ -1987,9 +2701,10 @@
                 }
             });
 
-            // Show mid-test ad after question 7
+            // Show mid-test ad around halfway through the test
             const midTestAd = document.getElementById('mid-test-ad');
-            if (index === 7) {
+            const midPoint = Math.floor(totalQuestions / 2);
+            if (index === midPoint) {
                 midTestAd.classList.remove('hidden');
             } else {
                 midTestAd.classList.add('hidden');
@@ -2033,6 +2748,7 @@
                 currentUser: currentUser,
                 currentQuestion: currentQuestion,
                 answers: answers,
+                userContext: userContext,
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem('us2_test_progress', JSON.stringify(progress));
@@ -2050,10 +2766,20 @@
         function resumeTest(progress) {
             pairID = progress.pairID;
             currentUser = progress.currentUser;
-            currentQuestion = progress.currentQuestion + 1; // Next question after last answered
             answers = progress.answers;
 
+            // Restore user context from saved progress
+            if (progress.userContext) {
+                userContext = progress.userContext;
+            }
+
+            // Filter questions based on restored context
+            filterQuestionsForContext();
+
+            currentQuestion = progress.currentQuestion + 1; // Next question after last answered
+
             showSection('test');
+            document.getElementById('test-onboarding').classList.add('hidden');
             document.getElementById('test-intro').classList.add('hidden');
             document.getElementById('test-questions').classList.remove('hidden');
             document.getElementById('test-waiting').classList.add('hidden');
@@ -2068,9 +2794,17 @@
 
         function showResumeModal(progress) {
             const questionsAnswered = progress.answers.length;
+            // Calculate total questions based on saved context
+            let tempContext = progress.userContext || userContext;
+            let totalQuestions = allQuestions.filter(q => {
+                if (!q.requires) return true;
+                if (q.requires === 'hasDependents') return tempContext.hasKids || tempContext.hasPets;
+                if (q.requires === 'hasKids') return tempContext.hasKids;
+                return true;
+            }).length;
             const message = currentLang === 'es'
-                ? `Tenés un test en progreso (${questionsAnswered}/15 preguntas). ¿Querés continuarlo?`
-                : `You have a test in progress (${questionsAnswered}/15 questions). Want to continue?`;
+                ? `Tenés un test en progreso (${questionsAnswered}/${totalQuestions} preguntas). ¿Querés continuarlo?`
+                : `You have a test in progress (${questionsAnswered}/${totalQuestions} questions). Want to continue?`;
 
             if (confirm(message)) {
                 resumeTest(progress);
@@ -2121,13 +2855,25 @@
                 score: totalScore,
                 answers: answers,
                 categoryScores: normalizedScores,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                context: {
+                    name: userContext.name,
+                    livingTogether: userContext.livingTogether,
+                    hasKids: userContext.hasKids,
+                    hasPets: userContext.hasPets
+                }
             };
 
             const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
 
             if (currentUser === 'A') {
                 pairData.userA = userData;
+                // Store shared context at pair level
+                pairData.sharedContext = {
+                    livingTogether: userContext.livingTogether,
+                    hasKids: userContext.hasKids,
+                    hasPets: userContext.hasPets
+                };
                 localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
                 savePairIDForReturn();
                 showWaitingScreen();
@@ -2168,6 +2914,51 @@
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
         }
 
+        function shareResults() {
+            const siteUrl = window.location.origin + window.location.pathname;
+            const message = translations[currentLang].share_message + '\n\n' + siteUrl;
+
+            // Try native share API first
+            if (navigator.share) {
+                navigator.share({
+                    title: 'US2 - Somos un equipo',
+                    text: message,
+                    url: siteUrl
+                }).catch(() => {
+                    // Fallback to WhatsApp
+                    shareResultsWhatsApp(message);
+                });
+            } else {
+                // Fallback to WhatsApp
+                shareResultsWhatsApp(message);
+            }
+        }
+
+        function shareResultsWhatsApp(message) {
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        }
+
+        function retakeTest() {
+            // Clear current test progress but keep history
+            clearTestProgress();
+
+            // Reset state
+            currentQuestion = 0;
+            answers = [];
+
+            // Reset user context for new test
+            userContext = {
+                name: '',
+                livingTogether: null,
+                hasKids: false,
+                hasPets: false
+            };
+
+            // Start new test
+            startTest();
+        }
+
         function showCopyFeedback() {
             const feedback = document.getElementById('copy-feedback');
             feedback.classList.remove('hidden');
@@ -2196,6 +2987,20 @@
             const userA = pairData.userA;
             const userB = pairData.userB;
 
+            // Get user names (from context or default)
+            const nameA = userA.context?.name || (currentLang === 'es' ? 'Usuario A' : 'User A');
+            const nameB = userB.context?.name || (currentLang === 'es' ? 'Usuario B' : 'User B');
+
+            // Update names
+            document.getElementById('name-a').textContent = nameA;
+            document.getElementById('name-b').textContent = nameB;
+
+            // Update avatars with initials
+            const avatarA = document.getElementById('avatar-a');
+            const avatarB = document.getElementById('avatar-b');
+            avatarA.textContent = nameA.charAt(0).toUpperCase();
+            avatarB.textContent = nameB.charAt(0).toUpperCase();
+
             // Update scores
             document.getElementById('score-a').textContent = userA.score;
             document.getElementById('score-b').textContent = userB.score;
@@ -2204,8 +3009,8 @@
             document.getElementById('profile-a').textContent = getProfile(userA.score);
             document.getElementById('profile-b').textContent = getProfile(userB.score);
 
-            // Create radar chart
-            createRadarChart(userA.categoryScores, userB.categoryScores);
+            // Create radar chart with names
+            createRadarChart(userA.categoryScores, userB.categoryScores, nameA, nameB);
 
             // Generate gap analysis
             generateGapAnalysis(userA.categoryScores, userB.categoryScores);
@@ -2213,12 +3018,15 @@
             // Load achievements and goals
             loadAchievements();
             loadGoals();
-            renderTestHistory();
+            renderTestHistory(pairData);
+            renderInsights(pairData);
 
             // Initialize gamification systems
             renderBadges();
             renderStreak();
             renderChallenge();
+            renderLevelSystem();
+            renderRewardSystem();
 
             // Check for badges (test completion, balance badges, etc.)
             checkAndUnlockBadges();
@@ -2258,11 +3066,12 @@
             }
         }
 
-        function renderTestHistory() {
+        function renderTestHistory(pairData) {
             const historySection = document.getElementById('history-section');
             const historyList = document.getElementById('history-list');
             const historyEmpty = document.getElementById('history-empty');
             const historyCount = document.getElementById('history-count');
+            const evolutionContainer = document.getElementById('evolution-chart-container');
 
             if (!historySection) return;
 
@@ -2270,6 +3079,7 @@
 
             if (history.length <= 1) {
                 historySection.classList.add('hidden');
+                if (evolutionContainer) evolutionContainer.classList.add('hidden');
                 return;
             }
 
@@ -2331,6 +3141,256 @@
                     </div>
                 `;
             }).join('');
+
+            // Render evolution chart if we have enough data
+            if (history.length >= 2) {
+                renderEvolutionChart(history, pairData);
+            }
+        }
+
+        let evolutionChart = null;
+
+        function renderEvolutionChart(history, pairData) {
+            const container = document.getElementById('evolution-chart-container');
+            const ctx = document.getElementById('evolutionChart');
+            if (!container || !ctx) return;
+
+            container.classList.remove('hidden');
+
+            // Update labels with names
+            const nameA = pairData?.userA?.context?.name || (currentLang === 'es' ? 'Usuario A' : 'User A');
+            const nameB = pairData?.userB?.context?.name || (currentLang === 'es' ? 'Usuario B' : 'User B');
+            document.getElementById('evolution-label-a').textContent = nameA;
+            document.getElementById('evolution-label-b').textContent = nameB;
+
+            // Prepare data (chronological order)
+            const labels = history.map((h, i) => {
+                const date = new Date(h.savedAt);
+                return date.toLocaleDateString(currentLang === 'es' ? 'es-AR' : 'en-US', {
+                    day: 'numeric',
+                    month: 'short'
+                });
+            });
+
+            const scoresA = history.map(h => h.userA.score);
+            const scoresB = history.map(h => h.userB.score);
+            const gaps = history.map(h => Math.abs(h.userA.score - h.userB.score));
+
+            // Destroy existing chart
+            if (evolutionChart) {
+                evolutionChart.destroy();
+            }
+
+            evolutionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: nameA,
+                            data: scoresA,
+                            borderColor: '#14b8a6',
+                            backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: nameB,
+                            data: scoresB,
+                            borderColor: '#a78bfa',
+                            backgroundColor: 'rgba(167, 139, 250, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        },
+                        {
+                            label: translations[currentLang].evolution_gap,
+                            data: gaps,
+                            borderColor: '#d1d5db',
+                            backgroundColor: 'rgba(209, 213, 219, 0.2)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 45,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        function renderInsights(pairData) {
+            const section = document.getElementById('insights-section');
+            const container = document.getElementById('insights-list');
+            if (!section || !container || !pairData?.userA || !pairData?.userB) return;
+
+            const insights = [];
+            const scoresA = pairData.userA.categoryScores || {};
+            const scoresB = pairData.userB.categoryScores || {};
+
+            // Find most balanced category
+            let minGap = Infinity;
+            let mostBalanced = null;
+            let maxGap = 0;
+            let leastBalanced = null;
+
+            const categoryNames = {
+                cat_hogar: currentLang === 'es' ? 'Hogar' : 'Home',
+                cat_social: 'Social',
+                cat_salud: currentLang === 'es' ? 'Salud' : 'Health',
+                cat_admin: 'Admin',
+                cat_cuidado: currentLang === 'es' ? 'Cuidado' : 'Care',
+                cat_mant: currentLang === 'es' ? 'Mantenimiento' : 'Maintenance',
+                cat_logistica: currentLang === 'es' ? 'Logística' : 'Logistics',
+                cat_limpieza: currentLang === 'es' ? 'Limpieza' : 'Cleaning',
+                cat_emocional: 'Emocional'
+            };
+
+            Object.keys(scoresA).forEach(cat => {
+                const gap = Math.abs((scoresA[cat] || 0) - (scoresB[cat] || 0));
+                if (gap < minGap) {
+                    minGap = gap;
+                    mostBalanced = cat;
+                }
+                if (gap > maxGap) {
+                    maxGap = gap;
+                    leastBalanced = cat;
+                }
+            });
+
+            // Add insights
+            if (mostBalanced) {
+                insights.push({
+                    icon: '⚖️',
+                    title: translations[currentLang].insight_strongest,
+                    text: categoryNames[mostBalanced] || mostBalanced,
+                    color: 'bg-green-50 border-green-200'
+                });
+            }
+
+            if (leastBalanced && maxGap > 0.5) {
+                insights.push({
+                    icon: '🎯',
+                    title: translations[currentLang].insight_opportunity,
+                    text: categoryNames[leastBalanced] || leastBalanced,
+                    color: 'bg-orange-50 border-orange-200'
+                });
+            }
+
+            // Overall balance insight
+            const totalGap = Math.abs(pairData.userA.score - pairData.userB.score);
+            let balanceInsight;
+            if (totalGap <= 5) {
+                balanceInsight = {
+                    icon: '🌟',
+                    title: translations[currentLang].insight_balance_great,
+                    text: `${translations[currentLang].history_gap}: ${totalGap} pts`,
+                    color: 'bg-purple-50 border-purple-200'
+                };
+            } else if (totalGap <= 15) {
+                balanceInsight = {
+                    icon: '👍',
+                    title: translations[currentLang].insight_balance_good,
+                    text: `${translations[currentLang].history_gap}: ${totalGap} pts`,
+                    color: 'bg-blue-50 border-blue-200'
+                };
+            } else {
+                balanceInsight = {
+                    icon: '💪',
+                    title: translations[currentLang].insight_balance_work,
+                    text: `${translations[currentLang].history_gap}: ${totalGap} pts`,
+                    color: 'bg-yellow-50 border-yellow-200'
+                };
+            }
+            insights.push(balanceInsight);
+
+            // Trend insight (from history)
+            const history = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+            if (history.length >= 2) {
+                const latest = history[history.length - 1];
+                const previous = history[history.length - 2];
+                const latestGap = Math.abs(latest.userA.score - latest.userB.score);
+                const previousGap = Math.abs(previous.userA.score - previous.userB.score);
+
+                let trendInsight;
+                if (latestGap < previousGap) {
+                    trendInsight = {
+                        icon: '📈',
+                        title: translations[currentLang].insight_trend_positive,
+                        text: `${previousGap} → ${latestGap} pts`,
+                        color: 'bg-green-50 border-green-200'
+                    };
+                } else if (latestGap > previousGap) {
+                    trendInsight = {
+                        icon: '📉',
+                        title: translations[currentLang].insight_trend_negative,
+                        text: `${previousGap} → ${latestGap} pts`,
+                        color: 'bg-red-50 border-red-200'
+                    };
+                } else {
+                    trendInsight = {
+                        icon: '➡️',
+                        title: translations[currentLang].insight_trend_stable,
+                        text: `${latestGap} pts`,
+                        color: 'bg-gray-50 border-gray-200'
+                    };
+                }
+                insights.push(trendInsight);
+            }
+
+            // Render insights
+            if (insights.length > 0) {
+                section.classList.remove('hidden');
+                container.innerHTML = insights.map(insight => `
+                    <div class="p-4 ${insight.color} border rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${insight.icon}</span>
+                            <div>
+                                <p class="font-medium text-gray-800">${insight.title}</p>
+                                <p class="text-sm text-gray-600">${insight.text}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
         }
 
         function getProfile(score) {
@@ -2340,13 +3400,17 @@
             return translations[currentLang].profile_director;
         }
 
-        function createRadarChart(scoresA, scoresB) {
+        function createRadarChart(scoresA, scoresB, nameA, nameB) {
             const ctx = document.getElementById('radarChart').getContext('2d');
 
             // Destroy existing chart if any
             if (radarChart) {
                 radarChart.destroy();
             }
+
+            // Use provided names or default
+            const labelA = nameA || (currentLang === 'es' ? 'Usuario A' : 'User A');
+            const labelB = nameB || (currentLang === 'es' ? 'Usuario B' : 'User B');
 
             const labels = Object.keys(scoresA);
             const dataA = labels.map(l => scoresA[l]);
@@ -2358,7 +3422,7 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: currentLang === 'es' ? 'Usuario A' : 'User A',
+                            label: labelA,
                             data: dataA,
                             backgroundColor: 'rgba(178, 216, 216, 0.3)',
                             borderColor: '#7fb3b3',
@@ -2369,7 +3433,7 @@
                             pointHoverBorderColor: '#7fb3b3'
                         },
                         {
-                            label: currentLang === 'es' ? 'Usuario B' : 'User B',
+                            label: labelB,
                             data: dataB,
                             backgroundColor: 'rgba(230, 230, 250, 0.3)',
                             borderColor: '#a78bbd',
@@ -2532,6 +3596,11 @@
 
                 // Check badges
                 checkAndUnlockBadges();
+
+                // Update level and rewards
+                checkLevelUp();
+                renderLevelSystem();
+                renderRewardSystem();
 
                 // Reload
                 loadAchievements();
@@ -2940,6 +4009,13 @@
             });
 
             renderBadges();
+
+            // Update level if new badges were earned
+            if (newBadges.length > 0) {
+                checkLevelUp();
+                renderLevelSystem();
+            }
+
             return newBadges;
         }
 
@@ -3149,6 +4225,318 @@
         }
 
         // ==========================================
+        // LEVEL SYSTEM (XP)
+        // ==========================================
+        const levelData = [
+            { level: 1, name: 'level_1', xpRequired: 0, icon: '🚀' },
+            { level: 2, name: 'level_2', xpRequired: 100, icon: '✈️' },
+            { level: 3, name: 'level_3', xpRequired: 300, icon: '🛫' },
+            { level: 4, name: 'level_4', xpRequired: 600, icon: '🛩️' },
+            { level: 5, name: 'level_5', xpRequired: 1000, icon: '🚁' }
+        ];
+
+        // XP Values
+        const XP_PER_ACHIEVEMENT = 5;
+        const XP_PER_BADGE = 25;
+        const XP_PER_CHALLENGE = 50;
+
+        function calculateTotalXP() {
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const badges = getUnlockedBadges();
+            const challengeHistory = JSON.parse(localStorage.getItem(`us2_challenge_history_${pairID}`) || '[]');
+
+            const approvedAchievements = achievements.filter(a => a.status === 'approved');
+
+            const xpFromAchievements = approvedAchievements.length * XP_PER_ACHIEVEMENT;
+            const xpFromBadges = badges.length * XP_PER_BADGE;
+            const xpFromChallenges = challengeHistory.length * XP_PER_CHALLENGE;
+
+            return {
+                total: xpFromAchievements + xpFromBadges + xpFromChallenges,
+                achievements: xpFromAchievements,
+                badges: xpFromBadges,
+                challenges: xpFromChallenges
+            };
+        }
+
+        function getCurrentLevel(totalXP) {
+            let currentLevel = levelData[0];
+            for (const level of levelData) {
+                if (totalXP >= level.xpRequired) {
+                    currentLevel = level;
+                }
+            }
+            return currentLevel;
+        }
+
+        function getNextLevel(currentLevel) {
+            const index = levelData.findIndex(l => l.level === currentLevel.level);
+            return index < levelData.length - 1 ? levelData[index + 1] : null;
+        }
+
+        function renderLevelSystem() {
+            const xpData = calculateTotalXP();
+            const currentLevel = getCurrentLevel(xpData.total);
+            const nextLevel = getNextLevel(currentLevel);
+
+            // Update UI elements
+            const levelIconEl = document.getElementById('level-icon');
+            const levelNameEl = document.getElementById('level-name');
+            const levelNumberEl = document.getElementById('level-number');
+            const totalXPEl = document.getElementById('total-xp');
+            const xpProgressTextEl = document.getElementById('xp-progress-text');
+            const xpProgressBarEl = document.getElementById('xp-progress-bar');
+            const xpAchEl = document.getElementById('xp-from-achievements');
+            const xpBadgeEl = document.getElementById('xp-from-badges');
+            const xpChallengeEl = document.getElementById('xp-from-challenges');
+
+            if (levelIconEl) levelIconEl.textContent = currentLevel.icon;
+            if (levelNameEl) levelNameEl.textContent = translations[currentLang][currentLevel.name] || currentLevel.name;
+            if (levelNumberEl) levelNumberEl.textContent = currentLevel.level;
+            if (totalXPEl) totalXPEl.textContent = xpData.total;
+
+            if (xpAchEl) xpAchEl.textContent = xpData.achievements;
+            if (xpBadgeEl) xpBadgeEl.textContent = xpData.badges;
+            if (xpChallengeEl) xpChallengeEl.textContent = xpData.challenges;
+
+            // Calculate progress to next level
+            if (nextLevel) {
+                const xpInCurrentLevel = xpData.total - currentLevel.xpRequired;
+                const xpNeededForNext = nextLevel.xpRequired - currentLevel.xpRequired;
+                const progressPercent = (xpInCurrentLevel / xpNeededForNext) * 100;
+
+                if (xpProgressTextEl) {
+                    xpProgressTextEl.textContent = `${xpData.total} / ${nextLevel.xpRequired}`;
+                }
+                if (xpProgressBarEl) {
+                    xpProgressBarEl.style.width = `${Math.min(progressPercent, 100)}%`;
+                }
+            } else {
+                // Max level
+                if (xpProgressTextEl) {
+                    xpProgressTextEl.textContent = currentLang === 'es' ? '¡Nivel máximo!' : 'Max level!';
+                }
+                if (xpProgressBarEl) {
+                    xpProgressBarEl.style.width = '100%';
+                }
+            }
+        }
+
+        function checkLevelUp() {
+            const previousLevel = parseInt(localStorage.getItem(`us2_current_level_${pairID}`) || '1');
+            const xpData = calculateTotalXP();
+            const currentLevel = getCurrentLevel(xpData.total);
+
+            if (currentLevel.level > previousLevel) {
+                localStorage.setItem(`us2_current_level_${pairID}`, currentLevel.level.toString());
+                showToast(currentLevel.icon, 'success', `${translations[currentLang].level_up_toast} ${translations[currentLang][currentLevel.name]}`);
+                triggerConfetti();
+            }
+        }
+
+        // ==========================================
+        // REWARDS SYSTEM
+        // ==========================================
+        const predefinedRewards = [
+            { id: 'date_night', icon: '🎬', nameKey: 'reward_date_night', descKey: 'reward_date_night_desc' },
+            { id: 'spa_day', icon: '🧖', nameKey: 'reward_spa_day', descKey: 'reward_spa_day_desc' },
+            { id: 'special_dinner', icon: '🍽️', nameKey: 'reward_special_dinner', descKey: 'reward_special_dinner_desc' },
+            { id: 'weekend_trip', icon: '🏖️', nameKey: 'reward_weekend_trip', descKey: 'reward_weekend_trip_desc' },
+            { id: 'free_day', icon: '😴', nameKey: 'reward_free_day', descKey: 'reward_free_day_desc' }
+        ];
+
+        function getRewardData() {
+            const defaultReward = {
+                currentRewardId: 'date_night',
+                customRewards: [],
+                target: 20,
+                claimedRewards: []
+            };
+            return JSON.parse(localStorage.getItem(`us2_rewards_${pairID}`) || JSON.stringify(defaultReward));
+        }
+
+        function saveRewardData(data) {
+            localStorage.setItem(`us2_rewards_${pairID}`, JSON.stringify(data));
+        }
+
+        function getCurrentReward() {
+            const data = getRewardData();
+            let reward = predefinedRewards.find(r => r.id === data.currentRewardId);
+
+            if (!reward) {
+                // Check custom rewards
+                const customReward = data.customRewards.find(r => r.id === data.currentRewardId);
+                if (customReward) {
+                    reward = customReward;
+                } else {
+                    reward = predefinedRewards[0];
+                }
+            }
+
+            return { ...reward, target: data.target };
+        }
+
+        function renderRewardSystem() {
+            const data = getRewardData();
+            const reward = getCurrentReward();
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const approvedCount = achievements.filter(a => a.status === 'approved').length;
+
+            // Update UI
+            const iconEl = document.getElementById('reward-icon');
+            const nameEl = document.getElementById('current-reward-name');
+            const targetEl = document.getElementById('reward-target');
+            const progressTextEl = document.getElementById('reward-progress-text');
+            const progressBarEl = document.getElementById('reward-progress-bar');
+            const claimBtn = document.getElementById('claim-reward-btn');
+            const sliderEl = document.getElementById('reward-goal-slider');
+            const sliderDisplayEl = document.getElementById('reward-goal-display');
+            const historyCountEl = document.getElementById('rewards-count');
+            const historyListEl = document.getElementById('rewards-history-list');
+
+            if (iconEl) iconEl.textContent = reward.icon;
+            if (nameEl) nameEl.textContent = reward.nameKey ? translations[currentLang][reward.nameKey] : reward.name;
+            if (targetEl) targetEl.textContent = reward.target;
+
+            const progress = Math.min(approvedCount, reward.target);
+            const percent = (progress / reward.target) * 100;
+
+            if (progressTextEl) progressTextEl.textContent = `${progress}/${reward.target}`;
+            if (progressBarEl) progressBarEl.style.width = `${percent}%`;
+
+            // Show claim button if goal reached
+            if (claimBtn) {
+                if (approvedCount >= reward.target) {
+                    claimBtn.classList.remove('hidden');
+                } else {
+                    claimBtn.classList.add('hidden');
+                }
+            }
+
+            if (sliderEl) sliderEl.value = reward.target;
+            if (sliderDisplayEl) sliderDisplayEl.textContent = reward.target;
+
+            // Render history
+            if (historyCountEl) historyCountEl.textContent = data.claimedRewards.length;
+            if (historyListEl) {
+                if (data.claimedRewards.length > 0) {
+                    historyListEl.innerHTML = data.claimedRewards.map(claimed => {
+                        const r = predefinedRewards.find(pr => pr.id === claimed.rewardId) ||
+                            data.customRewards.find(cr => cr.id === claimed.rewardId) ||
+                            { icon: '🎁', nameKey: null, name: claimed.rewardId };
+                        const name = r.nameKey ? translations[currentLang][r.nameKey] : r.name;
+                        const date = new Date(claimed.claimedAt).toLocaleDateString();
+                        return `<span class="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                            ${r.icon} ${name} <span class="text-xs text-purple-400">(${date})</span>
+                        </span>`;
+                    }).join('');
+                } else {
+                    historyListEl.innerHTML = `<span class="text-sm text-gray-400" data-i18n="no_rewards_yet">${translations[currentLang].no_rewards_yet}</span>`;
+                }
+            }
+        }
+
+        function updateRewardGoal(value) {
+            const data = getRewardData();
+            data.target = parseInt(value);
+            saveRewardData(data);
+            renderRewardSystem();
+        }
+
+        function openRewardSelector() {
+            const modal = document.getElementById('reward-selector-modal');
+            const listEl = document.getElementById('rewards-list');
+            const data = getRewardData();
+
+            // Render predefined rewards
+            const allRewards = [...predefinedRewards, ...data.customRewards];
+            listEl.innerHTML = allRewards.map(r => {
+                const name = r.nameKey ? translations[currentLang][r.nameKey] : r.name;
+                const desc = r.descKey ? translations[currentLang][r.descKey] : (r.desc || '');
+                const isSelected = r.id === data.currentRewardId;
+
+                return `<button onclick="selectReward('${r.id}')" class="w-full p-4 text-left rounded-xl border-2 transition-all ${isSelected ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-purple-300'}">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">${r.icon}</span>
+                        <div>
+                            <p class="font-medium text-gray-800">${name}</p>
+                            <p class="text-sm text-gray-500">${desc}</p>
+                        </div>
+                        ${isSelected ? '<span class="ml-auto text-purple-500">✓</span>' : ''}
+                    </div>
+                </button>`;
+            }).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeRewardSelector() {
+            document.getElementById('reward-selector-modal').classList.add('hidden');
+        }
+
+        function selectReward(rewardId) {
+            const data = getRewardData();
+            data.currentRewardId = rewardId;
+            saveRewardData(data);
+            closeRewardSelector();
+            renderRewardSystem();
+        }
+
+        function addCustomReward() {
+            const input = document.getElementById('custom-reward-input');
+            const name = input.value.trim();
+            if (!name) return;
+
+            const data = getRewardData();
+            const newReward = {
+                id: 'custom_' + Date.now(),
+                icon: '🎁',
+                name: name,
+                desc: ''
+            };
+
+            data.customRewards.push(newReward);
+            data.currentRewardId = newReward.id;
+            saveRewardData(data);
+
+            input.value = '';
+            closeRewardSelector();
+            renderRewardSystem();
+            showToast('🎁', 'success', currentLang === 'es' ? '¡Recompensa personalizada creada!' : 'Custom reward created!');
+        }
+
+        function claimReward() {
+            const data = getRewardData();
+            const reward = getCurrentReward();
+
+            // Add to history
+            data.claimedRewards.push({
+                rewardId: data.currentRewardId,
+                target: reward.target,
+                claimedAt: new Date().toISOString()
+            });
+
+            // Reset progress by clearing approved achievements count reference
+            // (We'll track from this point forward)
+            data.claimedAt = new Date().toISOString();
+            data.achievementsAtClaim = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]')
+                .filter(a => a.status === 'approved').length;
+
+            saveRewardData(data);
+
+            // Unlock first_reward badge if not already
+            saveBadge('first_reward');
+            checkAndUnlockBadges();
+
+            // Show celebration
+            showToast('🎉', 'success', translations[currentLang].reward_claimed_toast);
+            triggerConfetti();
+
+            renderRewardSystem();
+            renderLevelSystem();
+        }
+
+        // ==========================================
         // TOAST NOTIFICATIONS
         // ==========================================
         function showToast(icon, type, message) {
@@ -3315,33 +4703,253 @@
         // BLOG FUNCTIONS
         // ==========================================
 
+        // Article metadata
+        const articlesData = [
+            { id: 1, icon: '🧠', gradient: 'from-teal-soft to-lavender', tag: 'featured', readTime: 5 },
+            { id: 2, icon: '💬', gradient: 'from-purple-200 to-pink-200', tag: 'guide', readTime: 7 },
+            { id: 3, icon: '⚖️', gradient: 'from-orange-200 to-yellow-200', tag: 'insight', readTime: 4 },
+            { id: 4, icon: '📖', gradient: 'from-green-200 to-teal-200', tag: 'tutorial', readTime: 6 }
+        ];
+
+        let currentArticleId = null;
+
         function showArticle(articleId) {
+            currentArticleId = articleId;
             document.getElementById('blog-list').classList.add('hidden');
             document.getElementById('blog-article').classList.remove('hidden');
 
+            renderArticleContent(articleId);
+
             // Scroll to top of article
             document.getElementById('section-blog').scrollIntoView({ behavior: 'smooth' });
+        }
 
-            // Update translations for the article content
-            setLanguage(currentLang);
+        function renderArticleContent(articleId) {
+            const article = articlesData.find(a => a.id === articleId);
+            if (!article) return;
+
+            const t = translations[currentLang];
+            const prefix = `article_${articleId}_`;
+
+            // Build article HTML based on article ID
+            let bodyHTML = '';
+
+            if (articleId === 1) {
+                bodyHTML = `
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">${t.article_1_intro}</p>
+                    <p class="text-lg mb-8">${t.article_1_hook}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_1_h2_1}</h2>
+                    <p class="mb-4">${t.article_1_validation}</p>
+                    <p class="mb-6">${t.article_1_p1}</p>
+                    <div class="bg-offwhite p-6 rounded-xl my-8 border-l-4 border-teal-soft">
+                        <p class="mb-2">${t.article_1_example1}</p>
+                        <p>${t.article_1_example2}</p>
+                    </div>
+                    <p class="mb-6">${t.article_1_p2}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_1_h2_2}</h2>
+                    <p class="mb-6">${t.article_1_p3}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_1_h2_3}</h2>
+                    <p class="mb-6">${t.article_1_p4}</p>
+                    <p class="mb-8">${t.article_1_p5}</p>
+                    <div class="bg-gradient-to-r from-purple-50 to-teal-soft/20 p-6 rounded-xl my-8 border border-purple-100">
+                        <p class="font-semibold text-purple-700">${t.article_1_insight}</p>
+                    </div>
+                `;
+            } else if (articleId === 2) {
+                bodyHTML = `
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">${t.article_2_intro}</p>
+                    <p class="text-lg mb-8">${t.article_2_hook}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_2_h2_1}</h2>
+                    <p class="mb-4">${t.article_2_p1}</p>
+                    <p class="mb-6">${t.article_2_p2}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_2_h2_2}</h2>
+                    ${[1,2,3,4,5].map(i => `
+                        <div class="bg-offwhite p-6 rounded-xl my-6 border-l-4 border-purple-400">
+                            <h3 class="font-bold text-lg text-gray-800 mb-2">${t[`article_2_conv${i}_title`]}</h3>
+                            <p class="mb-3">${t[`article_2_conv${i}_desc`]}</p>
+                            <p class="text-sm text-purple-600">${t[`article_2_conv${i}_tip`]}</p>
+                        </div>
+                    `).join('')}
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_2_h2_3}</h2>
+                    <p class="mb-8">${t.article_2_p3}</p>
+                `;
+            } else if (articleId === 3) {
+                bodyHTML = `
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">${t.article_3_intro}</p>
+                    <p class="text-lg mb-8">${t.article_3_hook}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_3_h2_1}</h2>
+                    <p class="mb-4">${t.article_3_p1}</p>
+                    <p class="mb-6">${t.article_3_p2}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_3_h2_2}</h2>
+                    <p class="mb-4">${t.article_3_p3}</p>
+                    <p class="mb-6">${t.article_3_p4}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_3_h2_3}</h2>
+                    <div class="bg-orange-50 p-6 rounded-xl my-6 border-l-4 border-orange-400">
+                        <p class="mb-2">${t.article_3_signal1}</p>
+                        <p class="mb-2">${t.article_3_signal2}</p>
+                        <p class="mb-2">${t.article_3_signal3}</p>
+                        <p>${t.article_3_signal4}</p>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_3_h2_4}</h2>
+                    <p class="mb-8">${t.article_3_p5}</p>
+                `;
+            } else if (articleId === 4) {
+                bodyHTML = `
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">${t.article_4_intro}</p>
+                    <p class="text-lg mb-8">${t.article_4_hook}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_4_h2_1}</h2>
+                    <p class="mb-4">${t.article_4_step1_p1}</p>
+                    <p class="mb-4">${t.article_4_step1_p2}</p>
+                    <p class="text-sm text-green-600 mb-6">${t.article_4_step1_tip}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_4_h2_2}</h2>
+                    <p class="mb-4">${t.article_4_step2_p1}</p>
+                    <p class="mb-4">${t.article_4_step2_p2}</p>
+                    <p class="text-sm text-green-600 mb-6">${t.article_4_step2_tip}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_4_h2_3}</h2>
+                    <p class="mb-4">${t.article_4_step3_p1}</p>
+                    <p class="mb-4">${t.article_4_step3_p2}</p>
+                    <p class="text-sm text-green-600 mb-6">${t.article_4_step3_tip}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_4_h2_4}</h2>
+                    <p class="mb-4">${t.article_4_step4_p1}</p>
+                    <p class="mb-6">${t.article_4_step4_p2}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-10 mb-4">${t.article_4_h2_5}</h2>
+                    <p class="mb-4">${t.article_4_step5_p1}</p>
+                    <p class="mb-8">${t.article_4_step5_p2}</p>
+                `;
+            }
+
+            const tagKey = `blog_tag_${article.tag}`;
+            const html = `
+                <article class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="h-64 bg-gradient-to-br ${article.gradient} flex items-center justify-center">
+                        <span class="text-8xl">${article.icon}</span>
+                    </div>
+                    <div class="p-8 md:p-12">
+                        <div class="flex items-center gap-4 mb-6 text-sm text-gray-500">
+                            <span class="px-3 py-1 bg-teal-soft/20 text-teal-dark rounded-full">${t[tagKey] || article.tag}</span>
+                            <span>${article.readTime} min</span>
+                            <span>•</span>
+                            <span>${t.blog_author}</span>
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight">
+                            ${t[`article_${articleId}_full_title`]}
+                        </h1>
+                        <div class="adsense-placeholder my-8 py-4"><span>Ad Space - Article Top</span></div>
+                        <div class="prose prose-lg max-w-none text-gray-700">
+                            ${bodyHTML}
+                        </div>
+                        <div class="bg-gradient-to-br from-teal-soft to-teal-dark p-8 rounded-2xl mt-12 text-center text-white">
+                            <h3 class="text-2xl font-bold mb-2">${t[`article_${articleId}_cta_title`]}</h3>
+                            <p class="mb-6 opacity-90">${t[`article_${articleId}_cta_desc`]}</p>
+                            <button onclick="startTest()" class="px-8 py-4 bg-white text-teal-dark font-bold rounded-full hover:shadow-lg transition-all hover:scale-105">
+                                ${t.article_1_cta_btn}
+                            </button>
+                        </div>
+                        <div class="adsense-placeholder mt-12 py-4"><span>Ad Space - Article Bottom</span></div>
+                        <div class="mt-12 pt-8 border-t border-gray-100">
+                            <p class="text-center text-gray-600 mb-4">${t.article_share}</p>
+                            <div class="flex justify-center gap-3">
+                                <button onclick="shareArticleWhatsApp()" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                    WhatsApp
+                                </button>
+                                <button onclick="shareArticleTwitter()" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                    X
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            `;
+
+            document.getElementById('article-content').innerHTML = html;
+
+            // Render related articles
+            renderRelatedArticles(articleId);
+        }
+
+        function renderRelatedArticles(currentId) {
+            const t = translations[currentLang];
+            const related = articlesData.filter(a => a.id !== currentId).slice(0, 2);
+
+            const html = `
+                <h3 class="text-xl font-bold text-gray-800 mb-6">${t.blog_related}</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    ${related.map(a => `
+                        <div onclick="showArticle(${a.id})" class="bg-white rounded-xl shadow-sm p-6 cursor-pointer hover:shadow-lg transition-shadow">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl">${a.icon}</span>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${t[`article_${a.id}_title`]}</h4>
+                                    <p class="text-sm text-gray-500">${a.readTime} min</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('related-articles').innerHTML = html;
         }
 
         function showBlogList() {
             document.getElementById('blog-article').classList.add('hidden');
             document.getElementById('blog-list').classList.remove('hidden');
+            currentArticleId = null;
         }
 
         function shareArticleWhatsApp() {
-            const title = translations[currentLang].article_1_full_title;
+            const t = translations[currentLang];
+            const title = currentArticleId ? t[`article_${currentArticleId}_full_title`] : t.article_1_full_title;
             const url = window.location.origin + '/#blog';
             const message = encodeURIComponent(`${title} - ${url}`);
             window.open(`https://wa.me/?text=${message}`, '_blank');
         }
 
         function shareArticleTwitter() {
-            const title = encodeURIComponent(translations[currentLang].article_1_full_title);
+            const t = translations[currentLang];
+            const title = encodeURIComponent(currentArticleId ? t[`article_${currentArticleId}_full_title`] : t.article_1_full_title);
             const url = encodeURIComponent(window.location.origin + '/#blog');
             window.open(`https://twitter.com/intent/tweet?text=${title}&url=${url}`, '_blank');
+        }
+
+        // ==========================================
+        // TIPS LIBRARY
+        // ==========================================
+        let tipsExpanded = false;
+
+        function toggleMoreTips() {
+            const expandedDiv = document.getElementById('tips-expanded');
+            const btn = document.getElementById('tips-toggle-btn');
+            const t = translations[currentLang];
+
+            if (!tipsExpanded) {
+                // Render tips 6-20
+                const borderColors = ['border-orange-300', 'border-pink-300', 'border-blue-300', 'border-green-300', 'border-yellow-300',
+                    'border-indigo-300', 'border-red-300', 'border-cyan-300', 'border-teal-soft', 'border-lavender',
+                    'border-purple-300', 'border-teal-dark', 'border-orange-400', 'border-pink-400', 'border-blue-400'];
+
+                expandedDiv.innerHTML = '';
+                for (let i = 6; i <= 20; i++) {
+                    const colorIndex = (i - 6) % borderColors.length;
+                    const tipHTML = `
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 ${borderColors[colorIndex]}">
+                            <h4 class="font-semibold text-gray-800 mb-1">${t[`tip_${i}_title`]}</h4>
+                            <p class="text-gray-600 text-sm">${t[`tip_${i}_desc`]}</p>
+                        </div>
+                    `;
+                    expandedDiv.innerHTML += tipHTML;
+                }
+
+                expandedDiv.classList.remove('hidden');
+                btn.innerHTML = `<span>${t.tips_show_less}</span><span class="ml-1">↑</span>`;
+                tipsExpanded = true;
+            } else {
+                expandedDiv.classList.add('hidden');
+                btn.innerHTML = `<span>${t.tips_show_more}</span><span class="ml-1">↓</span>`;
+                tipsExpanded = false;
+            }
         }
 
         function subscribeNewsletter() {
