@@ -1,0 +1,2963 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US2 - Us for Two | Carga Mental Compartida</title>
+    <meta name="description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'teal-soft': '#b2d8d8',
+                        'teal-dark': '#7fb3b3',
+                        'lavender': '#e6e6fa',
+                        'lavender-dark': '#d1d1eb',
+                        'offwhite': '#f9f9f9',
+                        'warm-gray': '#6b7280'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .adsense-placeholder {
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.875rem;
+            min-height: 90px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-card {
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(135deg, #b2d8d8 0%, #7fb3b3 100%);
+            color: white;
+            border-color: #7fb3b3;
+        }
+
+        .radar-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .tip-card {
+            transition: all 0.3s ease;
+        }
+
+        .tip-card:hover {
+            transform: translateX(5px);
+            border-left-width: 6px;
+        }
+
+        .achievement-badge {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.4s ease-out;
+            max-width: 320px;
+        }
+
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.badge { border-left: 4px solid #f59e0b; }
+        .toast.challenge { border-left: 4px solid #8b5cf6; }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100px); }
+        }
+
+        .toast.hiding {
+            animation: slideOutRight 0.3s ease-in forwards;
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Badge Styles */
+        .badge-card {
+            transition: all 0.3s ease;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .badge-card.locked {
+            filter: grayscale(1);
+            opacity: 0.5;
+        }
+
+        .badge-card.unlocked {
+            animation: badgeUnlock 0.5s ease-out;
+        }
+
+        @keyframes badgeUnlock {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        /* Challenge Card */
+        .challenge-card {
+            background: linear-gradient(135deg, #e6e6fa 0%, #b2d8d8 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Streak flame */
+        .streak-flame {
+            animation: flicker 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            from { transform: scale(1) rotate(-2deg); }
+            to { transform: scale(1.1) rotate(2deg); }
+        }
+    </style>
+</head>
+<body class="bg-offwhite font-sans text-warm-gray min-h-screen">
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" onclick="showSection('home')" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">U2</span>
+                    </div>
+                    <span class="text-xl font-semibold text-gray-800 group-hover:text-teal-dark transition-colors">US2</span>
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="flex items-center gap-6">
+                    <a href="#" onclick="showSection('home')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_home">Inicio</a>
+                    <a href="#" onclick="showSection('test')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_test">Test</a>
+                    <a href="#" onclick="showSection('blog')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_blog">Blog</a>
+
+                    <!-- Language Selector -->
+                    <div class="flex items-center gap-1 ml-4 bg-lavender/50 rounded-full p-1">
+                        <button onclick="setLanguage('es')" id="lang-es" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm">ES</button>
+                        <button onclick="setLanguage('en')" id="lang-en" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark">EN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== HEADER AD PLACEHOLDER ========== -->
+    <div class="pt-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- AdSense Header -->
+            <div class="adsense-placeholder my-4 py-6">
+                <span>Ad Space - Header Banner</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="max-w-6xl mx-auto px-4 pb-20">
+
+        <!-- ========== HOME SECTION ========== -->
+        <section id="section-home" class="py-12 fade-in">
+            <div class="text-center max-w-3xl mx-auto">
+                <!-- Hero -->
+                <div class="slide-up">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6" data-i18n="home_title">
+                        La Carga Mental<br>se comparte mejor en equipo
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed" data-i18n="home_subtitle">
+                        US2 te ayuda a visibilizar la gestión invisible del hogar. Porque cuando ambos ven, ambos pueden actuar.
+                    </p>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                    <button onclick="startTest()" class="px-8 py-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105" data-i18n="home_cta_start">
+                        Comenzar el Test
+                    </button>
+                    <button onclick="showSection('blog')" class="px-8 py-4 bg-white text-teal-dark font-semibold rounded-full shadow-md hover:shadow-lg transition-all border-2 border-teal-soft hover:border-teal-dark" data-i18n="home_cta_learn">
+                        Conocer Más
+                    </button>
+                </div>
+
+                <!-- Demo Mode -->
+                <div class="mb-16">
+                    <button onclick="loadDemoMode()" class="px-6 py-2 text-sm text-gray-400 hover:text-teal-dark transition-colors">
+                        🧪 <span data-i18n="demo_mode_btn">Probar Modo Demo</span>
+                    </button>
+                </div>
+
+                <!-- Features -->
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-14 h-14 bg-teal-soft/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2" data-i18n="feature_1_title">Visibiliza</h3>
+                        <p class="text-gray-600" data-i18n="feature_1_desc">Descubre quién gestiona qué en tu hogar con un test rápido y revelador.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-14 h-14 bg-lavender/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2" data-i18n="feature_2_title">Compara</h3>
+                        <p class="text-gray-600" data-i18n="feature_2_desc">Gráficos claros que muestran la perspectiva de cada uno, sin juicios.</p>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-14 h-14 bg-teal-soft/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2" data-i18n="feature_3_title">Conecta</h3>
+                        <p class="text-gray-600" data-i18n="feature_3_desc">Herramientas y tips para construir un equipo más equilibrado.</p>
+                    </div>
+                </div>
+
+                <!-- How it works -->
+                <div class="mt-20">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-10" data-i18n="how_it_works_title">¿Cómo funciona?</h2>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-soft rounded-full flex items-center justify-center text-white font-bold text-lg">1</div>
+                            <span class="text-gray-700" data-i18n="step_1">Completás el test</span>
+                        </div>
+                        <svg class="w-6 h-6 text-gray-300 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-lavender rounded-full flex items-center justify-center text-gray-700 font-bold text-lg">2</div>
+                            <span class="text-gray-700" data-i18n="step_2">Invitás a tu pareja</span>
+                        </div>
+                        <svg class="w-6 h-6 text-gray-300 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-dark rounded-full flex items-center justify-center text-white font-bold text-lg">3</div>
+                            <span class="text-gray-700" data-i18n="step_3">Ven resultados juntos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TEST SECTION ========== -->
+        <section id="section-test" class="py-12 hidden">
+            <div class="max-w-2xl mx-auto">
+
+                <!-- Test Intro -->
+                <div id="test-intro" class="text-center fade-in">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="test_intro_title">Test de Carga Mental</h2>
+                    <p class="text-gray-600 mb-8" data-i18n="test_intro_desc">15 preguntas para entender cómo se distribuye la gestión invisible en tu hogar. Responde con honestidad, no hay respuestas correctas.</p>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm mb-8">
+                        <p class="text-gray-700 mb-4" data-i18n="test_intro_note">Cada respuesta refleja quién suele encargarse de cada tarea:</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="bg-teal-soft/20 p-3 rounded-lg"><strong>A:</strong> <span data-i18n="answer_a">Siempre yo</span></div>
+                            <div class="bg-lavender/30 p-3 rounded-lg"><strong>B:</strong> <span data-i18n="answer_b">Casi siempre yo</span></div>
+                            <div class="bg-lavender/30 p-3 rounded-lg"><strong>C:</strong> <span data-i18n="answer_c">A veces yo</span></div>
+                            <div class="bg-gray-100 p-3 rounded-lg"><strong>D:</strong> <span data-i18n="answer_d">Nunca yo</span></div>
+                        </div>
+                    </div>
+
+                    <button onclick="beginQuestions()" class="px-8 py-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105" data-i18n="test_start_btn">
+                        Comenzar
+                    </button>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="test-questions" class="hidden">
+                    <!-- Progress Bar -->
+                    <div class="mb-8">
+                        <div class="flex justify-between text-sm text-gray-500 mb-2">
+                            <span data-i18n="progress_label">Progreso</span>
+                            <span id="progress-text">1/15</span>
+                        </div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-gradient-to-r from-teal-soft to-teal-dark progress-bar" style="width: 6.66%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div id="question-card" class="question-card bg-white p-8 rounded-2xl shadow-sm">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span id="question-category" class="px-3 py-1 bg-teal-soft/30 text-teal-dark text-sm font-medium rounded-full">Hogar</span>
+                            <span id="question-number" class="text-gray-400 text-sm">1/15</span>
+                        </div>
+                        <h3 id="question-text" class="text-xl font-semibold text-gray-800 mb-6">¿Quién suele planificar el menú semanal?</h3>
+
+                        <div class="space-y-3">
+                            <button onclick="selectAnswer(3)" class="option-btn w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-soft" data-option="A">
+                                <span class="font-semibold text-teal-dark">A.</span> <span data-i18n="answer_a">Siempre yo</span>
+                            </button>
+                            <button onclick="selectAnswer(2)" class="option-btn w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-soft" data-option="B">
+                                <span class="font-semibold text-teal-dark">B.</span> <span data-i18n="answer_b">Casi siempre yo</span>
+                            </button>
+                            <button onclick="selectAnswer(1)" class="option-btn w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-soft" data-option="C">
+                                <span class="font-semibold text-teal-dark">C.</span> <span data-i18n="answer_c">A veces yo</span>
+                            </button>
+                            <button onclick="selectAnswer(0)" class="option-btn w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-soft" data-option="D">
+                                <span class="font-semibold text-teal-dark">D.</span> <span data-i18n="answer_d">Nunca yo</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ad between Q7 and Q8 -->
+                    <div id="mid-test-ad" class="hidden my-6">
+                        <!-- AdSense Mid-Test -->
+                        <div class="adsense-placeholder py-6">
+                            <span>Ad Space - Mid Test</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waiting Screen (User A) -->
+                <div id="test-waiting" class="hidden text-center fade-in">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm">
+                        <div class="w-20 h-20 bg-lavender rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="waiting_title">¡Tu parte está lista!</h2>
+                        <p class="text-gray-600 mb-6" data-i18n="waiting_desc">Ahora invita a tu pareja para completar el test. Cuando termine, podrán ver los resultados juntos.</p>
+
+                        <div class="bg-offwhite p-4 rounded-xl mb-6">
+                            <p class="text-sm text-gray-500 mb-2" data-i18n="waiting_link_label">Link de invitación:</p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="invite-link" readonly class="flex-1 p-3 bg-white border border-gray-200 rounded-lg text-sm text-gray-700">
+                                <button onclick="copyInviteLink()" class="px-4 py-3 bg-teal-soft text-white rounded-lg hover:bg-teal-dark transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="copyInviteMessage()" class="w-full p-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-xl hover:shadow-lg transition-all" data-i18n="copy_message_btn">
+                            Copiar mensaje de invitación
+                        </button>
+
+                        <p id="copy-feedback" class="text-sm text-green-600 mt-3 hidden" data-i18n="copy_success">¡Copiado al portapapeles!</p>
+
+                        <!-- AdSense Waiting Screen -->
+                        <div class="adsense-placeholder mt-8 py-6">
+                            <span>Ad Space - Waiting Screen</span>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-gray-100">
+                            <button onclick="checkPartnerStatus()" class="text-teal-dark hover:text-teal-soft transition-colors font-medium" data-i18n="check_status_btn">
+                                Verificar si mi pareja completó el test →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========== DASHBOARD SECTION ========== -->
+        <section id="section-dashboard" class="py-12 hidden">
+            <div class="max-w-4xl mx-auto">
+
+                <!-- AdSense Pre-Dashboard -->
+                <div class="adsense-placeholder mb-8 py-6">
+                    <span>Ad Space - Pre Dashboard</span>
+                </div>
+
+                <!-- Results Header -->
+                <div class="text-center mb-12 fade-in">
+                    <div class="w-20 h-20 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center mx-auto mb-6 achievement-badge">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="dashboard_title">¡Completaron US2!</h2>
+                    <p class="text-gray-600" data-i18n="dashboard_subtitle">Aquí está el mapa de su carga mental compartida</p>
+                </div>
+
+                <!-- Profiles Summary -->
+                <div class="grid md:grid-cols-2 gap-6 mb-12">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-teal-soft rounded-full flex items-center justify-center text-white font-bold">A</div>
+                            <div>
+                                <p class="text-sm text-gray-500" data-i18n="user_a_label">Usuario A</p>
+                                <p id="profile-a" class="text-lg font-semibold text-gray-800">Director/a de Orquesta</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl font-bold text-teal-dark" id="score-a">38</span>
+                            <span class="text-gray-400">/ 45 pts</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-lavender rounded-full flex items-center justify-center text-gray-700 font-bold">B</div>
+                            <div>
+                                <p class="text-sm text-gray-500" data-i18n="user_b_label">Usuario B</p>
+                                <p id="profile-b" class="text-lg font-semibold text-gray-800">Ejecutivo/a</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl font-bold text-purple-400" id="score-b">15</span>
+                            <span class="text-gray-400">/ 45 pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Radar Chart -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center" data-i18n="radar_title">Comparativa por Categorías</h3>
+                    <div class="radar-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Gap Analysis -->
+                <div class="bg-gradient-to-br from-lavender/30 to-teal-soft/20 p-8 rounded-2xl mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        <span data-i18n="gap_title">Análisis de Puntos Ciegos</span>
+                    </h3>
+                    <div id="gap-analysis" class="space-y-4">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <!-- ========== BADGES SECTION ========== -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                            <span>🏆</span>
+                            <span data-i18n="badges_title">Insignias del Equipo</span>
+                        </h3>
+                        <span class="text-sm text-gray-500">
+                            <span id="badges-count">0</span>/15 <span data-i18n="badges_unlocked">desbloqueadas</span>
+                        </span>
+                    </div>
+
+                    <!-- Badges Grid -->
+                    <div id="badges-grid" class="grid grid-cols-3 md:grid-cols-5 gap-4">
+                        <!-- Dynamic badges will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- ========== WEEKLY CHALLENGE ========== -->
+                <div class="challenge-card p-8 rounded-2xl shadow-sm mb-12">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                <span>🎯</span>
+                                <span data-i18n="challenge_title">Desafío de la Semana</span>
+                            </h3>
+                            <div class="flex items-center gap-2 text-sm">
+                                <span id="challenge-days-left" class="font-medium text-gray-700">5</span>
+                                <span class="text-gray-500" data-i18n="challenge_days_left">días restantes</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/80 backdrop-blur-sm p-6 rounded-xl">
+                            <p id="challenge-text" class="text-lg font-medium text-gray-800 mb-4">
+                                Registra logros en 5 categorías diferentes
+                            </p>
+
+                            <div class="mb-3">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600" data-i18n="challenge_progress">Progreso</span>
+                                    <span id="challenge-progress-text" class="font-medium text-teal-dark">0/5</span>
+                                </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="challenge-progress-bar" class="h-full bg-gradient-to-r from-purple-400 to-teal-dark progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <p id="challenge-status" class="text-sm text-gray-500 hidden" data-i18n="challenge_completed">
+                                ¡Completado!
+                            </p>
+                        </div>
+
+                        <!-- Streak Display -->
+                        <div class="mt-6 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="streak-flame text-2xl">🔥</div>
+                                <div>
+                                    <p class="text-sm text-gray-600" data-i18n="streak_title">Racha Actual</p>
+                                    <p class="text-2xl font-bold text-gray-800">
+                                        <span id="current-streak">0</span>
+                                        <span class="text-sm font-normal text-gray-500" data-i18n="streak_days">días</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600" data-i18n="streak_best">Mejor racha</p>
+                                <p class="text-lg font-semibold text-gray-800">
+                                    <span id="best-streak">0</span>
+                                    <span class="text-sm font-normal text-gray-500" data-i18n="streak_days">días</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AdSense Post-Chart -->
+                <div class="adsense-placeholder mb-12 py-6">
+                    <span>Ad Space - Post Chart</span>
+                </div>
+
+                <!-- 5 Golden Tips -->
+                <div class="mb-12">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center" data-i18n="tips_title">5 Tips de Oro</h3>
+                    <div class="space-y-4">
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-teal-soft">
+                            <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_1_title">🔥 Reconocer es Combustible</h4>
+                            <p class="text-gray-600 text-sm" data-i18n="tip_1_desc">Reconocer el trabajo invisible del otro es el combustible de la colaboración. Un "gracias por acordarte" vale oro.</p>
+                        </div>
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-lavender">
+                            <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_2_title">📦 Delegar Proyectos Completos</h4>
+                            <p class="text-gray-600 text-sm" data-i18n="tip_2_desc">No delegues tareas, delega proyectos completos. "Encárgate de los cumpleaños" es mejor que "compra el regalo".</p>
+                        </div>
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-teal-dark">
+                            <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_3_title">📅 Sync Semanal</h4>
+                            <p class="text-gray-600 text-sm" data-i18n="tip_3_desc">15 minutos semanales para revisar pendientes evitan semanas de malentendidos y resentimiento acumulado.</p>
+                        </div>
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-purple-300">
+                            <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_4_title">📉 Bajar la Vara</h4>
+                            <p class="text-gray-600 text-sm" data-i18n="tip_4_desc">Acordar estándares realistas reduce la fricción. No todo tiene que estar perfecto, tiene que estar hecho.</p>
+                        </div>
+                        <div class="tip-card bg-white p-5 rounded-xl shadow-sm border-l-4 border-teal-soft">
+                            <h4 class="font-semibold text-gray-800 mb-1" data-i18n="tip_5_title">💬 Definir Estándares</h4>
+                            <p class="text-gray-600 text-sm" data-i18n="tip_5_desc">Hablen de qué significa "limpio" o "organizado" para cada uno. Los estándares implícitos generan conflictos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== SECTION 1: LOGROS INVISIBLES ========== -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm mb-8">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                <span>👁️</span>
+                                <span data-i18n="invisible_title">Logros Invisibles</span>
+                            </h3>
+                            <p class="text-gray-500 text-sm mt-1" data-i18n="invisible_subtitle">El trabajo que nadie ve, pero hace la diferencia</p>
+                        </div>
+                        <!-- Help tooltip -->
+                        <div class="relative group">
+                            <button class="w-6 h-6 bg-gray-100 rounded-full text-gray-400 text-sm hover:bg-gray-200">?</button>
+                            <div class="absolute right-0 top-8 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <p data-i18n="invisible_help">Registrá las pequeñas acciones del día a día. Tu pareja las aprueba y sumás puntos. Es una forma de visibilizar lo que normalmente pasa desapercibido.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Points Display - Both Users -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-teal-soft/20 p-4 rounded-xl text-center">
+                            <div class="w-10 h-10 bg-teal-soft rounded-full flex items-center justify-center mx-auto mb-2 text-white font-bold">A</div>
+                            <p class="text-2xl font-bold text-teal-dark" id="points-user-a">0</p>
+                            <p class="text-xs text-gray-500" data-i18n="points_label">puntos</p>
+                        </div>
+                        <div class="bg-lavender/30 p-4 rounded-xl text-center">
+                            <div class="w-10 h-10 bg-lavender rounded-full flex items-center justify-center mx-auto mb-2 text-gray-700 font-bold">B</div>
+                            <p class="text-2xl font-bold text-purple-500" id="points-user-b">0</p>
+                            <p class="text-xs text-gray-500" data-i18n="points_label">puntos</p>
+                        </div>
+                    </div>
+
+                    <!-- Log input -->
+                    <div class="flex gap-3 mb-6">
+                        <input type="text" id="achievement-input" placeholder="Ej: Recordé comprar leche" class="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-soft" data-i18n-placeholder="achievement_placeholder">
+                        <button onclick="addAchievement()" class="px-6 py-3 bg-teal-soft text-white rounded-xl hover:bg-teal-dark transition-colors font-medium" data-i18n="add_achievement_btn">
+                            Agregar
+                        </button>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex gap-2 mb-4 border-b border-gray-100 overflow-x-auto">
+                        <button onclick="switchAchievementTab('pending')" id="tab-pending" class="achievement-tab px-4 py-2 text-sm font-medium text-teal-dark border-b-2 border-teal-dark whitespace-nowrap">
+                            <span data-i18n="tab_pending">Por aprobar</span>
+                            <span id="pending-count" class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs">0</span>
+                        </button>
+                        <button onclick="switchAchievementTab('mine')" id="tab-mine" class="achievement-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-teal-dark whitespace-nowrap">
+                            <span data-i18n="tab_mine">Mis logros</span>
+                        </button>
+                        <button onclick="switchAchievementTab('partner')" id="tab-partner" class="achievement-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-teal-dark whitespace-nowrap">
+                            <span data-i18n="tab_partner">De mi pareja</span>
+                        </button>
+                    </div>
+
+                    <!-- Lists -->
+                    <div id="pending-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                    <div id="my-achievements-list" class="space-y-2 max-h-48 overflow-y-auto hidden"></div>
+                    <div id="partner-achievements-list" class="space-y-2 max-h-48 overflow-y-auto hidden"></div>
+                </div>
+
+                <!-- ========== SECTION 2: OBJETIVOS DE PAREJA ========== -->
+                <div class="bg-gradient-to-br from-lavender/40 to-teal-soft/30 p-8 rounded-2xl shadow-sm mb-12">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                <span>🎯</span>
+                                <span data-i18n="goals_title">Objetivos de Pareja</span>
+                            </h3>
+                            <p class="text-gray-600 text-sm mt-1" data-i18n="goals_subtitle">Metas que construyen juntos</p>
+                        </div>
+                        <!-- Help tooltip -->
+                        <div class="relative group">
+                            <button class="w-6 h-6 bg-white/50 rounded-full text-gray-500 text-sm hover:bg-white">?</button>
+                            <div class="absolute right-0 top-8 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                <p data-i18n="goals_help">Proponé un objetivo y tu pareja lo acepta. Cuando lo logren juntos, celebren. Estos objetivos son compartidos, requieren que ambos empujen en la misma dirección.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current shared goal -->
+                    <div class="bg-white/80 backdrop-blur-sm p-5 rounded-xl mb-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm font-medium text-gray-600" data-i18n="current_goal">Objetivo actual:</span>
+                            <span id="goal-status" class="text-xs px-2 py-1 bg-teal-soft/30 text-teal-dark rounded-full" data-i18n="goal_active">Activo</span>
+                        </div>
+                        <p id="current-goal-text" class="text-lg font-medium text-gray-800 mb-4" data-i18n="no_goal_yet">Aún no tienen un objetivo definido</p>
+
+                        <!-- Goal progress -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-500" data-i18n="goal_progress">Progreso</span>
+                                <span id="goal-percent" class="font-medium text-teal-dark">0%</span>
+                            </div>
+                            <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="goal-bar" class="h-full bg-gradient-to-r from-purple-400 to-teal-dark progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Goal actions -->
+                        <div id="goal-actions" class="flex gap-2">
+                            <button onclick="completeGoalStep()" class="flex-1 px-4 py-2 bg-teal-soft text-white rounded-lg hover:bg-teal-dark transition-colors text-sm" data-i18n="goal_add_progress">
+                                + Sumar progreso
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Propose new goal -->
+                    <div class="bg-white/60 p-4 rounded-xl">
+                        <p class="text-sm font-medium text-gray-700 mb-3" data-i18n="propose_goal">Proponer nuevo objetivo:</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="goal-input" placeholder="Ej: Salir a cenar el viernes" class="flex-1 p-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-teal-soft text-sm" data-i18n-placeholder="goal_placeholder">
+                            <button onclick="proposeGoal()" class="px-4 py-2 bg-purple-400 text-white rounded-lg hover:bg-purple-500 transition-colors text-sm" data-i18n="propose_btn">
+                                Proponer
+                            </button>
+                        </div>
+
+                        <!-- Pending goal proposal (if any) -->
+                        <div id="pending-goal" class="hidden mt-4 p-3 bg-orange-50 border border-orange-100 rounded-lg">
+                            <p class="text-sm text-gray-600 mb-2" data-i18n="pending_goal_label">Objetivo propuesto esperando aprobación:</p>
+                            <div class="flex items-center justify-between">
+                                <p id="pending-goal-text" class="font-medium text-gray-800"></p>
+                                <button onclick="approveGoal()" class="px-3 py-1 bg-teal-soft text-white text-sm rounded-lg hover:bg-teal-dark" data-i18n="approve_goal_btn">
+                                    Aceptar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed goals history -->
+                    <div class="mt-6">
+                        <p class="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
+                            <span>🏆</span>
+                            <span data-i18n="completed_goals">Objetivos logrados:</span>
+                            <span id="completed-goals-count" class="text-teal-dark">0</span>
+                        </p>
+                        <div id="completed-goals-list" class="flex flex-wrap gap-2">
+                            <!-- Dynamic badges for completed goals -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Affiliate Banners -->
+                <div class="mb-12">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center" data-i18n="affiliates_title">Herramientas Recomendadas</h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <a href="#" class="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800" data-i18n="affiliate_1">App de Listas Compartidas</h4>
+                            <p class="text-xs text-gray-400 mt-1">Affiliate Link</p>
+                        </a>
+                        <a href="#" class="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800" data-i18n="affiliate_2">Calendario Familiar</h4>
+                            <p class="text-xs text-gray-400 mt-1">Affiliate Link</p>
+                        </a>
+                        <a href="#" class="block bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center group">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800" data-i18n="affiliate_3">Libro: Fair Play</h4>
+                            <p class="text-xs text-gray-400 mt-1">Affiliate Link</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Share Results -->
+                <div class="text-center space-y-6">
+                    <button onclick="restartTest()" class="px-8 py-4 bg-white text-teal-dark font-semibold rounded-full shadow-md hover:shadow-lg transition-all border-2 border-teal-soft" data-i18n="restart_btn">
+                        Hacer el Test de Nuevo
+                    </button>
+
+                    <!-- Share Section -->
+                    <div class="pt-6 border-t border-gray-100">
+                        <p class="text-gray-600 mb-4" data-i18n="share_title">¿Te gustó US2? ¡Compartilo!</p>
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <!-- WhatsApp -->
+                            <button onclick="shareOnWhatsApp()" class="flex items-center gap-2 px-5 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-md">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                                <span data-i18n="share_whatsapp">Compartir</span>
+                            </button>
+
+                            <!-- Twitter/X -->
+                            <button onclick="shareOnTwitter()" class="flex items-center gap-2 px-5 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors shadow-md">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                                <span>X</span>
+                            </button>
+
+                            <!-- Facebook -->
+                            <button onclick="shareOnFacebook()" class="flex items-center gap-2 px-5 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-md">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                <span>Facebook</span>
+                            </button>
+
+                            <!-- Copy Link -->
+                            <button onclick="copyShareLink()" class="flex items-center gap-2 px-5 py-3 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                <span data-i18n="share_copy_link">Copiar link</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========== BLOG SECTION ========== -->
+        <section id="section-blog" class="py-12 hidden">
+            <div class="max-w-3xl mx-auto text-center fade-in">
+                <div class="w-20 h-20 bg-lavender rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4" data-i18n="blog_title">Blog & Recursos</h2>
+                <p class="text-gray-600 mb-8" data-i18n="blog_coming_soon">Próximamente: artículos, guías y herramientas para construir un hogar más equilibrado.</p>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="blog_subscribe_title">Suscríbete para recibir novedades</h3>
+                    <div class="flex gap-3 max-w-md mx-auto">
+                        <input type="email" placeholder="tu@email.com" class="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-teal-soft">
+                        <button class="px-6 py-3 bg-teal-soft text-white rounded-xl hover:bg-teal-dark transition-colors font-medium" data-i18n="subscribe_btn">
+                            Suscribir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Placeholder articles -->
+                <div class="grid md:grid-cols-2 gap-6 mt-12">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm text-left opacity-60">
+                        <div class="h-32 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400" data-i18n="coming_soon">Próximamente</div>
+                        <h4 class="font-semibold text-gray-800" data-i18n="article_1_title">¿Qué es la Carga Mental?</h4>
+                        <p class="text-sm text-gray-500 mt-2" data-i18n="article_1_desc">Una guía completa sobre el trabajo invisible del hogar.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm text-left opacity-60">
+                        <div class="h-32 bg-gray-100 rounded-xl mb-4 flex items-center justify-center text-gray-400" data-i18n="coming_soon">Próximamente</div>
+                        <h4 class="font-semibold text-gray-800" data-i18n="article_2_title">5 Conversaciones Clave</h4>
+                        <p class="text-sm text-gray-500 mt-2" data-i18n="article_2_desc">Cómo hablar de distribución de tareas sin conflicto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-white border-t border-gray-100 py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">U2</span>
+                    </div>
+                    <span class="text-gray-800 font-medium">US2</span>
+                </div>
+
+                <div class="flex items-center gap-6 text-sm text-gray-500">
+                    <a href="#" class="hover:text-teal-dark transition-colors" data-i18n="footer_privacy">Privacidad</a>
+                    <a href="#" class="hover:text-teal-dark transition-colors" data-i18n="footer_terms">Términos</a>
+                    <a href="#" class="hover:text-teal-dark transition-colors" data-i18n="footer_contact">Contacto</a>
+                </div>
+
+                <p class="text-sm text-gray-400">© 2025 US2. <span data-i18n="footer_rights">Todos los derechos reservados.</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Confetti Container -->
+    <div id="confetti-container" class="confetti-container"></div>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        // ==========================================
+        // INTERNATIONALIZATION (i18n)
+        // ==========================================
+        const translations = {
+            es: {
+                // Navigation
+                nav_home: "Inicio",
+                nav_test: "Test",
+                nav_blog: "Blog",
+
+                // Home
+                home_title: "La Carga Mental<br>se comparte mejor en equipo",
+                home_subtitle: "US2 te ayuda a visibilizar la gestión invisible del hogar. Porque cuando ambos ven, ambos pueden actuar.",
+                home_cta_start: "Comenzar el Test",
+                home_cta_learn: "Conocer Más",
+
+                // Features
+                feature_1_title: "Visibiliza",
+                feature_1_desc: "Descubre quién gestiona qué en tu hogar con un test rápido y revelador.",
+                feature_2_title: "Compara",
+                feature_2_desc: "Gráficos claros que muestran la perspectiva de cada uno, sin juicios.",
+                feature_3_title: "Conecta",
+                feature_3_desc: "Herramientas y tips para construir un equipo más equilibrado.",
+
+                // How it works
+                how_it_works_title: "¿Cómo funciona?",
+                step_1: "Completás el test",
+                step_2: "Invitás a tu pareja",
+                step_3: "Ven resultados juntos",
+
+                // Test
+                test_intro_title: "Test de Carga Mental",
+                test_intro_desc: "15 preguntas para entender cómo se distribuye la gestión invisible en tu hogar. Responde con honestidad, no hay respuestas correctas.",
+                test_intro_note: "Cada respuesta refleja quién suele encargarse de cada tarea:",
+                test_start_btn: "Comenzar",
+                progress_label: "Progreso",
+
+                // Answers
+                answer_a: "Siempre yo",
+                answer_b: "Casi siempre yo",
+                answer_c: "A veces yo",
+                answer_d: "Nunca yo",
+
+                // Questions
+                q1: "¿Quién suele planificar el menú semanal?",
+                q2: "¿Quién nota cuando faltan insumos básicos (papel, jabón, etc.)?",
+                q3: "¿Quién gestiona el ciclo completo de ropa y blancos?",
+                q4: "¿Quién recuerda cumpleaños y elige regalos?",
+                q5: "¿Quién confirma asistencias y organiza la logística de eventos?",
+                q6: "¿Quién agenda turnos médicos y controla vacunas?",
+                q7: "¿Quién repone medicamentos básicos del hogar?",
+                q8: "¿Quién controla vencimientos de facturas e impuestos?",
+                q9: "¿Quién gestiona trámites burocráticos y reclamos?",
+                q10: "¿Quién recuerda las necesidades de hijes o mascotas?",
+                q11: "¿Quién gestiona talles de ropa y calzado?",
+                q12: "¿Quién nota roturas y gestiona reparaciones?",
+                q13: "¿Quién planifica vacaciones y escapadas?",
+                q14: "¿Quién coordina la limpieza profunda del hogar?",
+                q15: "¿Quién nota el malestar del otro y abre la conversación?",
+
+                // Categories
+                cat_hogar: "Hogar",
+                cat_social: "Social",
+                cat_salud: "Salud",
+                cat_admin: "Admin",
+                cat_cuidado: "Cuidado",
+                cat_mant: "Mant.",
+                cat_logistica: "Logística",
+                cat_limpieza: "Limpieza",
+                cat_emocional: "Emocional",
+
+                // Waiting
+                waiting_title: "¡Tu parte está lista!",
+                waiting_desc: "Ahora invita a tu pareja para completar el test. Cuando termine, podrán ver los resultados juntos.",
+                waiting_link_label: "Link de invitación:",
+                copy_message_btn: "Copiar mensaje de invitación",
+                copy_success: "¡Copiado al portapapeles!",
+                check_status_btn: "Verificar si mi pareja completó el test →",
+
+                // Invite message
+                invite_message: "¡Hola! Entré en US2 para que veamos cómo nos repartimos la 'gestión invisible' de casa. Cuando lo termines, vemos los resultados juntos. ¡Es para sumar!",
+
+                // Dashboard
+                dashboard_title: "¡Completaron US2!",
+                dashboard_subtitle: "Aquí está el mapa de su carga mental compartida",
+                user_a_label: "Usuario A",
+                user_b_label: "Usuario B",
+                radar_title: "Comparativa por Categorías",
+                gap_title: "Análisis de Puntos Ciegos",
+
+                // Profiles
+                profile_passenger: "Pasajero/a",
+                profile_executive: "Ejecutivo/a",
+                profile_comanager: "Gestor/a Compartido/a",
+                profile_director: "Director/a de Orquesta",
+
+                // Tips
+                tips_title: "5 Tips de Oro",
+                tip_1_title: "🔥 Reconocer es Combustible",
+                tip_1_desc: "Reconocer el trabajo invisible del otro es el combustible de la colaboración. Un 'gracias por acordarte' vale oro.",
+                tip_2_title: "📦 Delegar Proyectos Completos",
+                tip_2_desc: "No delegues tareas, delega proyectos completos. 'Encárgate de los cumpleaños' es mejor que 'compra el regalo'.",
+                tip_3_title: "📅 Sync Semanal",
+                tip_3_desc: "15 minutos semanales para revisar pendientes evitan semanas de malentendidos y resentimiento acumulado.",
+                tip_4_title: "📉 Bajar la Vara",
+                tip_4_desc: "Acordar estándares realistas reduce la fricción. No todo tiene que estar perfecto, tiene que estar hecho.",
+                tip_5_title: "💬 Definir Estándares",
+                tip_5_desc: "Hablen de qué significa 'limpio' o 'organizado' para cada uno. Los estándares implícitos generan conflictos.",
+
+                // Flight Log
+                flight_log_title: "Bitácora Diaria",
+                flight_log_desc: "Registra los 'logros invisibles' del día. Tu pareja los aprueba y suman puntos.",
+                reward_progress: "Progreso hacia: Noche de Cita 🎬",
+                reward_hint: "Meta: 20 logros aprobados entre ambos",
+                achievement_placeholder: "Ej: Recordé comprar leche",
+                add_achievement_btn: "Agregar",
+                points_label: "puntos",
+                tab_pending: "Pendientes de aprobar",
+                tab_mine: "Mis logros",
+                tab_partner: "De mi pareja",
+                no_achievements: "No hay logros aún",
+                approve_btn: "Aprobar",
+                approved_status: "Aprobado ✓",
+                pending_status: "Pendiente",
+                approval_toast: "¡Logro aprobado! +1 punto",
+
+                // Affiliates
+                affiliates_title: "Herramientas Recomendadas",
+                affiliate_1: "App de Listas Compartidas",
+                affiliate_2: "Calendario Familiar",
+                affiliate_3: "Libro: Fair Play",
+
+                // Actions
+                restart_btn: "Hacer el Test de Nuevo",
+                share_title: "¿Te gustó US2? ¡Compartilo!",
+                share_whatsapp: "Compartir",
+                share_copy_link: "Copiar link",
+                share_message: "¡Probé US2 con mi pareja! Una herramienta genial para visibilizar la carga mental del hogar. ¿La probamos juntos?",
+                link_copied: "¡Link copiado!",
+
+                // Blog
+                blog_title: "Blog & Recursos",
+                blog_coming_soon: "Próximamente: artículos, guías y herramientas para construir un hogar más equilibrado.",
+                blog_subscribe_title: "Suscríbete para recibir novedades",
+                subscribe_btn: "Suscribir",
+                coming_soon: "Próximamente",
+                article_1_title: "¿Qué es la Carga Mental?",
+                article_1_desc: "Una guía completa sobre el trabajo invisible del hogar.",
+                article_2_title: "5 Conversaciones Clave",
+                article_2_desc: "Cómo hablar de distribución de tareas sin conflicto.",
+
+                // Footer
+                footer_privacy: "Privacidad",
+                footer_terms: "Términos",
+                footer_contact: "Contacto",
+                footer_rights: "Todos los derechos reservados.",
+
+                // Gap analysis
+                gap_high: "Gran diferencia en",
+                gap_medium: "Diferencia moderada en",
+                gap_balanced: "¡Equilibrados en",
+                gap_explanation_high: "Este es un punto ciego importante. Conversen sobre expectativas.",
+                gap_explanation_medium: "Hay espacio para mejorar la distribución aquí.",
+                gap_explanation_balanced: "¡Bien hecho! Mantienen buen equilibrio en esta área.",
+
+                // Badges Section
+                badges_title: "Insignias del Equipo",
+                badges_unlocked: "desbloqueadas",
+                badge_locked: "Bloqueada",
+
+                // Badge Names
+                badge_first_look: "Primera Mirada",
+                badge_first_look_desc: "Completar el primer test",
+                badge_veterans: "Veteranos",
+                badge_veterans_desc: "Completar 5 tests",
+                badge_streak_3: "Racha de 3",
+                badge_streak_3_desc: "3 días seguidos registrando logros",
+                badge_streak_7: "Semana Completa",
+                badge_streak_7_desc: "7 días seguidos registrando logros",
+                badge_10_achievements: "Primeros Pasos",
+                badge_10_achievements_desc: "Registrar 10 logros",
+                badge_50_achievements: "En Camino",
+                badge_50_achievements_desc: "Registrar 50 logros",
+                badge_100_achievements: "Centenario",
+                badge_100_achievements_desc: "Registrar 100 logros",
+                badge_balanced_home: "Equilibristas del Hogar",
+                badge_balanced_home_desc: "Diferencia < 1 en categoría Hogar",
+                badge_balanced_social: "Co-Capitanes Sociales",
+                badge_balanced_social_desc: "Diferencia < 1 en categoría Social",
+                badge_balanced_health: "Guardianes de Salud",
+                badge_balanced_health_desc: "Diferencia < 1 en categoría Salud",
+                badge_night_owl: "Búho Nocturno",
+                badge_night_owl_desc: "Registrar logro después de las 22h",
+                badge_early_bird: "Madrugador",
+                badge_early_bird_desc: "Registrar logro antes de las 7h",
+                badge_first_reward: "Primera Recompensa",
+                badge_first_reward_desc: "Alcanzar la primera meta de logros",
+                badge_weekly_champ: "Campeón Semanal",
+                badge_weekly_champ_desc: "Completar un desafío semanal",
+                badge_perfect_week: "Semana Perfecta",
+                badge_perfect_week_desc: "Completar todos los desafíos de una semana",
+
+                // Weekly Challenge
+                challenge_title: "Desafío de la Semana",
+                challenge_progress: "Progreso",
+                challenge_days_left: "días restantes",
+                challenge_completed: "¡Completado!",
+                challenge_1: "Registra logros en 5 categorías diferentes",
+                challenge_2: "Mantén una racha de 5 días",
+                challenge_3: "Haz el test de nuevo y compara",
+                challenge_4: "Registra 15 logros entre ambos",
+                challenge_5: "Consigue 2 badges nuevos",
+
+                // Streak
+                streak_title: "Racha Actual",
+                streak_days: "días",
+                streak_best: "Mejor racha",
+
+                // Toast messages
+                toast_badge_unlocked: "¡Insignia desbloqueada!",
+                toast_challenge_complete: "¡Desafío completado!",
+                toast_streak_milestone: "¡Nueva racha alcanzada!",
+
+                // Demo mode
+                demo_mode_btn: "Probar Modo Demo",
+
+                // Logros Invisibles Section
+                invisible_title: "Logros Invisibles",
+                invisible_subtitle: "El trabajo que nadie ve, pero hace la diferencia",
+                invisible_help: "Registrá las pequeñas acciones del día a día. Tu pareja las aprueba y sumás puntos. Es una forma de visibilizar lo que normalmente pasa desapercibido.",
+
+                // Objetivos de Pareja Section
+                goals_title: "Objetivos de Pareja",
+                goals_subtitle: "Metas que construyen juntos",
+                goals_help: "Proponé un objetivo y tu pareja lo acepta. Cuando lo logren juntos, celebren. Estos objetivos son compartidos, requieren que ambos empujen en la misma dirección.",
+                current_goal: "Objetivo actual:",
+                goal_active: "Activo",
+                goal_pending: "Esperando aprobación",
+                goal_completed: "¡Completado!",
+                no_goal_yet: "Aún no tienen un objetivo definido",
+                goal_progress: "Progreso",
+                goal_add_progress: "+ Sumar progreso",
+                propose_goal: "Proponer nuevo objetivo:",
+                goal_placeholder: "Ej: Salir a cenar el viernes",
+                propose_btn: "Proponer",
+                pending_goal_label: "Objetivo propuesto esperando aprobación:",
+                approve_goal_btn: "Aceptar",
+                completed_goals: "Objetivos logrados:",
+                goal_proposed_toast: "¡Objetivo propuesto! Tu pareja debe aprobarlo.",
+                goal_approved_toast: "¡Objetivo aceptado! A trabajar juntos.",
+                goal_progress_toast: "¡+25% de progreso!",
+                goal_complete_toast: "🎉 ¡Objetivo completado!"
+            },
+            en: {
+                // Navigation
+                nav_home: "Home",
+                nav_test: "Test",
+                nav_blog: "Blog",
+
+                // Home
+                home_title: "Mental Load<br>is better shared as a team",
+                home_subtitle: "US2 helps you visualize the invisible management of your home. Because when both see, both can act.",
+                home_cta_start: "Start the Test",
+                home_cta_learn: "Learn More",
+
+                // Features
+                feature_1_title: "Visualize",
+                feature_1_desc: "Discover who manages what in your home with a quick, revealing test.",
+                feature_2_title: "Compare",
+                feature_2_desc: "Clear charts showing each person's perspective, judgment-free.",
+                feature_3_title: "Connect",
+                feature_3_desc: "Tools and tips to build a more balanced team.",
+
+                // How it works
+                how_it_works_title: "How does it work?",
+                step_1: "Complete the test",
+                step_2: "Invite your partner",
+                step_3: "See results together",
+
+                // Test
+                test_intro_title: "Mental Load Test",
+                test_intro_desc: "15 questions to understand how invisible management is distributed in your home. Answer honestly, there are no right answers.",
+                test_intro_note: "Each answer reflects who usually handles each task:",
+                test_start_btn: "Start",
+                progress_label: "Progress",
+
+                // Answers
+                answer_a: "Always me",
+                answer_b: "Almost always me",
+                answer_c: "Sometimes me",
+                answer_d: "Never me",
+
+                // Questions
+                q1: "Who usually plans the weekly menu?",
+                q2: "Who notices when basic supplies are missing (paper, soap, etc.)?",
+                q3: "Who manages the complete laundry and linens cycle?",
+                q4: "Who remembers birthdays and chooses gifts?",
+                q5: "Who confirms attendance and organizes event logistics?",
+                q6: "Who schedules doctor appointments and tracks vaccines?",
+                q7: "Who replenishes basic household medicine?",
+                q8: "Who tracks bill and tax due dates?",
+                q9: "Who manages bureaucracy and claims?",
+                q10: "Who remembers the needs of kids or pets?",
+                q11: "Who manages clothing and shoe sizes?",
+                q12: "Who notices repairs and manages fixes?",
+                q13: "Who plans vacations and getaways?",
+                q14: "Who coordinates deep cleaning of the home?",
+                q15: "Who notices partner's discomfort and starts the conversation?",
+
+                // Categories
+                cat_hogar: "Home",
+                cat_social: "Social",
+                cat_salud: "Health",
+                cat_admin: "Admin",
+                cat_cuidado: "Care",
+                cat_mant: "Maint.",
+                cat_logistica: "Logistics",
+                cat_limpieza: "Cleaning",
+                cat_emocional: "Emotional",
+
+                // Waiting
+                waiting_title: "Your part is done!",
+                waiting_desc: "Now invite your partner to complete the test. When they finish, you'll see the results together.",
+                waiting_link_label: "Invitation link:",
+                copy_message_btn: "Copy invitation message",
+                copy_success: "Copied to clipboard!",
+                check_status_btn: "Check if my partner completed the test →",
+
+                // Invite message
+                invite_message: "Hi! I started US2 so we can see how we share the 'invisible management' at home. When you finish, we'll see the results together. It's about teamwork!",
+
+                // Dashboard
+                dashboard_title: "You completed US2!",
+                dashboard_subtitle: "Here's the map of your shared mental load",
+                user_a_label: "User A",
+                user_b_label: "User B",
+                radar_title: "Comparison by Categories",
+                gap_title: "Blind Spot Analysis",
+
+                // Profiles
+                profile_passenger: "Passenger",
+                profile_executive: "Executive",
+                profile_comanager: "Co-Manager",
+                profile_director: "Orchestra Director",
+
+                // Tips
+                tips_title: "5 Golden Tips",
+                tip_1_title: "🔥 Recognition is Fuel",
+                tip_1_desc: "Recognizing the other's invisible work is the fuel of collaboration. A 'thanks for remembering' is worth gold.",
+                tip_2_title: "📦 Hand Over Projects",
+                tip_2_desc: "Don't delegate tasks, delegate complete projects. 'Handle birthdays' is better than 'buy the gift'.",
+                tip_3_title: "📅 Weekly Sync",
+                tip_3_desc: "15 weekly minutes to review pending items prevent weeks of misunderstandings and accumulated resentment.",
+                tip_4_title: "📉 Lower the Bar",
+                tip_4_desc: "Agreeing on realistic standards reduces friction. Not everything has to be perfect, it has to be done.",
+                tip_5_title: "💬 Define Standard of Care",
+                tip_5_desc: "Talk about what 'clean' or 'organized' means to each of you. Implicit standards create conflicts.",
+
+                // Flight Log
+                flight_log_title: "Daily Flight Log",
+                flight_log_desc: "Record today's 'invisible achievements'. Your partner approves them and you earn points.",
+                reward_progress: "Progress toward: Date Night 🎬",
+                reward_hint: "Goal: 20 approved achievements between both",
+                achievement_placeholder: "Ex: Remembered to buy milk",
+                add_achievement_btn: "Add",
+                points_label: "points",
+                tab_pending: "Pending approval",
+                tab_mine: "My achievements",
+                tab_partner: "Partner's",
+                no_achievements: "No achievements yet",
+                approve_btn: "Approve",
+                approved_status: "Approved ✓",
+                pending_status: "Pending",
+                approval_toast: "Achievement approved! +1 point",
+
+                // Affiliates
+                affiliates_title: "Recommended Tools",
+                affiliate_1: "Shared Lists App",
+                affiliate_2: "Family Calendar",
+                affiliate_3: "Book: Fair Play",
+
+                // Actions
+                restart_btn: "Take the Test Again",
+                share_title: "Did you like US2? Share it!",
+                share_whatsapp: "Share",
+                share_copy_link: "Copy link",
+                share_message: "I tried US2 with my partner! A great tool to visualize the mental load at home. Want to try it together?",
+                link_copied: "Link copied!",
+
+                // Blog
+                blog_title: "Blog & Resources",
+                blog_coming_soon: "Coming soon: articles, guides, and tools to build a more balanced home.",
+                blog_subscribe_title: "Subscribe for updates",
+                subscribe_btn: "Subscribe",
+                coming_soon: "Coming Soon",
+                article_1_title: "What is Mental Load?",
+                article_1_desc: "A complete guide to the invisible work of the home.",
+                article_2_title: "5 Key Conversations",
+                article_2_desc: "How to talk about task distribution without conflict.",
+
+                // Footer
+                footer_privacy: "Privacy",
+                footer_terms: "Terms",
+                footer_contact: "Contact",
+                footer_rights: "All rights reserved.",
+
+                // Gap analysis
+                gap_high: "Big difference in",
+                gap_medium: "Moderate difference in",
+                gap_balanced: "Balanced in",
+                gap_explanation_high: "This is an important blind spot. Discuss expectations.",
+                gap_explanation_medium: "There's room to improve distribution here.",
+                gap_explanation_balanced: "Well done! You maintain good balance in this area.",
+
+                // Badges Section
+                badges_title: "Team Badges",
+                badges_unlocked: "unlocked",
+                badge_locked: "Locked",
+
+                // Badge Names
+                badge_first_look: "First Look",
+                badge_first_look_desc: "Complete the first test",
+                badge_veterans: "Veterans",
+                badge_veterans_desc: "Complete 5 tests",
+                badge_streak_3: "3-Day Streak",
+                badge_streak_3_desc: "3 consecutive days logging achievements",
+                badge_streak_7: "Full Week",
+                badge_streak_7_desc: "7 consecutive days logging achievements",
+                badge_10_achievements: "First Steps",
+                badge_10_achievements_desc: "Log 10 achievements",
+                badge_50_achievements: "On the Way",
+                badge_50_achievements_desc: "Log 50 achievements",
+                badge_100_achievements: "Centenary",
+                badge_100_achievements_desc: "Log 100 achievements",
+                badge_balanced_home: "Home Balancers",
+                badge_balanced_home_desc: "Difference < 1 in Home category",
+                badge_balanced_social: "Social Co-Captains",
+                badge_balanced_social_desc: "Difference < 1 in Social category",
+                badge_balanced_health: "Health Guardians",
+                badge_balanced_health_desc: "Difference < 1 in Health category",
+                badge_night_owl: "Night Owl",
+                badge_night_owl_desc: "Log achievement after 10pm",
+                badge_early_bird: "Early Bird",
+                badge_early_bird_desc: "Log achievement before 7am",
+                badge_first_reward: "First Reward",
+                badge_first_reward_desc: "Reach the first achievement goal",
+                badge_weekly_champ: "Weekly Champion",
+                badge_weekly_champ_desc: "Complete a weekly challenge",
+                badge_perfect_week: "Perfect Week",
+                badge_perfect_week_desc: "Complete all challenges in a week",
+
+                // Weekly Challenge
+                challenge_title: "Weekly Challenge",
+                challenge_progress: "Progress",
+                challenge_days_left: "days left",
+                challenge_completed: "Completed!",
+                challenge_1: "Log achievements in 5 different categories",
+                challenge_2: "Maintain a 5-day streak",
+                challenge_3: "Take the test again and compare",
+                challenge_4: "Log 15 achievements between both",
+                challenge_5: "Earn 2 new badges",
+
+                // Streak
+                streak_title: "Current Streak",
+                streak_days: "days",
+                streak_best: "Best streak",
+
+                // Toast messages
+                toast_badge_unlocked: "Badge unlocked!",
+                toast_challenge_complete: "Challenge completed!",
+                toast_streak_milestone: "New streak milestone!",
+
+                // Demo mode
+                demo_mode_btn: "Try Demo Mode",
+
+                // Invisible Achievements Section
+                invisible_title: "Invisible Achievements",
+                invisible_subtitle: "The work nobody sees, but makes the difference",
+                invisible_help: "Log the small daily actions. Your partner approves them and you earn points. It's a way to make visible what usually goes unnoticed.",
+
+                // Couple Goals Section
+                goals_title: "Couple Goals",
+                goals_subtitle: "Goals you build together",
+                goals_help: "Propose a goal and your partner accepts it. When you achieve it together, celebrate. These goals are shared, they require both of you pushing in the same direction.",
+                current_goal: "Current goal:",
+                goal_active: "Active",
+                goal_pending: "Waiting for approval",
+                goal_completed: "Completed!",
+                no_goal_yet: "You don't have a goal set yet",
+                goal_progress: "Progress",
+                goal_add_progress: "+ Add progress",
+                propose_goal: "Propose new goal:",
+                goal_placeholder: "Ex: Go out for dinner on Friday",
+                propose_btn: "Propose",
+                pending_goal_label: "Proposed goal waiting for approval:",
+                approve_goal_btn: "Accept",
+                completed_goals: "Goals achieved:",
+                goal_proposed_toast: "Goal proposed! Your partner must approve it.",
+                goal_approved_toast: "Goal accepted! Time to work together.",
+                goal_progress_toast: "+25% progress!",
+                goal_complete_toast: "🎉 Goal completed!"
+            }
+        };
+
+        let currentLang = 'es';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('us2_lang', lang);
+
+            // Update language buttons
+            document.getElementById('lang-es').className = lang === 'es'
+                ? 'lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm'
+                : 'lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark';
+            document.getElementById('lang-en').className = lang === 'en'
+                ? 'lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm'
+                : 'lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark';
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            // Update current question if in test
+            if (currentQuestion >= 0 && currentQuestion < questions.length) {
+                displayQuestion(currentQuestion);
+            }
+
+            // Update HTML lang attribute
+            document.documentElement.lang = lang;
+        }
+
+        // ==========================================
+        // QUESTIONS DATA
+        // ==========================================
+        const questions = [
+            { category: 'cat_hogar', textKey: 'q1' },
+            { category: 'cat_hogar', textKey: 'q2' },
+            { category: 'cat_hogar', textKey: 'q3' },
+            { category: 'cat_social', textKey: 'q4' },
+            { category: 'cat_social', textKey: 'q5' },
+            { category: 'cat_salud', textKey: 'q6' },
+            { category: 'cat_salud', textKey: 'q7' },
+            { category: 'cat_admin', textKey: 'q8' },
+            { category: 'cat_admin', textKey: 'q9' },
+            { category: 'cat_cuidado', textKey: 'q10' },
+            { category: 'cat_cuidado', textKey: 'q11' },
+            { category: 'cat_mant', textKey: 'q12' },
+            { category: 'cat_logistica', textKey: 'q13' },
+            { category: 'cat_limpieza', textKey: 'q14' },
+            { category: 'cat_emocional', textKey: 'q15' }
+        ];
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let currentQuestion = 0;
+        let answers = [];
+        let pairID = null;
+        let currentUser = 'A';
+        let radarChart = null;
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        function init() {
+            // Check saved language
+            const savedLang = localStorage.getItem('us2_lang');
+            if (savedLang) {
+                setLanguage(savedLang);
+            }
+
+            // Check URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlPairID = urlParams.get('pairID');
+            const urlUser = urlParams.get('user');
+
+            if (urlPairID && urlUser === 'B') {
+                // User B arriving via invitation link
+                pairID = urlPairID;
+                currentUser = 'B';
+
+                // Check if User A has completed
+                const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+                if (pairData.userA) {
+                    // Check if User B already completed
+                    if (pairData.userB) {
+                        showDashboard(pairData);
+                    } else {
+                        // Show test for User B
+                        showSection('test');
+                    }
+                } else {
+                    // Invalid or expired link
+                    showSection('home');
+                }
+            } else if (urlPairID) {
+                // Returning user with pairID
+                pairID = urlPairID;
+                const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+                if (pairData.userA && pairData.userB) {
+                    showDashboard(pairData);
+                } else {
+                    showSection('home');
+                }
+            } else {
+                // Check for saved session
+                const savedPairID = localStorage.getItem('us2_last_pairID');
+                if (savedPairID) {
+                    const pairData = JSON.parse(localStorage.getItem(`us2_pair_${savedPairID}`) || '{}');
+                    if (pairData.userA && pairData.userB) {
+                        pairID = savedPairID;
+                        // Show home but allow quick access to dashboard
+                    }
+                }
+                showSection('home');
+            }
+        }
+
+        // Save pairID for returning users
+        function savePairIDForReturn() {
+            if (pairID) {
+                localStorage.setItem('us2_last_pairID', pairID);
+            }
+        }
+
+        // ==========================================
+        // NAVIGATION
+        // ==========================================
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('section[id^="section-"]').forEach(s => {
+                s.classList.add('hidden');
+            });
+
+            // Show requested section
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('fade-in');
+            }
+
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-teal-dark', 'font-semibold');
+                link.classList.add('text-gray-600');
+            });
+        }
+
+        // ==========================================
+        // TEST LOGIC
+        // ==========================================
+        function startTest() {
+            showSection('test');
+            document.getElementById('test-intro').classList.remove('hidden');
+            document.getElementById('test-questions').classList.add('hidden');
+            document.getElementById('test-waiting').classList.add('hidden');
+        }
+
+        function beginQuestions() {
+            // Generate pairID if User A
+            if (currentUser === 'A') {
+                pairID = generatePairID();
+            }
+
+            currentQuestion = 0;
+            answers = [];
+
+            document.getElementById('test-intro').classList.add('hidden');
+            document.getElementById('test-questions').classList.remove('hidden');
+
+            displayQuestion(0);
+        }
+
+        function generatePairID() {
+            return 'US2-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function displayQuestion(index) {
+            const question = questions[index];
+            const categoryText = translations[currentLang][question.category] || question.category;
+            const questionText = translations[currentLang][question.textKey] || question.textKey;
+
+            document.getElementById('question-category').textContent = categoryText;
+            document.getElementById('question-number').textContent = `${index + 1}/15`;
+            document.getElementById('question-text').textContent = questionText;
+            document.getElementById('progress-text').textContent = `${index + 1}/15`;
+            document.getElementById('progress-bar').style.width = `${((index + 1) / 15) * 100}%`;
+
+            // Update answer buttons text
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                const option = btn.getAttribute('data-option');
+                const span = btn.querySelector('span:last-child');
+                if (span) {
+                    span.textContent = translations[currentLang][`answer_${option.toLowerCase()}`];
+                }
+            });
+
+            // Show mid-test ad after question 7
+            const midTestAd = document.getElementById('mid-test-ad');
+            if (index === 7) {
+                midTestAd.classList.remove('hidden');
+            } else {
+                midTestAd.classList.add('hidden');
+            }
+        }
+
+        function selectAnswer(points) {
+            answers.push({
+                question: currentQuestion,
+                category: questions[currentQuestion].category,
+                points: points
+            });
+
+            // Visual feedback
+            const buttons = document.querySelectorAll('.option-btn');
+            const selectedIndex = 3 - points; // A=3, B=2, C=1, D=0
+            buttons[selectedIndex].classList.add('selected');
+
+            // Delay before next question
+            setTimeout(() => {
+                currentQuestion++;
+
+                if (currentQuestion < questions.length) {
+                    displayQuestion(currentQuestion);
+                } else {
+                    completeTest();
+                }
+            }, 300);
+        }
+
+        function completeTest() {
+            // Calculate total score
+            const totalScore = answers.reduce((sum, a) => sum + a.points, 0);
+
+            // Calculate category scores
+            const categoryScores = {};
+            const categoryMapping = {
+                'cat_hogar': 'Hogar',
+                'cat_social': 'Social',
+                'cat_salud': 'Salud',
+                'cat_admin': 'Admin',
+                'cat_cuidado': 'Cuidado',
+                'cat_mant': 'Mantenimiento',
+                'cat_logistica': 'Logística',
+                'cat_limpieza': 'Limpieza',
+                'cat_emocional': 'Emocional'
+            };
+
+            answers.forEach(a => {
+                const cat = categoryMapping[a.category] || a.category;
+                if (!categoryScores[cat]) {
+                    categoryScores[cat] = { total: 0, count: 0 };
+                }
+                categoryScores[cat].total += a.points;
+                categoryScores[cat].count++;
+            });
+
+            // Normalize scores (average per category, scaled to max 3)
+            const normalizedScores = {};
+            for (const cat in categoryScores) {
+                normalizedScores[cat] = categoryScores[cat].total / categoryScores[cat].count;
+            }
+
+            // Save to localStorage
+            const userData = {
+                score: totalScore,
+                answers: answers,
+                categoryScores: normalizedScores,
+                timestamp: new Date().toISOString()
+            };
+
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+
+            if (currentUser === 'A') {
+                pairData.userA = userData;
+                localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                savePairIDForReturn();
+                showWaitingScreen();
+            } else {
+                pairData.userB = userData;
+                localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                savePairIDForReturn();
+                showDashboard(pairData);
+            }
+        }
+
+        function showWaitingScreen() {
+            document.getElementById('test-questions').classList.add('hidden');
+            document.getElementById('test-waiting').classList.remove('hidden');
+
+            // Generate invite link
+            const inviteLink = `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=B`;
+            document.getElementById('invite-link').value = inviteLink;
+        }
+
+        function copyInviteLink() {
+            const link = document.getElementById('invite-link').value;
+            navigator.clipboard.writeText(link);
+            showCopyFeedback();
+        }
+
+        function copyInviteMessage() {
+            const link = document.getElementById('invite-link').value;
+            const message = translations[currentLang].invite_message + ' ' + link;
+            navigator.clipboard.writeText(message);
+            showCopyFeedback();
+        }
+
+        function showCopyFeedback() {
+            const feedback = document.getElementById('copy-feedback');
+            feedback.classList.remove('hidden');
+            setTimeout(() => {
+                feedback.classList.add('hidden');
+            }, 2000);
+        }
+
+        function checkPartnerStatus() {
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            if (pairData.userA && pairData.userB) {
+                showDashboard(pairData);
+            } else {
+                alert(currentLang === 'es'
+                    ? 'Tu pareja aún no ha completado el test. ¡Comparte el link!'
+                    : 'Your partner hasn\'t completed the test yet. Share the link!');
+            }
+        }
+
+        // ==========================================
+        // DASHBOARD
+        // ==========================================
+        function showDashboard(pairData) {
+            showSection('dashboard');
+
+            const userA = pairData.userA;
+            const userB = pairData.userB;
+
+            // Update scores
+            document.getElementById('score-a').textContent = userA.score;
+            document.getElementById('score-b').textContent = userB.score;
+
+            // Update profiles
+            document.getElementById('profile-a').textContent = getProfile(userA.score);
+            document.getElementById('profile-b').textContent = getProfile(userB.score);
+
+            // Create radar chart
+            createRadarChart(userA.categoryScores, userB.categoryScores);
+
+            // Generate gap analysis
+            generateGapAnalysis(userA.categoryScores, userB.categoryScores);
+
+            // Load achievements and goals
+            loadAchievements();
+            loadGoals();
+
+            // Initialize gamification systems
+            renderBadges();
+            renderStreak();
+            renderChallenge();
+
+            // Check for badges (test completion, balance badges, etc.)
+            checkAndUnlockBadges();
+
+            // Save to test history for tracking
+            saveTestToHistory(pairData);
+        }
+
+        function saveTestToHistory(pairData) {
+            const history = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            // Check if this exact test was already saved (same timestamp)
+            const alreadySaved = history.some(h =>
+                h.userA?.timestamp === pairData.userA?.timestamp &&
+                h.userB?.timestamp === pairData.userB?.timestamp
+            );
+
+            if (!alreadySaved && pairData.userA && pairData.userB) {
+                history.push({
+                    userA: {
+                        score: pairData.userA.score,
+                        timestamp: pairData.userA.timestamp
+                    },
+                    userB: {
+                        score: pairData.userB.score,
+                        timestamp: pairData.userB.timestamp
+                    },
+                    savedAt: new Date().toISOString()
+                });
+
+                // Keep only last 10 tests
+                if (history.length > 10) {
+                    history.shift();
+                }
+
+                localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(history));
+            }
+        }
+
+        function getProfile(score) {
+            if (score <= 9) return translations[currentLang].profile_passenger;
+            if (score <= 19) return translations[currentLang].profile_executive;
+            if (score <= 34) return translations[currentLang].profile_comanager;
+            return translations[currentLang].profile_director;
+        }
+
+        function createRadarChart(scoresA, scoresB) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+
+            // Destroy existing chart if any
+            if (radarChart) {
+                radarChart.destroy();
+            }
+
+            const labels = Object.keys(scoresA);
+            const dataA = labels.map(l => scoresA[l]);
+            const dataB = labels.map(l => scoresB[l]);
+
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: currentLang === 'es' ? 'Usuario A' : 'User A',
+                            data: dataA,
+                            backgroundColor: 'rgba(178, 216, 216, 0.3)',
+                            borderColor: '#7fb3b3',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#7fb3b3',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#7fb3b3'
+                        },
+                        {
+                            label: currentLang === 'es' ? 'Usuario B' : 'User B',
+                            data: dataB,
+                            backgroundColor: 'rgba(230, 230, 250, 0.3)',
+                            borderColor: '#a78bbd',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#a78bbd',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#a78bbd'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 3,
+                            ticks: {
+                                stepSize: 1,
+                                display: false
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    family: 'Inter'
+                                },
+                                color: '#6b7280'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: 'Inter'
+                                },
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateGapAnalysis(scoresA, scoresB) {
+            const container = document.getElementById('gap-analysis');
+            container.innerHTML = '';
+
+            const gaps = [];
+            for (const cat in scoresA) {
+                const diff = Math.abs(scoresA[cat] - scoresB[cat]);
+                gaps.push({ category: cat, diff: diff, scoreA: scoresA[cat], scoreB: scoresB[cat] });
+            }
+
+            // Sort by difference (largest first)
+            gaps.sort((a, b) => b.diff - a.diff);
+
+            gaps.forEach(gap => {
+                let level, explanation, bgColor;
+
+                if (gap.diff >= 2) {
+                    level = translations[currentLang].gap_high;
+                    explanation = translations[currentLang].gap_explanation_high;
+                    bgColor = 'bg-red-50 border-red-200';
+                } else if (gap.diff >= 1) {
+                    level = translations[currentLang].gap_medium;
+                    explanation = translations[currentLang].gap_explanation_medium;
+                    bgColor = 'bg-yellow-50 border-yellow-200';
+                } else {
+                    level = translations[currentLang].gap_balanced;
+                    explanation = translations[currentLang].gap_explanation_balanced;
+                    bgColor = 'bg-green-50 border-green-200';
+                }
+
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-xl border ${bgColor}`;
+                div.innerHTML = `
+                    <p class="font-medium text-gray-800">${level} <span class="text-teal-dark">${gap.category}</span></p>
+                    <p class="text-sm text-gray-600 mt-1">${explanation}</p>
+                    <div class="flex gap-4 mt-2 text-xs text-gray-500">
+                        <span>A: ${gap.scoreA.toFixed(1)}</span>
+                        <span>B: ${gap.scoreB.toFixed(1)}</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // ==========================================
+        // GAMIFICATION - Daily Flight Log (Improved)
+        // ==========================================
+        let currentAchievementTab = 'pending';
+
+        function generateAchievementId() {
+            return 'ach_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+        }
+
+        function addAchievement() {
+            const input = document.getElementById('achievement-input');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // Categorize the achievement
+            const category = categorizeAchievement(text);
+
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            achievements.push({
+                id: generateAchievementId(),
+                text: text,
+                user: currentUser,
+                category: category,
+                status: 'pending', // pending or approved
+                timestamp: new Date().toISOString()
+            });
+
+            localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
+            input.value = '';
+
+            // Update streak
+            updateStreak();
+            renderStreak();
+
+            // Check for new badges
+            checkAndUnlockBadges({ achievementAdded: true });
+
+            // Update challenge progress
+            renderChallenge();
+
+            // Reload achievements list
+            loadAchievements();
+
+            // Show quick feedback
+            showToast('✓', 'success', currentLang === 'es' ? '¡Logro enviado para aprobar!' : 'Achievement sent for approval!');
+        }
+
+        function approveAchievement(achievementId) {
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const index = achievements.findIndex(a => a.id === achievementId);
+
+            if (index !== -1) {
+                achievements[index].status = 'approved';
+                achievements[index].approvedBy = currentUser;
+                achievements[index].approvedAt = new Date().toISOString();
+                localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
+
+                // Show toast
+                showToast('👍', 'success', translations[currentLang].approval_toast);
+
+                // Trigger confetti for approval
+                triggerConfetti();
+
+                // Check badges
+                checkAndUnlockBadges();
+
+                // Reload
+                loadAchievements();
+            }
+        }
+
+        function switchAchievementTab(tab) {
+            currentAchievementTab = tab;
+
+            // Update tab styles
+            document.querySelectorAll('.achievement-tab').forEach(t => {
+                t.classList.remove('text-teal-dark', 'border-b-2', 'border-teal-dark');
+                t.classList.add('text-gray-500');
+            });
+
+            const activeTab = document.getElementById(`tab-${tab}`);
+            if (activeTab) {
+                activeTab.classList.remove('text-gray-500');
+                activeTab.classList.add('text-teal-dark', 'border-b-2', 'border-teal-dark');
+            }
+
+            // Show/hide lists
+            document.getElementById('pending-list').classList.toggle('hidden', tab !== 'pending');
+            document.getElementById('my-achievements-list').classList.toggle('hidden', tab !== 'mine');
+            document.getElementById('partner-achievements-list').classList.toggle('hidden', tab !== 'partner');
+
+            loadAchievements();
+        }
+
+        function loadAchievements() {
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const partnerUser = currentUser === 'A' ? 'B' : 'A';
+
+            // Calculate points per user (only approved achievements count)
+            const approvedAchievements = achievements.filter(a => a.status === 'approved');
+            const pointsA = approvedAchievements.filter(a => a.user === 'A').length;
+            const pointsB = approvedAchievements.filter(a => a.user === 'B').length;
+
+            document.getElementById('points-user-a').textContent = pointsA;
+            document.getElementById('points-user-b').textContent = pointsB;
+
+            // Pending approvals (partner's achievements that I need to approve)
+            const pendingFromPartner = achievements.filter(a => a.user === partnerUser && a.status === 'pending');
+            const pendingList = document.getElementById('pending-list');
+            const pendingCount = document.getElementById('pending-count');
+
+            pendingCount.textContent = pendingFromPartner.length;
+            pendingCount.classList.toggle('hidden', pendingFromPartner.length === 0);
+
+            pendingList.innerHTML = pendingFromPartner.length > 0
+                ? pendingFromPartner.slice(-10).reverse().map(a => `
+                    <div class="flex items-center justify-between gap-3 p-3 bg-orange-50 border border-orange-100 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 ${a.user === 'A' ? 'bg-teal-soft' : 'bg-lavender'} rounded-full flex items-center justify-center text-sm font-medium ${a.user === 'A' ? 'text-white' : 'text-gray-700'}">
+                                ${a.user}
+                            </div>
+                            <span class="text-gray-700 text-sm">${a.text}</span>
+                        </div>
+                        <button onclick="approveAchievement('${a.id}')" class="px-3 py-1 bg-teal-soft text-white text-sm rounded-lg hover:bg-teal-dark transition-colors">
+                            ${translations[currentLang].approve_btn}
+                        </button>
+                    </div>
+                `).join('')
+                : `<p class="text-center text-gray-400 py-4">${currentLang === 'es' ? 'No hay logros pendientes de aprobar' : 'No pending achievements'}</p>`;
+
+            // My achievements
+            const myAchievements = achievements.filter(a => a.user === currentUser);
+            const myList = document.getElementById('my-achievements-list');
+
+            myList.innerHTML = myAchievements.length > 0
+                ? myAchievements.slice(-10).reverse().map(a => `
+                    <div class="flex items-center justify-between gap-3 p-3 ${a.status === 'approved' ? 'bg-green-50' : 'bg-offwhite'} rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 ${currentUser === 'A' ? 'bg-teal-soft' : 'bg-lavender'} rounded-full flex items-center justify-center text-sm font-medium ${currentUser === 'A' ? 'text-white' : 'text-gray-700'}">
+                                ${currentUser}
+                            </div>
+                            <span class="text-gray-700 text-sm">${a.text}</span>
+                        </div>
+                        <span class="text-xs ${a.status === 'approved' ? 'text-green-600' : 'text-orange-500'}">
+                            ${a.status === 'approved' ? translations[currentLang].approved_status : translations[currentLang].pending_status}
+                        </span>
+                    </div>
+                `).join('')
+                : `<p class="text-center text-gray-400 py-4">${translations[currentLang].no_achievements}</p>`;
+
+            // Partner's achievements
+            const partnerAchievements = achievements.filter(a => a.user === partnerUser);
+            const partnerList = document.getElementById('partner-achievements-list');
+
+            partnerList.innerHTML = partnerAchievements.length > 0
+                ? partnerAchievements.slice(-10).reverse().map(a => `
+                    <div class="flex items-center justify-between gap-3 p-3 ${a.status === 'approved' ? 'bg-green-50' : 'bg-offwhite'} rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 ${partnerUser === 'A' ? 'bg-teal-soft' : 'bg-lavender'} rounded-full flex items-center justify-center text-sm font-medium ${partnerUser === 'A' ? 'text-white' : 'text-gray-700'}">
+                                ${partnerUser}
+                            </div>
+                            <span class="text-gray-700 text-sm">${a.text}</span>
+                        </div>
+                        <span class="text-xs ${a.status === 'approved' ? 'text-green-600' : 'text-orange-500'}">
+                            ${a.status === 'approved' ? translations[currentLang].approved_status : translations[currentLang].pending_status}
+                        </span>
+                    </div>
+                `).join('')
+                : `<p class="text-center text-gray-400 py-4">${translations[currentLang].no_achievements}</p>`;
+        }
+
+        // ==========================================
+        // COUPLE GOALS SYSTEM
+        // ==========================================
+
+        function getGoalsData() {
+            return JSON.parse(localStorage.getItem(`us2_goals_${pairID}`) || '{"current": null, "pending": null, "completed": []}');
+        }
+
+        function saveGoalsData(data) {
+            localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(data));
+        }
+
+        function proposeGoal() {
+            const input = document.getElementById('goal-input');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            const goalsData = getGoalsData();
+
+            // If there's already an active goal, can't propose another
+            if (goalsData.current) {
+                showToast('⚠️', 'info', currentLang === 'es' ? 'Ya hay un objetivo activo' : 'There\'s already an active goal');
+                return;
+            }
+
+            // Create pending goal proposal
+            goalsData.pending = {
+                text: text,
+                proposedBy: currentUser,
+                proposedAt: new Date().toISOString()
+            };
+
+            saveGoalsData(goalsData);
+            input.value = '';
+
+            showToast('📤', 'success', translations[currentLang].goal_proposed_toast);
+            loadGoals();
+        }
+
+        function approveGoal() {
+            const goalsData = getGoalsData();
+
+            if (!goalsData.pending) return;
+
+            // Can't approve your own proposal
+            if (goalsData.pending.proposedBy === currentUser) {
+                showToast('⚠️', 'info', currentLang === 'es' ? 'Tu pareja debe aprobar este objetivo' : 'Your partner must approve this goal');
+                return;
+            }
+
+            // Move pending to current
+            goalsData.current = {
+                text: goalsData.pending.text,
+                proposedBy: goalsData.pending.proposedBy,
+                approvedBy: currentUser,
+                startedAt: new Date().toISOString(),
+                progress: 0
+            };
+            goalsData.pending = null;
+
+            saveGoalsData(goalsData);
+
+            showToast('🎯', 'success', translations[currentLang].goal_approved_toast);
+            triggerConfetti();
+            loadGoals();
+        }
+
+        function completeGoalStep() {
+            const goalsData = getGoalsData();
+
+            if (!goalsData.current) return;
+
+            // Add 25% progress (4 steps to complete)
+            goalsData.current.progress = Math.min(goalsData.current.progress + 25, 100);
+
+            if (goalsData.current.progress >= 100) {
+                // Goal completed!
+                goalsData.completed.push({
+                    text: goalsData.current.text,
+                    completedAt: new Date().toISOString()
+                });
+                goalsData.current = null;
+
+                saveGoalsData(goalsData);
+                showToast('🎉', 'success', translations[currentLang].goal_complete_toast);
+                triggerConfetti();
+            } else {
+                saveGoalsData(goalsData);
+                showToast('📈', 'success', translations[currentLang].goal_progress_toast);
+            }
+
+            loadGoals();
+        }
+
+        function loadGoals() {
+            const goalsData = getGoalsData();
+
+            const currentGoalText = document.getElementById('current-goal-text');
+            const goalStatus = document.getElementById('goal-status');
+            const goalPercent = document.getElementById('goal-percent');
+            const goalBar = document.getElementById('goal-bar');
+            const goalActions = document.getElementById('goal-actions');
+            const pendingGoal = document.getElementById('pending-goal');
+            const pendingGoalText = document.getElementById('pending-goal-text');
+            const completedCount = document.getElementById('completed-goals-count');
+            const completedList = document.getElementById('completed-goals-list');
+
+            // Current goal
+            if (goalsData.current) {
+                currentGoalText.textContent = goalsData.current.text;
+                currentGoalText.removeAttribute('data-i18n');
+                goalStatus.textContent = translations[currentLang].goal_active;
+                goalStatus.className = 'text-xs px-2 py-1 bg-teal-soft/30 text-teal-dark rounded-full';
+                goalPercent.textContent = `${goalsData.current.progress}%`;
+                goalBar.style.width = `${goalsData.current.progress}%`;
+                goalActions.classList.remove('hidden');
+            } else {
+                currentGoalText.textContent = translations[currentLang].no_goal_yet;
+                currentGoalText.setAttribute('data-i18n', 'no_goal_yet');
+                goalStatus.textContent = '-';
+                goalStatus.className = 'text-xs px-2 py-1 bg-gray-100 text-gray-400 rounded-full';
+                goalPercent.textContent = '0%';
+                goalBar.style.width = '0%';
+                goalActions.classList.add('hidden');
+            }
+
+            // Pending goal proposal
+            if (goalsData.pending) {
+                pendingGoal.classList.remove('hidden');
+                pendingGoalText.textContent = goalsData.pending.text;
+
+                // Show approve button only if it's not your own proposal
+                const approveBtn = pendingGoal.querySelector('button');
+                if (goalsData.pending.proposedBy === currentUser) {
+                    approveBtn.classList.add('hidden');
+                } else {
+                    approveBtn.classList.remove('hidden');
+                }
+            } else {
+                pendingGoal.classList.add('hidden');
+            }
+
+            // Completed goals
+            completedCount.textContent = goalsData.completed.length;
+            completedList.innerHTML = goalsData.completed.length > 0
+                ? goalsData.completed.map(g => `
+                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-white/80 text-gray-700 text-sm rounded-full border border-green-200">
+                        <span class="text-green-500">✓</span> ${g.text}
+                    </span>
+                `).join('')
+                : '';
+        }
+
+        // ==========================================
+        // BADGES SYSTEM
+        // ==========================================
+        const badgesData = [
+            { id: 'first_look', icon: '👁️', category: 'progress' },
+            { id: 'veterans', icon: '🎖️', category: 'progress' },
+            { id: 'streak_3', icon: '🔥', category: 'streak' },
+            { id: 'streak_7', icon: '💪', category: 'streak' },
+            { id: '10_achievements', icon: '🌱', category: 'achievements' },
+            { id: '50_achievements', icon: '🌿', category: 'achievements' },
+            { id: '100_achievements', icon: '🌳', category: 'achievements' },
+            { id: 'balanced_home', icon: '🏠', category: 'balance' },
+            { id: 'balanced_social', icon: '🎉', category: 'balance' },
+            { id: 'balanced_health', icon: '💊', category: 'balance' },
+            { id: 'night_owl', icon: '🦉', category: 'special' },
+            { id: 'early_bird', icon: '🐦', category: 'special' },
+            { id: 'first_reward', icon: '🎁', category: 'rewards' },
+            { id: 'weekly_champ', icon: '🏅', category: 'challenges' },
+            { id: 'perfect_week', icon: '⭐', category: 'challenges' }
+        ];
+
+        function getUnlockedBadges() {
+            return JSON.parse(localStorage.getItem(`us2_badges_${pairID}`) || '[]');
+        }
+
+        function saveBadge(badgeId) {
+            const badges = getUnlockedBadges();
+            if (!badges.includes(badgeId)) {
+                badges.push(badgeId);
+                localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(badges));
+                return true; // New badge unlocked
+            }
+            return false; // Already had badge
+        }
+
+        function renderBadges() {
+            const container = document.getElementById('badges-grid');
+            if (!container) return;
+
+            const unlockedBadges = getUnlockedBadges();
+            document.getElementById('badges-count').textContent = unlockedBadges.length;
+
+            container.innerHTML = badgesData.map(badge => {
+                const isUnlocked = unlockedBadges.includes(badge.id);
+                const name = translations[currentLang][`badge_${badge.id}`] || badge.id;
+                const desc = translations[currentLang][`badge_${badge.id}_desc`] || '';
+
+                return `
+                    <div class="badge-card ${isUnlocked ? 'unlocked' : 'locked'} bg-offwhite p-4 rounded-xl text-center cursor-pointer group relative"
+                         title="${desc}">
+                        <div class="badge-icon mb-2 ${isUnlocked ? '' : 'grayscale'}">${badge.icon}</div>
+                        <p class="text-xs font-medium text-gray-700 truncate">${isUnlocked ? name : '???'}</p>
+
+                        <!-- Tooltip -->
+                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                            <p class="font-medium">${name}</p>
+                            <p class="text-gray-300">${desc}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function checkAndUnlockBadges(context = {}) {
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+            const streakData = getStreakData();
+            const challengeData = getChallengeData();
+
+            let newBadges = [];
+
+            // Progress badges
+            if (pairData.userA && pairData.userB) {
+                if (saveBadge('first_look')) newBadges.push('first_look');
+            }
+
+            if (testHistory.length >= 5) {
+                if (saveBadge('veterans')) newBadges.push('veterans');
+            }
+
+            // Streak badges
+            if (streakData.current >= 3) {
+                if (saveBadge('streak_3')) newBadges.push('streak_3');
+            }
+            if (streakData.current >= 7) {
+                if (saveBadge('streak_7')) newBadges.push('streak_7');
+            }
+
+            // Achievement count badges
+            if (achievements.length >= 10) {
+                if (saveBadge('10_achievements')) newBadges.push('10_achievements');
+            }
+            if (achievements.length >= 50) {
+                if (saveBadge('50_achievements')) newBadges.push('50_achievements');
+            }
+            if (achievements.length >= 100) {
+                if (saveBadge('100_achievements')) newBadges.push('100_achievements');
+            }
+
+            // Balance badges (check gap analysis)
+            if (pairData.userA && pairData.userB) {
+                const scoresA = pairData.userA.categoryScores;
+                const scoresB = pairData.userB.categoryScores;
+
+                if (scoresA && scoresB) {
+                    if (Math.abs((scoresA['Hogar'] || 0) - (scoresB['Hogar'] || 0)) < 1) {
+                        if (saveBadge('balanced_home')) newBadges.push('balanced_home');
+                    }
+                    if (Math.abs((scoresA['Social'] || 0) - (scoresB['Social'] || 0)) < 1) {
+                        if (saveBadge('balanced_social')) newBadges.push('balanced_social');
+                    }
+                    if (Math.abs((scoresA['Salud'] || 0) - (scoresB['Salud'] || 0)) < 1) {
+                        if (saveBadge('balanced_health')) newBadges.push('balanced_health');
+                    }
+                }
+            }
+
+            // Time-based badges
+            if (context.achievementAdded) {
+                const hour = new Date().getHours();
+                if (hour >= 22 || hour < 5) {
+                    if (saveBadge('night_owl')) newBadges.push('night_owl');
+                }
+                if (hour >= 5 && hour < 7) {
+                    if (saveBadge('early_bird')) newBadges.push('early_bird');
+                }
+            }
+
+            // First reward badge
+            if (achievements.length >= 20) {
+                if (saveBadge('first_reward')) newBadges.push('first_reward');
+            }
+
+            // Challenge badges
+            if (challengeData.completedThisWeek) {
+                if (saveBadge('weekly_champ')) newBadges.push('weekly_champ');
+            }
+
+            // Show notifications for new badges
+            newBadges.forEach(badgeId => {
+                const badge = badgesData.find(b => b.id === badgeId);
+                const name = translations[currentLang][`badge_${badgeId}`] || badgeId;
+                showToast(`${badge.icon} ${name}`, 'badge', translations[currentLang].toast_badge_unlocked);
+                triggerConfetti();
+            });
+
+            renderBadges();
+            return newBadges;
+        }
+
+        // ==========================================
+        // STREAK SYSTEM
+        // ==========================================
+        function getStreakData() {
+            return JSON.parse(localStorage.getItem(`us2_streak_${pairID}`) || '{"current": 0, "best": 0, "lastDate": null}');
+        }
+
+        function updateStreak() {
+            const data = getStreakData();
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+            if (data.lastDate === today) {
+                // Already logged today
+                return data;
+            } else if (data.lastDate === yesterday) {
+                // Continuing streak
+                data.current++;
+            } else if (data.lastDate === null) {
+                // First ever log
+                data.current = 1;
+            } else {
+                // Streak broken
+                data.current = 1;
+            }
+
+            data.lastDate = today;
+            if (data.current > data.best) {
+                data.best = data.current;
+            }
+
+            localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(data));
+
+            // Check for streak milestones
+            if (data.current === 3 || data.current === 7 || data.current === 14 || data.current === 30) {
+                showToast(`🔥 ${data.current} ${translations[currentLang].streak_days}!`, 'success', translations[currentLang].toast_streak_milestone);
+            }
+
+            return data;
+        }
+
+        function renderStreak() {
+            const data = getStreakData();
+            const currentEl = document.getElementById('current-streak');
+            const bestEl = document.getElementById('best-streak');
+
+            if (currentEl) currentEl.textContent = data.current;
+            if (bestEl) bestEl.textContent = data.best;
+        }
+
+        // ==========================================
+        // WEEKLY CHALLENGE SYSTEM
+        // ==========================================
+        const weeklyChalllenges = [
+            { id: 1, target: 5, type: 'categories' },
+            { id: 2, target: 5, type: 'streak' },
+            { id: 3, target: 1, type: 'retest' },
+            { id: 4, target: 15, type: 'achievements' },
+            { id: 5, target: 2, type: 'badges' }
+        ];
+
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 1);
+            const diff = now - start;
+            const oneWeek = 604800000;
+            return Math.floor(diff / oneWeek);
+        }
+
+        function getDaysLeftInWeek() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            return dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+        }
+
+        function getChallengeData() {
+            const weekNum = getCurrentWeekNumber();
+            const stored = JSON.parse(localStorage.getItem(`us2_challenge_${pairID}`) || '{}');
+
+            if (stored.weekNumber !== weekNum) {
+                // New week, reset challenge
+                const challengeIndex = weekNum % weeklyChalllenges.length;
+                return {
+                    weekNumber: weekNum,
+                    challengeId: weeklyChalllenges[challengeIndex].id,
+                    progress: 0,
+                    completedThisWeek: false,
+                    startBadgeCount: getUnlockedBadges().length
+                };
+            }
+
+            return stored;
+        }
+
+        function saveChallengeData(data) {
+            localStorage.setItem(`us2_challenge_${pairID}`, JSON.stringify(data));
+        }
+
+        function calculateChallengeProgress() {
+            const data = getChallengeData();
+            const challenge = weeklyChalllenges.find(c => c.id === data.challengeId);
+            if (!challenge) return data;
+
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            const streakData = getStreakData();
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            let progress = 0;
+
+            switch (challenge.type) {
+                case 'categories':
+                    // Count unique categories in achievements this week
+                    const weekStart = new Date();
+                    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                    weekStart.setHours(0, 0, 0, 0);
+
+                    const categoriesThisWeek = new Set();
+                    achievements.forEach(a => {
+                        if (new Date(a.timestamp) >= weekStart && a.category) {
+                            categoriesThisWeek.add(a.category);
+                        }
+                    });
+                    progress = categoriesThisWeek.size;
+                    break;
+
+                case 'streak':
+                    progress = streakData.current;
+                    break;
+
+                case 'retest':
+                    // Check if test was taken this week
+                    const thisWeekTests = testHistory.filter(t => {
+                        const testDate = new Date(t.timestamp);
+                        const weekStart = new Date();
+                        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+                        return testDate >= weekStart;
+                    });
+                    progress = thisWeekTests.length > 0 ? 1 : 0;
+                    break;
+
+                case 'achievements':
+                    // Count achievements this week
+                    const weekStartAch = new Date();
+                    weekStartAch.setDate(weekStartAch.getDate() - weekStartAch.getDay());
+                    weekStartAch.setHours(0, 0, 0, 0);
+
+                    progress = achievements.filter(a => new Date(a.timestamp) >= weekStartAch).length;
+                    break;
+
+                case 'badges':
+                    // Count new badges since week started
+                    progress = getUnlockedBadges().length - (data.startBadgeCount || 0);
+                    break;
+            }
+
+            data.progress = Math.min(progress, challenge.target);
+
+            // Check if completed
+            if (data.progress >= challenge.target && !data.completedThisWeek) {
+                data.completedThisWeek = true;
+                showToast('🎯', 'challenge', translations[currentLang].toast_challenge_complete);
+                triggerConfetti();
+            }
+
+            saveChallengeData(data);
+            return data;
+        }
+
+        function renderChallenge() {
+            const data = calculateChallengeProgress();
+            const challenge = weeklyChalllenges.find(c => c.id === data.challengeId);
+            if (!challenge) return;
+
+            const textEl = document.getElementById('challenge-text');
+            const progressTextEl = document.getElementById('challenge-progress-text');
+            const progressBarEl = document.getElementById('challenge-progress-bar');
+            const daysLeftEl = document.getElementById('challenge-days-left');
+            const statusEl = document.getElementById('challenge-status');
+
+            if (textEl) {
+                textEl.textContent = translations[currentLang][`challenge_${data.challengeId}`] || '';
+            }
+
+            if (progressTextEl) {
+                progressTextEl.textContent = `${data.progress}/${challenge.target}`;
+            }
+
+            if (progressBarEl) {
+                const percent = (data.progress / challenge.target) * 100;
+                progressBarEl.style.width = `${Math.min(percent, 100)}%`;
+            }
+
+            if (daysLeftEl) {
+                daysLeftEl.textContent = getDaysLeftInWeek();
+            }
+
+            if (statusEl) {
+                if (data.completedThisWeek) {
+                    statusEl.classList.remove('hidden');
+                } else {
+                    statusEl.classList.add('hidden');
+                }
+            }
+        }
+
+        // ==========================================
+        // TOAST NOTIFICATIONS
+        // ==========================================
+        function showToast(icon, type, message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <span class="text-2xl">${icon}</span>
+                <div>
+                    <p class="font-semibold text-gray-800">${message}</p>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ==========================================
+        // CONFETTI ANIMATION
+        // ==========================================
+        function triggerConfetti() {
+            const container = document.getElementById('confetti-container');
+            if (!container) return;
+
+            const colors = ['#b2d8d8', '#e6e6fa', '#7fb3b3', '#f59e0b', '#10b981', '#8b5cf6'];
+            const confettiCount = 50;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                confetti.style.animationDuration = `${2 + Math.random() * 2}s`;
+
+                // Random shapes
+                if (Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                } else {
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                }
+
+                container.appendChild(confetti);
+
+                // Remove after animation
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        // ==========================================
+        // ACHIEVEMENT CATEGORIES (for challenges)
+        // ==========================================
+        const achievementCategories = [
+            { id: 'hogar', keywords: ['cocina', 'comida', 'limpi', 'orden', 'ropa', 'casa', 'cook', 'clean', 'laundry', 'home'] },
+            { id: 'social', keywords: ['cumple', 'regalo', 'evento', 'fiesta', 'birthday', 'gift', 'party', 'event'] },
+            { id: 'salud', keywords: ['médic', 'doctor', 'medic', 'vacuna', 'vaccine', 'cita', 'appointment'] },
+            { id: 'admin', keywords: ['pago', 'factura', 'impuesto', 'trámite', 'bill', 'tax', 'payment', 'paperwork'] },
+            { id: 'cuidado', keywords: ['niño', 'mascota', 'hijo', 'pet', 'kid', 'child', 'perro', 'gato', 'dog', 'cat'] },
+            { id: 'logistica', keywords: ['viaje', 'vacacion', 'reserv', 'trip', 'vacation', 'travel', 'booking'] },
+            { id: 'emocional', keywords: ['habla', 'convers', 'escuch', 'apoyo', 'talk', 'listen', 'support', 'feel'] }
+        ];
+
+        function categorizeAchievement(text) {
+            const lowerText = text.toLowerCase();
+            for (const cat of achievementCategories) {
+                for (const keyword of cat.keywords) {
+                    if (lowerText.includes(keyword)) {
+                        return cat.id;
+                    }
+                }
+            }
+            return 'general';
+        }
+
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function restartTest() {
+            // Clear only test data, keep achievements, badges, streak for continuity
+            if (pairID) {
+                localStorage.removeItem(`us2_pair_${pairID}`);
+                // Note: We keep achievements, badges, streak, and challenge data
+            }
+
+            // Reset test state but keep pairID for continuity
+            currentUser = 'A';
+            currentQuestion = 0;
+            answers = [];
+
+            // Generate new pairID only if we don't have one
+            if (!pairID) {
+                pairID = generatePairID();
+            }
+
+            // Clear URL parameters
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Show test section
+            startTest();
+        }
+
+        // Full reset (clears everything)
+        function fullReset() {
+            if (pairID) {
+                localStorage.removeItem(`us2_pair_${pairID}`);
+                localStorage.removeItem(`us2_achievements_${pairID}`);
+                localStorage.removeItem(`us2_badges_${pairID}`);
+                localStorage.removeItem(`us2_streak_${pairID}`);
+                localStorage.removeItem(`us2_challenge_${pairID}`);
+                localStorage.removeItem(`us2_test_history_${pairID}`);
+            }
+
+            pairID = null;
+            currentUser = 'A';
+            currentQuestion = 0;
+            answers = [];
+
+            window.history.replaceState({}, document.title, window.location.pathname);
+            showSection('home');
+        }
+
+        // ==========================================
+        // SOCIAL SHARING
+        // ==========================================
+        function getShareUrl() {
+            return window.location.origin + window.location.pathname;
+        }
+
+        function getShareMessage() {
+            return translations[currentLang].share_message;
+        }
+
+        function shareOnWhatsApp() {
+            const url = getShareUrl();
+            const message = encodeURIComponent(getShareMessage() + ' ' + url);
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent(getShareUrl());
+            const message = encodeURIComponent(getShareMessage());
+            window.open(`https://twitter.com/intent/tweet?text=${message}&url=${url}`, '_blank');
+        }
+
+        function shareOnFacebook() {
+            const url = encodeURIComponent(getShareUrl());
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function copyShareLink() {
+            const url = getShareUrl();
+            navigator.clipboard.writeText(url);
+            showToast('🔗', 'success', translations[currentLang].link_copied);
+        }
+
+        // ==========================================
+        // DEMO MODE
+        // ==========================================
+        function loadDemoMode() {
+            const demoPairID = 'US2-DEMO01';
+
+            // Simulated pair data with completed test
+            const pairData = {
+                userA: {
+                    score: 35,
+                    answers: [],
+                    categoryScores: {
+                        'Hogar': 2.7, 'Social': 2.2, 'Salud': 2.5,
+                        'Admin': 2.3, 'Cuidado': 2.8, 'Mantenimiento': 2.5,
+                        'Logística': 1.8, 'Limpieza': 2.3, 'Emocional': 2.8
+                    },
+                    timestamp: new Date(Date.now() - 86400000).toISOString() // Yesterday
+                },
+                userB: {
+                    score: 18,
+                    answers: [],
+                    categoryScores: {
+                        'Hogar': 1.3, 'Social': 1.5, 'Salud': 1.2,
+                        'Admin': 1.8, 'Cuidado': 1.0, 'Mantenimiento': 1.5,
+                        'Logística': 2.2, 'Limpieza': 1.0, 'Emocional': 0.8
+                    },
+                    timestamp: new Date().toISOString()
+                }
+            };
+
+            // Sample achievements with categories (some approved, some pending)
+            const now = new Date();
+            const achievements = [
+                { id: 'demo1', text: 'Preparé el almuerzo para la semana', user: 'A', category: 'hogar', status: 'approved', timestamp: new Date(now - 5*86400000).toISOString() },
+                { id: 'demo2', text: 'Llamé para agendar turno del dentista', user: 'A', category: 'salud', status: 'approved', timestamp: new Date(now - 4*86400000).toISOString() },
+                { id: 'demo3', text: 'Compré el regalo para el cumple de mamá', user: 'B', category: 'social', status: 'approved', timestamp: new Date(now - 3*86400000).toISOString() },
+                { id: 'demo4', text: 'Pagué las facturas de luz y gas', user: 'A', category: 'admin', status: 'approved', timestamp: new Date(now - 2*86400000).toISOString() },
+                { id: 'demo5', text: 'Llevé al perro al veterinario', user: 'B', category: 'cuidado', status: 'approved', timestamp: new Date(now - 1*86400000).toISOString() },
+                { id: 'demo6', text: 'Organicé los medicamentos del botiquín', user: 'A', category: 'salud', status: 'approved', timestamp: new Date(now - 12*3600000).toISOString() },
+                { id: 'demo7', text: 'Reservé restaurant para el aniversario', user: 'B', category: 'logistica', status: 'pending', timestamp: new Date(now - 6*3600000).toISOString() },
+                { id: 'demo8', text: 'Hablé con mi pareja sobre cómo se sentía', user: 'A', category: 'emocional', status: 'pending', timestamp: new Date(now - 2*3600000).toISOString() }
+            ];
+
+            // Streak data - 4 day streak
+            const streak = {
+                current: 4,
+                best: 7,
+                lastDate: new Date().toDateString()
+            };
+
+            // Some unlocked badges
+            const badges = ['first_look', 'streak_3', '10_achievements'];
+
+            // Test history
+            const testHistory = [
+                {
+                    userA: { score: 32, timestamp: new Date(now - 14*86400000).toISOString() },
+                    userB: { score: 20, timestamp: new Date(now - 14*86400000).toISOString() },
+                    savedAt: new Date(now - 14*86400000).toISOString()
+                },
+                {
+                    userA: { score: 35, timestamp: pairData.userA.timestamp },
+                    userB: { score: 18, timestamp: pairData.userB.timestamp },
+                    savedAt: new Date().toISOString()
+                }
+            ];
+
+            // Goals data - one active goal with progress, one completed
+            const goalsData = {
+                current: {
+                    text: 'Organizar una cena romántica este fin de semana',
+                    proposedBy: 'A',
+                    approvedBy: 'B',
+                    startedAt: new Date(now - 3*86400000).toISOString(),
+                    progress: 50
+                },
+                pending: null,
+                completed: [
+                    { text: 'Hacer las compras del mes juntos', completedAt: new Date(now - 10*86400000).toISOString() }
+                ]
+            };
+
+            // Save all demo data to localStorage
+            localStorage.setItem(`us2_pair_${demoPairID}`, JSON.stringify(pairData));
+            localStorage.setItem(`us2_achievements_${demoPairID}`, JSON.stringify(achievements));
+            localStorage.setItem(`us2_streak_${demoPairID}`, JSON.stringify(streak));
+            localStorage.setItem(`us2_badges_${demoPairID}`, JSON.stringify(badges));
+            localStorage.setItem(`us2_test_history_${demoPairID}`, JSON.stringify(testHistory));
+            localStorage.setItem(`us2_goals_${demoPairID}`, JSON.stringify(goalsData));
+            localStorage.setItem('us2_last_pairID', demoPairID);
+
+            // Set global state
+            pairID = demoPairID;
+            currentUser = 'A';
+
+            // Show dashboard with demo data
+            showDashboard(pairData);
+
+            // Show welcome toast
+            setTimeout(() => {
+                showToast('🧪', 'success', currentLang === 'es' ? '¡Modo Demo activado!' : 'Demo Mode activated!');
+            }, 500);
+        }
+
+        // ==========================================
+        // INITIALIZE APP
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
