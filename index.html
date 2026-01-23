@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>US2 - Compartamos nuestro futuro</title>
     <meta name="description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
+    <link rel="canonical" href="https://us2.fun/">
 
     <!-- Open Graph / WhatsApp / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://us2-seven.vercel.app/">
+    <meta property="og:url" content="https://us2.fun/">
     <meta property="og:title" content="US2 - Compartamos nuestro futuro">
     <meta property="og:description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
-    <meta property="og:image" content="https://us2-seven.vercel.app/og-image.png">
+    <meta property="og:image" content="https://us2.fun/og-image.png">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -23,6 +24,9 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -277,32 +281,28 @@
 <body class="bg-offwhite font-sans text-warm-gray min-h-screen">
 
     <!-- ========== NAVBAR ========== -->
-    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm shadow-sm z-50">
-        <div class="max-w-6xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <!-- Logo -->
-                <a href="#" onclick="showSection('home')" class="flex items-center gap-2 group">
-                    <div class="w-10 h-10 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">S2</span>
-                    </div>
-                    <span class="text-xl font-semibold text-gray-800 group-hover:text-teal-dark transition-colors" data-i18n="logo_tagline">Somos un equipo</span>
-                </a>
+    <header class="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" onclick="showSection('home'); return false;" class="flex items-center gap-2">
+                <span class="text-2xl font-black">
+                    <span class="text-teal-dark">U</span><span class="text-purple-600">S</span><span class="text-teal-dark">2</span>
+                </span>
+            </a>
 
-                <!-- Navigation Links -->
-                <div class="flex items-center gap-6">
-                    <a href="#" onclick="showSection('home')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_home">Inicio</a>
-                    <a href="#" onclick="showSection('test')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_test">Test</a>
-                    <a href="#" onclick="showSection('blog')" class="nav-link text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_blog">Blog</a>
+            <!-- Navigation -->
+            <nav class="flex items-center gap-4">
+                <a href="blog/" class="text-gray-600 hover:text-teal-dark transition-colors font-medium" data-i18n="nav_blog">Blog</a>
+                <a href="#" onclick="showSection('test'); return false;" class="px-4 py-2 bg-teal-dark text-white rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors" data-i18n="nav_test_btn">Hacer el Test</a>
 
-                    <!-- Language Selector -->
-                    <div class="flex items-center gap-1 ml-4 bg-lavender/50 rounded-full p-1">
-                        <button onclick="setLanguage('es')" id="lang-es" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm">ES</button>
-                        <button onclick="setLanguage('en')" id="lang-en" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark">EN</button>
-                    </div>
+                <!-- Language Selector -->
+                <div class="flex items-center gap-1 ml-2 bg-gray-100 rounded-full p-1">
+                    <button onclick="setLanguage('es')" id="lang-es" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm">ES</button>
+                    <button onclick="setLanguage('en')" id="lang-en" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark">EN</button>
                 </div>
-            </div>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <!-- ========== HEADER AD PLACEHOLDER ========== -->
     <div class="pt-20 px-4">
@@ -1357,6 +1357,273 @@
     <!-- ========== JAVASCRIPT ========== -->
     <script>
         // ==========================================
+        // SUPABASE CONFIGURATION
+        // ==========================================
+        const SUPABASE_URL = 'https://lcmooxztnwdvhmnhfwyu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjbW9veHp0bndkdmhtbmhmd3l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyMDIxNDcsImV4cCI6MjA4NDc3ODE0N30.96aIqPR0lt8mqId8lPKuIg-lNKt92AbAAFvGRIG-fj8';
+
+        // Initialize Supabase client
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ==========================================
+        // SUPABASE STORAGE HELPERS
+        // ==========================================
+        const db = {
+            // Save pair to database
+            async savePair(pairId, sharedContext = {}) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('pairs')
+                        .upsert({ pair_id: pairId, shared_context: sharedContext }, { onConflict: 'pair_id' })
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    return data;
+                } catch (e) {
+                    console.error('Error saving pair:', e);
+                    return null;
+                }
+            },
+
+            // Get pair by pairId
+            async getPair(pairId) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('pairs')
+                        .select('*')
+                        .eq('pair_id', pairId)
+                        .single();
+                    if (error && error.code !== 'PGRST116') throw error;
+                    return data;
+                } catch (e) {
+                    console.error('Error getting pair:', e);
+                    return null;
+                }
+            },
+
+            // Save user
+            async saveUser(pairId, role, name, email = null) {
+                try {
+                    // First get pair UUID
+                    const pair = await this.getPair(pairId);
+                    const pairUuid = pair?.id || null;
+
+                    // Check if user already exists
+                    const { data: existing } = await supabaseClient
+                        .from('users')
+                        .select('id')
+                        .eq('pair_id', pairId)
+                        .eq('role', role)
+                        .single();
+
+                    if (existing) {
+                        // Update existing user
+                        const { data, error } = await supabaseClient
+                            .from('users')
+                            .update({ name: name, email: email })
+                            .eq('id', existing.id)
+                            .select()
+                            .single();
+                        if (error) throw error;
+                        return data;
+                    } else {
+                        // Insert new user
+                        const { data, error } = await supabaseClient
+                            .from('users')
+                            .insert({
+                                pair_uuid: pairUuid,
+                                pair_id: pairId,
+                                role: role,
+                                name: name,
+                                email: email
+                            })
+                            .select()
+                            .single();
+                        if (error) throw error;
+                        return data;
+                    }
+                } catch (e) {
+                    console.error('Error saving user:', e);
+                    return null;
+                }
+            },
+
+            // Save test results
+            async saveTest(pairId, userRole, score, categoryScores, answers) {
+                try {
+                    const pair = await this.getPair(pairId);
+                    const pairUuid = pair?.id || null;
+
+                    const { data, error } = await supabaseClient
+                        .from('tests')
+                        .insert({
+                            pair_uuid: pairUuid,
+                            pair_id: pairId,
+                            user_role: userRole,
+                            score: score,
+                            category_scores: categoryScores,
+                            answers: answers
+                        })
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    return data;
+                } catch (e) {
+                    console.error('Error saving test:', e);
+                    return null;
+                }
+            },
+
+            // Get tests for a pair
+            async getTests(pairId) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('tests')
+                        .select('*')
+                        .eq('pair_id', pairId)
+                        .order('completed_at', { ascending: false });
+                    if (error) throw error;
+                    return data || [];
+                } catch (e) {
+                    console.error('Error getting tests:', e);
+                    return [];
+                }
+            },
+
+            // Save achievement
+            async saveAchievement(pairId, userRole, text, category, status = 'pending') {
+                try {
+                    const pair = await this.getPair(pairId);
+                    const pairUuid = pair?.id || null;
+
+                    const { data, error } = await supabaseClient
+                        .from('achievements')
+                        .insert({
+                            pair_uuid: pairUuid,
+                            pair_id: pairId,
+                            user_role: userRole,
+                            text: text,
+                            category: category,
+                            status: status
+                        })
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    return data;
+                } catch (e) {
+                    console.error('Error saving achievement:', e);
+                    return null;
+                }
+            },
+
+            // Get achievements for a pair
+            async getAchievements(pairId) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('achievements')
+                        .select('*')
+                        .eq('pair_id', pairId)
+                        .order('created_at', { ascending: false });
+                    if (error) throw error;
+                    return data || [];
+                } catch (e) {
+                    console.error('Error getting achievements:', e);
+                    return [];
+                }
+            },
+
+            // Update achievement status
+            async updateAchievementStatus(achievementId, newStatus) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('achievements')
+                        .update({ status: newStatus })
+                        .eq('id', achievementId)
+                        .select()
+                        .single();
+                    if (error) throw error;
+                    return data;
+                } catch (e) {
+                    console.error('Error updating achievement:', e);
+                    return null;
+                }
+            }
+        };
+
+        // ==========================================
+        // SYNC HELPER FUNCTIONS
+        // ==========================================
+
+        // Main sync function - called after test completion
+        async function syncToSupabase(role, userData, sharedContext) {
+            try {
+                // 1. Save or update pair
+                await db.savePair(pairID, sharedContext || {});
+
+                // 2. Save user
+                await db.saveUser(pairID, role, userData.context?.name || 'Usuario ' + role);
+
+                // 3. Save test results
+                await db.saveTest(
+                    pairID,
+                    role,
+                    userData.score,
+                    userData.categoryScores,
+                    userData.answers
+                );
+
+                console.log(`✅ Synced ${role} data to Supabase`);
+            } catch (e) {
+                console.error('Sync error:', e);
+                // Continue without blocking - localStorage already has the data
+            }
+        }
+
+        // Sync achievement to Supabase
+        async function syncAchievementToSupabase(achievement) {
+            try {
+                await db.saveAchievement(
+                    pairID,
+                    achievement.user || 'A',
+                    achievement.text,
+                    achievement.category,
+                    achievement.status || 'pending'
+                );
+                console.log('✅ Achievement synced');
+            } catch (e) {
+                console.error('Achievement sync error:', e);
+            }
+        }
+
+        // Load data from Supabase on startup (merge with localStorage)
+        async function loadFromSupabase() {
+            try {
+                // Get pair data
+                const pair = await db.getPair(pairID);
+                if (pair) {
+                    console.log('📥 Loaded pair from Supabase:', pair.pair_id);
+                }
+
+                // Get tests
+                const tests = await db.getTests(pairID);
+                if (tests.length > 0) {
+                    console.log(`📥 Loaded ${tests.length} tests from Supabase`);
+                }
+
+                // Get achievements
+                const achievements = await db.getAchievements(pairID);
+                if (achievements.length > 0) {
+                    console.log(`📥 Loaded ${achievements.length} achievements from Supabase`);
+                }
+
+                return { pair, tests, achievements };
+            } catch (e) {
+                console.error('Load from Supabase error:', e);
+                return { pair: null, tests: [], achievements: [] };
+            }
+        }
+
+        // ==========================================
         // INTERNATIONALIZATION (i18n)
         // ==========================================
         const translations = {
@@ -1368,6 +1635,7 @@
                 nav_home: "Inicio",
                 nav_test: "Test",
                 nav_blog: "Blog",
+                nav_test_btn: "Hacer el Test",
 
                 // Home
                 home_title: "Juntos hacemos<br>que todo funcione",
@@ -1855,6 +2123,7 @@
                 nav_home: "Home",
                 nav_test: "Test",
                 nav_blog: "Blog",
+                nav_test_btn: "Take the Test",
 
                 // Home
                 home_title: "Together we make<br>everything work",
@@ -2876,11 +3145,19 @@
                 };
                 localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
                 savePairIDForReturn();
+
+                // Sync to Supabase
+                syncToSupabase('A', userData, pairData.sharedContext);
+
                 showWaitingScreen();
             } else {
                 pairData.userB = userData;
                 localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
                 savePairIDForReturn();
+
+                // Sync to Supabase
+                syncToSupabase('B', userData, null);
+
                 showDashboard(pairData);
             }
         }
@@ -3559,6 +3836,11 @@
             });
 
             localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
+
+            // Sync to Supabase
+            const newAchievement = achievements[achievements.length - 1];
+            syncAchievementToSupabase(newAchievement);
+
             input.value = '';
 
             // Update streak
