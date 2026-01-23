@@ -1,0 +1,10 @@
+# robots.txt for US2
+# https://us2app.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://us2app.com/sitemap.xml
+
+# Disallow nothing - we want all pages indexed
