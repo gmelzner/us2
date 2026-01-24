@@ -5369,8 +5369,8 @@
             document.getElementById('test-questions').classList.add('hidden');
             document.getElementById('test-waiting').classList.remove('hidden');
 
-            // Generate invite link
-            const inviteLink = `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=B`;
+            // Generate invite link (include language so partner sees same language)
+            const inviteLink = `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=B&lang=${currentLang}`;
             document.getElementById('invite-link').value = inviteLink;
         }
 
