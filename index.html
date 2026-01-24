@@ -720,8 +720,8 @@
             <div class="max-w-4xl mx-auto relative">
 
                 <!-- Profile Button (Top Right) -->
-                <button onclick="showSection('profile'); renderProfileData();" class="absolute top-0 right-4 md:right-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-105 group z-10">
-                    <svg class="w-6 h-6 text-gray-600 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onclick="showSection('profile'); renderProfileData();" class="absolute -top-8 right-4 md:right-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-105 group z-20 border-2 border-indigo-100">
+                    <svg class="w-6 h-6 text-indigo-600 group-hover:text-indigo-800 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </button>
@@ -4118,6 +4118,7 @@
                 // Fetch from shared_context (primary source)
                 const pair = await db.getPair(pairID);
                 const serverAchievements = pair?.shared_context?.achievements || [];
+                const serverGoals = pair?.shared_context?.goals || null;
 
                 // Compare with local state
                 const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
@@ -4132,6 +4133,22 @@
                         changesCount++; // Status changed (approved/rejected)
                     }
                 });
+
+                // Check for goal changes and sync
+                if (serverGoals) {
+                    const localGoals = getGoalsData();
+                    const serverGoalsStr = JSON.stringify(serverGoals);
+                    const localGoalsStr = JSON.stringify(localGoals);
+                    if (serverGoalsStr !== localGoalsStr) {
+                        // New pending goal from partner
+                        if (serverGoals.pending && !localGoals.pending) {
+                            changesCount++;
+                        }
+                        // Sync and update UI
+                        localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(serverGoals));
+                        loadGoals();
+                    }
+                }
 
                 // Show/hide notification badge
                 const badge = document.getElementById('refresh-badge');
@@ -5151,7 +5168,8 @@
             // Render history
             if (testHistory.length > 0) {
                 historyList.innerHTML = testHistory.slice(-5).reverse().map((test, i) => {
-                    const date = new Date(test.userA?.timestamp || test.userB?.timestamp);
+                    const testTimestamp = test.userA?.timestamp || test.userB?.timestamp || test.savedAt;
+                    const date = new Date(testTimestamp);
                     const dateStr = date.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', {
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
@@ -5168,8 +5186,15 @@
 
             // Check if 7 days have passed since last test
             const lastTest = testHistory[testHistory.length - 1];
-            const lastTestDate = lastTest ? new Date(lastTest.userA?.timestamp || lastTest.userB?.timestamp) : null;
-            const daysSinceLastTest = lastTestDate ? Math.floor((Date.now() - lastTestDate.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+            // Use userA/userB timestamp, or savedAt as fallback
+            const lastTestTimestamp = lastTest
+                ? (lastTest.userA?.timestamp || lastTest.userB?.timestamp || lastTest.savedAt)
+                : null;
+            const lastTestDate = lastTestTimestamp ? new Date(lastTestTimestamp) : null;
+            // If we have a test but no valid date, assume it's recent (0 days) to prevent immediate retest
+            const daysSinceLastTest = lastTestDate && !isNaN(lastTestDate.getTime())
+                ? Math.floor((Date.now() - lastTestDate.getTime()) / (1000 * 60 * 60 * 24))
+                : (lastTest ? 0 : 999);
 
             if (daysSinceLastTest >= 7) {
                 // Can retest now
@@ -6890,12 +6915,18 @@
             const day = daySelect ? daySelect.value : '';
             const month = monthSelect ? monthSelect.value : '';
 
+            // Always close modal first to ensure UI responds
+            closeAnniversaryModal();
+
             if (day && month) {
                 const anniversaryData = { month: parseInt(month), day: parseInt(day) };
                 const anniversaryStr = `${month}-${day}`;
 
                 // Save locally
                 localStorage.setItem(`us2_anniversary_${pairID}`, JSON.stringify(anniversaryData));
+
+                showToast('💍', 'success', translations[currentLang].anniversary_saved || 'Fecha guardada');
+                SoundSystem.playSuccess();
 
                 // Save to Supabase (both column and shared_context)
                 try {
@@ -6918,12 +6949,14 @@
                     console.log('Anniversary save to Supabase failed, saved locally');
                 }
 
-                showToast('💍', 'success', translations[currentLang].anniversary_saved || 'Fecha guardada');
-                SoundSystem.playSuccess();
-                checkAndUnlockBadges({ checkSeasonal: true });
-                checkAnniversaryReminder();
+                // Run these after sync (non-blocking)
+                try {
+                    checkAndUnlockBadges({ checkSeasonal: true });
+                    checkAnniversaryReminder();
+                } catch (e) {
+                    console.log('Badge/reminder check error:', e);
+                }
             }
-            closeAnniversaryModal();
         }
 
         function checkAnniversaryReminder() {
