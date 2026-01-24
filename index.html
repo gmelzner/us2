@@ -833,13 +833,17 @@
                             <span id="badges-count">0</span>/19 <span data-i18n="badges_unlocked">desbloqueadas</span>
                         </span>
                     </div>
-                    <button onclick="openAnniversaryModal()" class="text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1 transition-colors">
-                        💍 <span data-i18n="set_anniversary">Configurar aniversario</span>
-                    </button>
 
                     <!-- Badges Grid -->
-                    <div id="badges-grid" class="grid grid-cols-3 md:grid-cols-5 gap-4">
+                    <div id="badges-grid" class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
                         <!-- Dynamic badges will be inserted here -->
+                    </div>
+
+                    <!-- Anniversary button - integrated subtly -->
+                    <div class="text-center pt-4 border-t border-gray-100">
+                        <button onclick="openAnniversaryModal()" class="text-sm text-gray-500 hover:text-purple-600 transition-colors inline-flex items-center gap-2">
+                            💍 <span data-i18n="set_anniversary">Configurar fecha de aniversario</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1625,7 +1629,7 @@
     </div>
 
     <!-- Anniversary Modal -->
-    <div id="anniversary-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div id="anniversary-modal" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4" style="display: none;">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                 <span>💍</span>
@@ -1634,10 +1638,10 @@
             <p class="text-gray-600 text-sm mb-4" data-i18n="anniversary_modal_desc">¿Cuándo celebran su aniversario?</p>
             <input type="date" id="anniversary-input" class="w-full p-3 border-2 border-gray-200 rounded-xl mb-4 focus:border-purple-400 focus:outline-none">
             <div class="flex gap-3">
-                <button onclick="closeAnniversaryModal()" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium">
+                <button onclick="closeAnniversaryModal()" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium" data-i18n="cancel_btn">
                     Cancelar
                 </button>
-                <button onclick="saveAnniversary()" class="flex-1 px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors font-medium">
+                <button onclick="saveAnniversary()" class="flex-1 px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors font-medium" data-i18n="save_btn">
                     Guardar
                 </button>
             </div>
@@ -2158,9 +2162,9 @@
 
                 // Onboarding
                 onboarding_title: "Antes de comenzar...",
-                onboarding_title_b: "¡Hola! Una última cosa...",
+                onboarding_title_b: "{partnerName} quiere saber tu perspectiva",
                 onboarding_desc: "Contanos un poco sobre tu situación para personalizar el test.",
-                onboarding_desc_b: "Tu pareja ya completó su parte. Solo necesitamos tu nombre para continuar.",
+                onboarding_desc_b: "Completá el test y descubran juntos cómo equilibrar las tareas del hogar.",
                 onboarding_name_label: "¿Cómo te llamás?",
                 onboarding_name_placeholder: "Tu nombre",
                 onboarding_living_label: "¿Conviven actualmente?",
@@ -2225,8 +2229,18 @@
                 invite_message: "¡Hola! Entré en US2 para que veamos cómo nos repartimos la 'gestión invisible' de casa. Cuando lo termines, vemos los resultados juntos. ¡Es para sumar!",
 
                 // Dashboard
-                dashboard_title: "¡Completaron US2!",
-                dashboard_subtitle: "Aquí está el mapa de su carga mental compartida",
+                dashboard_title: "¡Lo lograron juntos! 🎉",
+                dashboard_subtitle: "Este es el mapa de cómo se reparten las tareas del hogar",
+
+                // Email Report Modal
+                email_modal_title: "¿Querés recibir el informe completo?",
+                email_modal_desc: "Te enviamos un resumen detallado con tips personalizados según sus resultados.",
+                email_placeholder: "tu@email.com",
+                email_skip: "Ahora no",
+                email_submit: "Enviar informe",
+                email_privacy: "No spam. Solo el informe y tips ocasionales.",
+                email_success: "¡Listo! Revisá tu casilla en unos minutos.",
+                email_error: "Hubo un error. Intentá de nuevo.",
                 share_results: "Compartir Resultados",
                 share_whatsapp: "Compartir en WhatsApp",
                 retake_test: "Volver a Hacer el Test",
@@ -2353,7 +2367,10 @@
                 gap_explanation_balanced: "¡Bien hecho! Mantienen buen equilibrio en esta área.",
 
                 // Mini-test re-evaluación
-                reeval_btn: "Re-evaluar esta área",
+                reeval_btn: "Agendar seguimiento",
+                reeval_btn_ready: "Re-evaluar ahora",
+                reeval_scheduled: "📅 Seguimiento agendado",
+                reeval_scheduled_desc: "Vuelvan en 2 semanas para ver si mejoraron en esta área",
                 reeval_modal_title: "Re-evaluar:",
                 reeval_modal_subtitle: "Respondan estas 3 preguntas para ver si mejoraron en esta área",
                 reeval_question_prefix: "Pregunta",
@@ -2646,6 +2663,8 @@
                 create_custom: "Crear recompensa personalizada:",
                 custom_reward_placeholder: "Ej: Escapada de fin de semana",
                 add_btn: "Agregar",
+                cancel_btn: "Cancelar",
+                save_btn: "Guardar",
                 reward_claimed_toast: "🎉 ¡Recompensa reclamada! A celebrar juntos.",
 
                 // Predefined Rewards
@@ -2707,9 +2726,9 @@
 
                 // Onboarding
                 onboarding_title: "Before we start...",
-                onboarding_title_b: "Hi! One last thing...",
+                onboarding_title_b: "{partnerName} wants to know your perspective",
                 onboarding_desc: "Tell us a bit about your situation to personalize the test.",
-                onboarding_desc_b: "Your partner already completed their part. We just need your name to continue.",
+                onboarding_desc_b: "Complete the test and discover together how to balance household tasks.",
                 onboarding_name_label: "What's your name?",
                 onboarding_name_placeholder: "Your name",
                 onboarding_living_label: "Do you currently live together?",
@@ -2774,8 +2793,18 @@
                 invite_message: "Hi! I started US2 so we can see how we share the 'invisible management' at home. When you finish, we'll see the results together. It's about teamwork!",
 
                 // Dashboard
-                dashboard_title: "You completed US2!",
-                dashboard_subtitle: "Here's the map of your shared mental load",
+                dashboard_title: "You did it together! 🎉",
+                dashboard_subtitle: "This is the map of how you share household tasks",
+
+                // Email Report Modal
+                email_modal_title: "Want to receive the full report?",
+                email_modal_desc: "We'll send you a detailed summary with personalized tips based on your results.",
+                email_placeholder: "your@email.com",
+                email_skip: "Not now",
+                email_submit: "Send report",
+                email_privacy: "No spam. Just the report and occasional tips.",
+                email_success: "Done! Check your inbox in a few minutes.",
+                email_error: "There was an error. Please try again.",
                 share_results: "Share Results",
                 share_whatsapp: "Share on WhatsApp",
                 retake_test: "Retake Test",
@@ -2902,7 +2931,10 @@
                 gap_explanation_balanced: "Well done! You maintain good balance in this area.",
 
                 // Mini-test re-evaluation
-                reeval_btn: "Re-evaluate this area",
+                reeval_btn: "Schedule follow-up",
+                reeval_btn_ready: "Re-evaluate now",
+                reeval_scheduled: "📅 Follow-up scheduled",
+                reeval_scheduled_desc: "Come back in 2 weeks to see if you improved in this area",
                 reeval_modal_title: "Re-evaluate:",
                 reeval_modal_subtitle: "Answer these 3 questions to see if you improved in this area",
                 reeval_question_prefix: "Question",
@@ -3195,6 +3227,8 @@
                 create_custom: "Create custom reward:",
                 custom_reward_placeholder: "E.g., Weekend getaway",
                 add_btn: "Add",
+                cancel_btn: "Cancel",
+                save_btn: "Save",
                 reward_claimed_toast: "🎉 Reward claimed! Time to celebrate together.",
 
                 // Predefined Rewards
@@ -3710,12 +3744,19 @@
             if (livingSection) livingSection.classList.add('hidden');
             if (dependentsSection) dependentsSection.classList.add('hidden');
 
-            // Update title/description for User B
+            // Get partner name from stored data
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            const partnerName = pairData.userA?.context?.name || (currentLang === 'es' ? 'Tu pareja' : 'Your partner');
+
+            // Update title/description for User B with partner's name
             const title = document.querySelector('#test-onboarding h2');
             const desc = document.querySelector('#test-onboarding p');
             title.setAttribute('data-i18n', 'onboarding_title_b');
             desc.setAttribute('data-i18n', 'onboarding_desc_b');
-            title.textContent = translations[currentLang].onboarding_title_b || translations[currentLang].onboarding_title;
+
+            const titleText = (translations[currentLang].onboarding_title_b || translations[currentLang].onboarding_title)
+                .replace('{partnerName}', partnerName);
+            title.textContent = titleText;
             desc.textContent = translations[currentLang].onboarding_desc_b || translations[currentLang].onboarding_desc;
 
             // Reset name input
@@ -4873,14 +4914,44 @@
                 div.dataset.category = gap.category;
                 div.dataset.levelType = levelType;
 
-                // Solo mostrar botón re-evaluar si hay diferencia significativa
+                // Solo mostrar botón seguimiento si hay diferencia significativa
                 const showReeval = levelType === 'high' || levelType === 'medium';
-                const reevalBtn = showReeval ? `
-                    <button onclick="startMiniTest('${gap.category}')" class="mt-3 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50 hover:border-teal-soft transition-colors flex items-center gap-2">
-                        <span>🔄</span>
-                        <span data-i18n="reeval_btn">${translations[currentLang].reeval_btn || 'Re-evaluar esta área'}</span>
-                    </button>
-                ` : '';
+                let reevalBtn = '';
+
+                if (showReeval) {
+                    // Verificar si ya pasaron 14 días desde el test o si ya está agendado
+                    const scheduled = JSON.parse(localStorage.getItem(`us2_scheduled_reeval_${pairID}`) || '{}');
+                    const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+                    const testDate = pairData.userB?.timestamp ? new Date(pairData.userB.timestamp) : new Date();
+                    const daysSinceTest = Math.floor((Date.now() - testDate.getTime()) / (1000 * 60 * 60 * 24));
+                    const isScheduled = scheduled[gap.category];
+                    const canReeval = daysSinceTest >= 14;
+
+                    if (canReeval) {
+                        // Ya pasaron 14 días, pueden re-evaluar
+                        reevalBtn = `
+                            <button onclick="startMiniTest('${gap.category}')" class="mt-3 px-4 py-2 bg-teal-soft text-white text-sm rounded-lg hover:bg-teal-dark transition-colors flex items-center gap-2">
+                                <span>🔄</span>
+                                <span>${translations[currentLang].reeval_btn_ready || 'Re-evaluar ahora'}</span>
+                            </button>
+                        `;
+                    } else if (isScheduled) {
+                        // Ya está agendado
+                        reevalBtn = `
+                            <div class="mt-3 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
+                                <span>${translations[currentLang].reeval_scheduled || '📅 Seguimiento agendado'}</span>
+                            </div>
+                        `;
+                    } else {
+                        // Ofrecer agendar seguimiento
+                        reevalBtn = `
+                            <button onclick="scheduleReeval('${gap.category}', this)" class="mt-3 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50 hover:border-teal-soft transition-colors flex items-center gap-2">
+                                <span>📅</span>
+                                <span>${translations[currentLang].reeval_btn || 'Agendar seguimiento'}</span>
+                            </button>
+                        `;
+                    }
+                }
 
                 div.innerHTML = `
                     <div class="flex items-start gap-3">
@@ -5005,6 +5076,28 @@
             answers: [],
             previousDiff: 0
         };
+
+        function scheduleReeval(category, buttonElement) {
+            // Guardar la categoría como agendada para seguimiento
+            const scheduled = JSON.parse(localStorage.getItem(`us2_scheduled_reeval_${pairID}`) || '{}');
+            scheduled[category] = {
+                scheduledAt: new Date().toISOString(),
+                category: category
+            };
+            localStorage.setItem(`us2_scheduled_reeval_${pairID}`, JSON.stringify(scheduled));
+
+            // Actualizar el botón a estado "agendado"
+            const parent = buttonElement.parentElement;
+            buttonElement.outerHTML = `
+                <div class="mt-3 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg flex items-center gap-2">
+                    <span>${translations[currentLang].reeval_scheduled || '📅 Seguimiento agendado'}</span>
+                </div>
+            `;
+
+            // Mostrar toast de confirmación
+            showToast('📅', 'success', translations[currentLang].reeval_scheduled_desc || 'Vuelvan en 2 semanas para ver si mejoraron');
+            SoundSystem.playClick();
+        }
 
         function startMiniTest(category) {
             // Obtener diferencia previa de los datos guardados
@@ -5505,6 +5598,7 @@
         // ==========================================
         // ANNIVERSARY SYSTEM
         // ==========================================
+
         function openAnniversaryModal() {
             const modal = document.getElementById('anniversary-modal');
             const input = document.getElementById('anniversary-input');
@@ -5514,12 +5608,12 @@
                 const year = new Date().getFullYear();
                 input.value = `${year}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
             }
-            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
             SoundSystem.playClick();
         }
 
         function closeAnniversaryModal() {
-            document.getElementById('anniversary-modal').classList.add('hidden');
+            document.getElementById('anniversary-modal').style.display = 'none';
         }
 
         async function saveAnniversary() {
