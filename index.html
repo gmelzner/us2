@@ -717,7 +717,14 @@
 
         <!-- ========== DASHBOARD SECTION ========== -->
         <section id="section-dashboard" class="py-12 hidden">
-            <div class="max-w-4xl mx-auto">
+            <div class="max-w-4xl mx-auto relative">
+
+                <!-- Profile Button (Top Right) -->
+                <button onclick="showSection('profile'); renderProfileData();" class="absolute top-0 right-4 md:right-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-105 group z-10">
+                    <svg class="w-6 h-6 text-gray-600 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </button>
 
                 <!-- AdSense Pre-Dashboard -->
                 <div class="adsense-placeholder mb-8 py-6">
@@ -751,6 +758,10 @@
                             <span data-i18n="share_results">Compartir Resultados</span>
                         </button>
                     </div>
+                    <!-- Save Analysis Link -->
+                    <button id="save-analysis-btn" onclick="forceShowEmailModal()" class="mt-4 text-sm text-gray-500 hover:text-teal-dark transition-colors underline">
+                        <span data-i18n="save_analysis_link">📧 Guardar mi análisis por email</span>
+                    </button>
                 </div>
 
                 <!-- Profiles Summary -->
@@ -799,6 +810,28 @@
                     <div id="gap-analysis" class="space-y-4">
                         <!-- Dynamic content -->
                     </div>
+                </div>
+
+                <!-- ========== ACHIEVEMENT SUGGESTIONS ========== -->
+                <div id="suggestions-section" class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl shadow-sm mb-12 border border-amber-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                            <span class="text-xl">💡</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800" data-i18n="suggestions_title">Sugerencias para Equilibrar</h3>
+                            <p class="text-sm text-gray-600">
+                                <span data-i18n="suggestions_subtitle">Tu mayor diferencia está en</span>
+                                <span id="suggestions-category" class="font-semibold text-amber-700">-</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div id="suggestions-list" class="space-y-2">
+                        <!-- Dynamic suggestions will be inserted here -->
+                    </div>
+                    <button id="suggestions-more-btn" onclick="showMoreSuggestions()" class="mt-4 text-sm text-amber-700 hover:text-amber-900 font-medium hidden">
+                        <span data-i18n="suggestions_more">Ver más sugerencias</span> →
+                    </button>
                 </div>
 
                 <!-- ========== LOGROS INVISIBLES HIGHLIGHT ========== -->
@@ -1448,6 +1481,110 @@
             </div>
         </section>
 
+        <!-- ========== PROFILE SECTION ========== -->
+        <section id="section-profile" class="py-12 hidden">
+            <div class="max-w-lg mx-auto fade-in px-4">
+                <!-- Header with back button -->
+                <div class="flex items-center justify-between mb-8">
+                    <button onclick="showSection('dashboard')" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span data-i18n="back_to_dashboard">Volver</span>
+                    </button>
+                    <h1 class="text-xl font-bold text-gray-800" data-i18n="profile_title">Mi Perfil</h1>
+                    <div class="w-20"></div> <!-- Spacer for centering -->
+                </div>
+
+                <!-- Profile Header Card -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg mb-6">
+                    <div class="flex flex-col items-center">
+                        <!-- Avatar -->
+                        <div id="profile-avatar" class="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-4">
+                            ?
+                        </div>
+                        <!-- Name -->
+                        <h2 id="profile-name" class="text-2xl font-bold text-gray-800 mb-2">Usuario</h2>
+                        <!-- Level Badge -->
+                        <div class="flex items-center gap-2 bg-indigo-100 px-4 py-2 rounded-full">
+                            <span id="profile-level-icon" class="text-xl">🚀</span>
+                            <span id="profile-level-name" class="text-indigo-700 font-medium">Nivel 1</span>
+                            <span class="text-indigo-500">•</span>
+                            <span id="profile-xp" class="text-indigo-600 font-bold">0 XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evolution Chart Card -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span>📊</span>
+                        <span data-i18n="profile_evolution">Mi Evolución</span>
+                    </h3>
+                    <div id="profile-evolution-container">
+                        <canvas id="profile-evolution-chart" height="200"></canvas>
+                        <p id="profile-no-history" class="text-center text-gray-500 py-8 hidden" data-i18n="profile_no_history">
+                            Completa más tests para ver tu evolución
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Badges Card -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span>🏆</span>
+                        <span data-i18n="profile_badges">Mis Insignias</span>
+                        <span id="profile-badges-count" class="text-sm font-normal text-gray-500">(0/19)</span>
+                    </h3>
+                    <div id="profile-badges-grid" class="grid grid-cols-5 gap-3">
+                        <!-- Badges will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Test History Card -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span>📝</span>
+                        <span data-i18n="profile_test_history">Historial de Tests</span>
+                    </h3>
+                    <div id="profile-history-list" class="space-y-3">
+                        <!-- History items will be rendered here -->
+                    </div>
+                    <p id="profile-no-tests" class="text-center text-gray-500 py-4 hidden" data-i18n="profile_no_tests">
+                        Aún no hay tests completados
+                    </p>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="bg-white rounded-3xl p-6 shadow-lg mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span>⚙️</span>
+                        <span data-i18n="profile_settings">Configuración</span>
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Anniversary -->
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600" data-i18n="anniversary_label">Aniversario</span>
+                            <span id="profile-anniversary" class="font-medium text-gray-800">No configurado</span>
+                        </div>
+                        <!-- Language -->
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600" data-i18n="language_label">Idioma</span>
+                            <span id="profile-language" class="font-medium text-gray-800">Español</span>
+                        </div>
+                        <!-- Logout button -->
+                        <button onclick="confirmLogout()" class="w-full mt-4 py-3 px-4 bg-red-50 text-red-600 rounded-xl font-medium hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span data-i18n="logout_button">Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
         <!-- ========== BLOG SECTION ========== -->
         <section id="section-blog" class="py-12 hidden">
             <div class="max-w-4xl mx-auto fade-in">
@@ -1698,6 +1835,48 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partner Updates Modal -->
+    <div id="partner-updates-modal" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl animate-bounce-in">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">📬</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800" data-i18n="updates_title">Novedades de tu Equipo</h3>
+            </div>
+
+            <!-- New achievements to review -->
+            <div id="updates-new-achievements" class="hidden mb-4">
+                <p class="text-sm font-medium text-gray-600 mb-2">
+                    <span id="updates-partner-name">Tu pareja</span> <span data-i18n="updates_added_achievements">agregó logros para que revises:</span>
+                </p>
+                <div id="updates-achievements-list" class="space-y-2 max-h-32 overflow-y-auto">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- My achievements approved -->
+            <div id="updates-approved" class="hidden mb-4">
+                <p class="text-sm font-medium text-gray-600 mb-2">
+                    <span id="updates-partner-name-2">Tu pareja</span> <span data-i18n="updates_approved_yours">aprobó tu logro:</span>
+                </p>
+                <div id="updates-approved-list" class="space-y-2 max-h-32 overflow-y-auto">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-3 mt-6">
+                <button onclick="closePartnerUpdatesModal()" class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors" data-i18n="updates_later">
+                    Cerrar
+                </button>
+                <button onclick="goToAchievements()" class="flex-1 px-4 py-3 bg-gradient-to-r from-teal-soft to-teal-dark text-white rounded-xl font-medium hover:shadow-lg transition-all" data-i18n="updates_view_all">
+                    Ver Logros
                 </button>
             </div>
         </div>
@@ -1963,6 +2142,112 @@
             }
         }
 
+        // Sync badges to shared_context (per user)
+        async function syncBadgesToSharedContext(badges, userType) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                // Badges are stored per user: { userA: [...], userB: [...] }
+                const currentBadges = currentContext.badges || {};
+                const updatedBadges = {
+                    ...currentBadges,
+                    [userType]: badges
+                };
+
+                const updatedContext = {
+                    ...currentContext,
+                    badges: updatedBadges,
+                    lastBadgesSync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Badges synced to shared_context for', userType);
+            } catch (e) {
+                console.error('Badges sync error:', e);
+            }
+        }
+
+        // Sync streak data to shared_context (shared between users)
+        async function syncStreakToSharedContext(streakData) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                const updatedContext = {
+                    ...currentContext,
+                    streak: streakData,
+                    lastStreakSync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Streak synced to shared_context');
+            } catch (e) {
+                console.error('Streak sync error:', e);
+            }
+        }
+
+        // Sync test history to shared_context
+        async function syncTestHistoryToSharedContext(testHistory) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                const updatedContext = {
+                    ...currentContext,
+                    testHistory: testHistory,
+                    lastTestHistorySync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Test history synced to shared_context');
+            } catch (e) {
+                console.error('Test history sync error:', e);
+            }
+        }
+
+        // Sync level/XP data to shared_context (per user)
+        async function syncLevelToSharedContext(levelData, userType) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                // Level data stored per user
+                const currentLevelData = currentContext.levelData || {};
+                const updatedLevelData = {
+                    ...currentLevelData,
+                    [userType]: levelData
+                };
+
+                const updatedContext = {
+                    ...currentContext,
+                    levelData: updatedLevelData,
+                    lastLevelSync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Level synced to shared_context for', userType);
+            } catch (e) {
+                console.error('Level sync error:', e);
+            }
+        }
+
         // Legacy: Sync single achievement to separate table (keeping for backup)
         async function syncAchievementToSupabase(achievement) {
             try {
@@ -2052,6 +2337,50 @@
                         }))
                     ));
                     console.log(`📥 Loaded ${achievements.length} achievements from Supabase`);
+                }
+
+                // Load badges, streak, testHistory from shared_context
+                const ctx = pair.shared_context || {};
+
+                // Load achievements from shared_context (primary source, overwrites table data)
+                if (ctx.achievements && ctx.achievements.length > 0) {
+                    localStorage.setItem(`us2_achievements_${pairId}`, JSON.stringify(ctx.achievements));
+                    console.log(`📥 Loaded ${ctx.achievements.length} achievements from shared_context`);
+                }
+
+                // Load goals
+                if (ctx.goals) {
+                    localStorage.setItem(`us2_goals_${pairId}`, JSON.stringify(ctx.goals));
+                    console.log('📥 Loaded goals from shared_context');
+                }
+
+                // Load badges (per user - need to know current user)
+                if (ctx.badges) {
+                    // Store both users' badges, will be filtered when displaying
+                    const currentUserType = localStorage.getItem(`us2_current_user_${pairId}`) === 'B' ? 'userB' : 'userA';
+                    const userBadges = ctx.badges[currentUserType] || [];
+                    if (userBadges.length > 0) {
+                        localStorage.setItem(`us2_badges_${pairId}`, JSON.stringify(userBadges));
+                        console.log(`📥 Loaded ${userBadges.length} badges from shared_context`);
+                    }
+                }
+
+                // Load streak
+                if (ctx.streak) {
+                    localStorage.setItem(`us2_streak_${pairId}`, JSON.stringify(ctx.streak));
+                    console.log('📥 Loaded streak from shared_context');
+                }
+
+                // Load test history
+                if (ctx.testHistory && ctx.testHistory.length > 0) {
+                    localStorage.setItem(`us2_test_history_${pairId}`, JSON.stringify(ctx.testHistory));
+                    console.log(`📥 Loaded ${ctx.testHistory.length} test history entries from shared_context`);
+                }
+
+                // Load anniversary
+                if (ctx.anniversary) {
+                    localStorage.setItem(`us2_anniversary_${pairId}`, JSON.stringify(ctx.anniversary));
+                    console.log('📥 Loaded anniversary from shared_context');
                 }
 
                 return pairData;
@@ -2754,13 +3083,95 @@
                 reward_free_day: "Día Libre",
                 reward_free_day_desc: "Un día completo sin responsabilidades del hogar",
 
+                // Achievement Suggestions
+                suggestions_title: "Sugerencias para Equilibrar",
+                suggestions_subtitle: "Tu mayor diferencia está en",
+                suggestions_add: "Agregar",
+                suggestions_more: "Ver más sugerencias",
+                suggestions_added: "¡Agregado! Esperando aprobación de tu pareja.",
+                // Hogar
+                suggest_cooked_dinner: "Cocinó la cena",
+                suggest_grocery_shopping: "Hizo las compras del super",
+                suggest_meal_planning: "Planificó el menú semanal",
+                suggest_ordered_food: "Ordenó comida/decidió qué cenar",
+                suggest_washed_dishes: "Lavó los platos",
+                // Social
+                suggest_bought_gift: "Compró un regalo para alguien",
+                suggest_organized_event: "Organizó un encuentro/evento",
+                suggest_kept_in_touch: "Mantuvo contacto con familia/amigos",
+                suggest_remembered_birthday: "Recordó un cumpleaños importante",
+                // Salud
+                suggest_scheduled_appointment: "Agendó un turno médico",
+                suggest_restocked_medicine: "Repuso medicamentos",
+                suggest_took_to_doctor: "Llevó a alguien al médico",
+                suggest_health_checkup: "Coordinó chequeo de salud",
+                // Admin
+                suggest_paid_bill: "Pagó una factura/impuesto",
+                suggest_made_claim: "Hizo un reclamo o trámite",
+                suggest_organized_finances: "Organizó las finanzas del mes",
+                suggest_renewed_document: "Renovó un documento/seguro",
+                // Cuidado
+                suggest_pet_care: "Se encargó del cuidado de mascotas",
+                suggest_kids_activity: "Llevó a los chicos a una actividad",
+                suggest_homework_help: "Ayudó con tareas escolares",
+                suggest_school_prep: "Preparó cosas para el colegio",
+                // Mantenimiento
+                suggest_fixed_something: "Arregló algo en la casa",
+                suggest_changed_bulb: "Cambió una lamparita/fusible",
+                suggest_garden_care: "Cuidó el jardín/plantas",
+                suggest_car_maintenance: "Se encargó del mantenimiento del auto",
+                // Logística
+                suggest_drove_someone: "Llevó/buscó a alguien",
+                suggest_received_package: "Recibió/gestionó un envío",
+                suggest_coordinated_schedules: "Coordinó agendas de la familia",
+                suggest_travel_planning: "Planificó un viaje/salida",
+                // Limpieza
+                suggest_cleaned_bathroom: "Limpió el baño a fondo",
+                suggest_did_laundry: "Lavó y dobló la ropa",
+                suggest_organized_closet: "Organizó un armario/cajón",
+                suggest_mopped_floors: "Trapeó/aspiró los pisos",
+                suggest_changed_sheets: "Cambió las sábanas",
+                // Emocional
+                suggest_difficult_conversation: "Tuvo una conversación difícil",
+                suggest_emotional_support: "Dio apoyo emocional",
+                suggest_family_mediation: "Medió en un conflicto familiar",
+                suggest_checked_in: "Chequeó cómo estaba el otro",
+
                 // Email Capture Modal
                 email_modal_title: "¿Querés guardar tu análisis?",
                 email_modal_desc: "Recibí un PDF con tus resultados completos + 10 tips personalizados para mejorar el equilibrio en tu hogar.",
                 email_modal_placeholder: "tu@email.com",
                 email_modal_cta: "Enviarme el PDF Gratis",
                 email_modal_privacy: "No spam. Solo contenido útil para parejas.",
-                email_modal_success: "¡Listo! Revisá tu casilla de correo."
+                email_modal_success: "¡Listo! Revisá tu casilla de correo.",
+
+                // Profile Section
+                back_to_dashboard: "Volver",
+                profile_title: "Mi Perfil",
+                profile_evolution: "Mi Evolución",
+                profile_no_history: "Completá más tests para ver tu evolución",
+                profile_badges: "Mis Insignias",
+                profile_test_history: "Historial de Tests",
+                profile_no_tests: "Aún no hay tests completados",
+                profile_settings: "Configuración",
+                anniversary_label: "Aniversario",
+                language_label: "Idioma",
+                not_configured: "No configurado",
+                logout_button: "Cerrar Sesión",
+                logged_out: "Sesión cerrada",
+                my_score: "Mi score",
+                partner_score: "Score pareja",
+
+                // Partner Updates Modal
+                updates_title: "Novedades de tu Equipo",
+                updates_added_achievements: "agregó logros para que revises:",
+                updates_approved_yours: "aprobó tu logro:",
+                updates_later: "Cerrar",
+                updates_view_all: "Ver Logros",
+                updates_team_celebration: "¡Logro completado en equipo!",
+
+                // Email Save
+                save_analysis_link: "📧 Guardar mi análisis por email"
             },
             en: {
                 // Logo
@@ -3327,13 +3738,95 @@
                 reward_free_day: "Free Day",
                 reward_free_day_desc: "A full day with no household responsibilities",
 
+                // Achievement Suggestions
+                suggestions_title: "Suggestions to Balance",
+                suggestions_subtitle: "Your biggest gap is in",
+                suggestions_add: "Add",
+                suggestions_more: "See more suggestions",
+                suggestions_added: "Added! Waiting for your partner's approval.",
+                // Home
+                suggest_cooked_dinner: "Cooked dinner",
+                suggest_grocery_shopping: "Did the grocery shopping",
+                suggest_meal_planning: "Planned the weekly menu",
+                suggest_ordered_food: "Ordered food/decided what to eat",
+                suggest_washed_dishes: "Washed the dishes",
+                // Social
+                suggest_bought_gift: "Bought a gift for someone",
+                suggest_organized_event: "Organized a gathering/event",
+                suggest_kept_in_touch: "Kept in touch with family/friends",
+                suggest_remembered_birthday: "Remembered an important birthday",
+                // Health
+                suggest_scheduled_appointment: "Scheduled a medical appointment",
+                suggest_restocked_medicine: "Restocked medicine",
+                suggest_took_to_doctor: "Took someone to the doctor",
+                suggest_health_checkup: "Coordinated health checkup",
+                // Admin
+                suggest_paid_bill: "Paid a bill/tax",
+                suggest_made_claim: "Made a complaint or errand",
+                suggest_organized_finances: "Organized monthly finances",
+                suggest_renewed_document: "Renewed a document/insurance",
+                // Care
+                suggest_pet_care: "Took care of pets",
+                suggest_kids_activity: "Took the kids to an activity",
+                suggest_homework_help: "Helped with homework",
+                suggest_school_prep: "Prepared things for school",
+                // Maintenance
+                suggest_fixed_something: "Fixed something at home",
+                suggest_changed_bulb: "Changed a lightbulb/fuse",
+                suggest_garden_care: "Took care of garden/plants",
+                suggest_car_maintenance: "Handled car maintenance",
+                // Logistics
+                suggest_drove_someone: "Drove/picked up someone",
+                suggest_received_package: "Received/managed a delivery",
+                suggest_coordinated_schedules: "Coordinated family schedules",
+                suggest_travel_planning: "Planned a trip/outing",
+                // Cleaning
+                suggest_cleaned_bathroom: "Deep cleaned the bathroom",
+                suggest_did_laundry: "Did and folded laundry",
+                suggest_organized_closet: "Organized a closet/drawer",
+                suggest_mopped_floors: "Mopped/vacuumed floors",
+                suggest_changed_sheets: "Changed the sheets",
+                // Emotional
+                suggest_difficult_conversation: "Had a difficult conversation",
+                suggest_emotional_support: "Gave emotional support",
+                suggest_family_mediation: "Mediated a family conflict",
+                suggest_checked_in: "Checked in on how the other was doing",
+
                 // Email Capture Modal
                 email_modal_title: "Want to save your analysis?",
                 email_modal_desc: "Get a PDF with your complete results + 10 personalized tips to improve balance in your home.",
                 email_modal_placeholder: "your@email.com",
                 email_modal_cta: "Send me the Free PDF",
                 email_modal_privacy: "No spam. Only useful content for couples.",
-                email_modal_success: "Done! Check your inbox."
+                email_modal_success: "Done! Check your inbox.",
+
+                // Profile Section
+                back_to_dashboard: "Back",
+                profile_title: "My Profile",
+                profile_evolution: "My Evolution",
+                profile_no_history: "Complete more tests to see your evolution",
+                profile_badges: "My Badges",
+                profile_test_history: "Test History",
+                profile_no_tests: "No tests completed yet",
+                profile_settings: "Settings",
+                anniversary_label: "Anniversary",
+                language_label: "Language",
+                not_configured: "Not configured",
+                logout_button: "Log Out",
+                logged_out: "Logged out",
+                my_score: "My score",
+                partner_score: "Partner score",
+
+                // Partner Updates Modal
+                updates_title: "Team Updates",
+                updates_added_achievements: "added achievements for you to review:",
+                updates_approved_yours: "approved your achievement:",
+                updates_later: "Close",
+                updates_view_all: "View Achievements",
+                updates_team_celebration: "Achievement completed as a team!",
+
+                // Email Save
+                save_analysis_link: "📧 Save my analysis by email"
             }
         };
 
@@ -3413,6 +3906,29 @@
             if (subscribers.length > 0 || capturedEmails.length > 0) return;
 
             emailModalShown = true;
+            const modal = document.getElementById('email-capture-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                SoundSystem.playClick();
+            }
+        }
+
+        // Force show email modal (manual trigger, bypasses session checks)
+        function forceShowEmailModal() {
+            // Only check if already subscribed
+            const subscribers = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
+            const capturedEmails = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
+
+            if (subscribers.length > 0 || capturedEmails.length > 0) {
+                showToast('📧', 'info', currentLang === 'es' ? 'Ya guardaste tu análisis' : 'Analysis already saved');
+                return;
+            }
+
+            // Clear session dismiss flag
+            sessionStorage.removeItem('us2_email_modal_dismissed');
+            emailModalShown = false;
+
             const modal = document.getElementById('email-capture-modal');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -3632,6 +4148,125 @@
             }
         }
 
+        // ==========================================
+        // PARTNER UPDATES MODAL
+        // ==========================================
+        let lastKnownAchievements = null;
+
+        async function checkForPartnerUpdates() {
+            try {
+                const pair = await db.getPair(pairID);
+                const serverAchievements = pair?.shared_context?.achievements || [];
+                const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+
+                // Determine partner user type
+                const partnerUser = currentUser === 'A' ? 'B' : 'A';
+
+                // Find achievements added by partner that I haven't seen
+                const newFromPartner = serverAchievements.filter(serverAch => {
+                    const isFromPartner = serverAch.user === partnerUser;
+                    const localAch = localAchievements.find(l => l.id === serverAch.id);
+                    return isFromPartner && !localAch;
+                });
+
+                // Find my achievements that were approved by partner
+                const myApproved = serverAchievements.filter(serverAch => {
+                    const isMine = serverAch.user === currentUser;
+                    const localAch = localAchievements.find(l => l.id === serverAch.id);
+                    // Check if status changed to approved and partner approved
+                    return isMine && localAch &&
+                           serverAch.status === 'approved' &&
+                           localAch.status !== 'approved';
+                });
+
+                return {
+                    newFromPartner,
+                    myApproved,
+                    hasUpdates: newFromPartner.length > 0 || myApproved.length > 0
+                };
+            } catch (e) {
+                console.error('Check partner updates failed:', e);
+                return { newFromPartner: [], myApproved: [], hasUpdates: false };
+            }
+        }
+
+        async function showPartnerUpdatesIfAny() {
+            const updates = await checkForPartnerUpdates();
+
+            if (!updates.hasUpdates) return;
+
+            const modal = document.getElementById('partner-updates-modal');
+            const newAchSection = document.getElementById('updates-new-achievements');
+            const newAchList = document.getElementById('updates-achievements-list');
+            const approvedSection = document.getElementById('updates-approved');
+            const approvedList = document.getElementById('updates-approved-list');
+
+            // Get partner name
+            const partnerUser = currentUser === 'A' ? 'B' : 'A';
+            const partnerData = JSON.parse(localStorage.getItem(`us2_${pairID}_${partnerUser}`) || '{}');
+            const partnerName = partnerData.context?.name || (currentLang === 'es' ? 'Tu pareja' : 'Your partner');
+
+            // Update partner name in modal
+            const partnerNameEl = document.getElementById('updates-partner-name');
+            const partnerNameEl2 = document.getElementById('updates-partner-name-2');
+            if (partnerNameEl) partnerNameEl.textContent = partnerName;
+            if (partnerNameEl2) partnerNameEl2.textContent = partnerName;
+
+            // Show new achievements from partner
+            if (updates.newFromPartner.length > 0) {
+                newAchSection.classList.remove('hidden');
+                newAchList.innerHTML = updates.newFromPartner.map(ach => `
+                    <div class="flex items-center gap-2 p-2 bg-teal-50 rounded-lg">
+                        <span class="text-teal-600">•</span>
+                        <span class="text-gray-700 text-sm">"${ach.text}"</span>
+                    </div>
+                `).join('');
+            } else {
+                newAchSection.classList.add('hidden');
+            }
+
+            // Show my approved achievements
+            if (updates.myApproved.length > 0) {
+                approvedSection.classList.remove('hidden');
+                approvedList.innerHTML = updates.myApproved.map(ach => `
+                    <div class="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                        <span class="text-green-600">✓</span>
+                        <span class="text-gray-700 text-sm">"${ach.text}"</span>
+                    </div>
+                `).join('');
+
+                // Trigger celebration for approved achievements
+                if (updates.myApproved.length > 0) {
+                    triggerConfetti();
+                    SoundSystem.playSuccess();
+                }
+            } else {
+                approvedSection.classList.add('hidden');
+            }
+
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        function closePartnerUpdatesModal() {
+            const modal = document.getElementById('partner-updates-modal');
+            modal.style.display = 'none';
+
+            // Sync the data so we don't show the same updates again
+            syncFromSupabase().then(() => {
+                loadAchievements();
+            });
+        }
+
+        function goToAchievements() {
+            closePartnerUpdatesModal();
+            // Scroll to achievements section
+            const achievementsSection = document.getElementById('invisible-section');
+            if (achievementsSection) {
+                achievementsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         async function refreshDashboardData() {
             const icon = document.getElementById('refresh-icon');
             const badge = document.getElementById('refresh-badge');
@@ -3706,9 +4341,15 @@
                     localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(ctx.goals));
                 }
 
-                // Sync badges
+                // Sync badges (stored per user, merge with local)
                 if (ctx.badges) {
-                    localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(ctx.badges));
+                    const userType = currentUser === 'A' ? 'userA' : 'userB';
+                    const localBadges = JSON.parse(localStorage.getItem(`us2_badges_${pairID}`) || '[]');
+                    const serverBadges = ctx.badges[userType] || [];
+                    // Merge: union of local and server badges
+                    const mergedBadges = [...new Set([...localBadges, ...serverBadges])];
+                    localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(mergedBadges));
+                    console.log('✅ Badges synced from shared_context');
                 }
 
                 // Sync challenge history
@@ -3719,6 +4360,18 @@
                 // Sync streak
                 if (ctx.streak) {
                     localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(ctx.streak));
+                    console.log('✅ Streak synced from shared_context');
+                }
+
+                // Sync test history
+                if (ctx.testHistory && ctx.testHistory.length > 0) {
+                    const localHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+                    // Merge by savedAt date (avoid duplicates)
+                    const localDates = new Set(localHistory.map(h => h.savedAt));
+                    const serverOnly = ctx.testHistory.filter(h => !localDates.has(h.savedAt));
+                    const merged = [...localHistory, ...serverOnly].slice(-10); // Keep last 10
+                    localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(merged));
+                    console.log('✅ Test history synced from shared_context');
                 }
             } catch (e) {
                 console.error('Sync from Supabase failed:', e);
@@ -3745,6 +4398,68 @@
             { category: 'cat_limpieza', textKey: 'q14' },
             { category: 'cat_emocional', textKey: 'q15' }
         ];
+
+        // ==========================================
+        // ACHIEVEMENT SUGGESTIONS BY CATEGORY
+        // ==========================================
+        const achievementSuggestions = {
+            cat_hogar: [
+                { icon: '🍳', textKey: 'suggest_cooked_dinner' },
+                { icon: '🛒', textKey: 'suggest_grocery_shopping' },
+                { icon: '📝', textKey: 'suggest_meal_planning' },
+                { icon: '🥡', textKey: 'suggest_ordered_food' },
+                { icon: '🍽️', textKey: 'suggest_washed_dishes' }
+            ],
+            cat_social: [
+                { icon: '🎁', textKey: 'suggest_bought_gift' },
+                { icon: '📅', textKey: 'suggest_organized_event' },
+                { icon: '💬', textKey: 'suggest_kept_in_touch' },
+                { icon: '🎂', textKey: 'suggest_remembered_birthday' }
+            ],
+            cat_salud: [
+                { icon: '📞', textKey: 'suggest_scheduled_appointment' },
+                { icon: '💊', textKey: 'suggest_restocked_medicine' },
+                { icon: '🏥', textKey: 'suggest_took_to_doctor' },
+                { icon: '🩺', textKey: 'suggest_health_checkup' }
+            ],
+            cat_admin: [
+                { icon: '📄', textKey: 'suggest_paid_bill' },
+                { icon: '📞', textKey: 'suggest_made_claim' },
+                { icon: '🏦', textKey: 'suggest_organized_finances' },
+                { icon: '📋', textKey: 'suggest_renewed_document' }
+            ],
+            cat_cuidado: [
+                { icon: '🐕', textKey: 'suggest_pet_care' },
+                { icon: '👶', textKey: 'suggest_kids_activity' },
+                { icon: '📚', textKey: 'suggest_homework_help' },
+                { icon: '🎒', textKey: 'suggest_school_prep' }
+            ],
+            cat_mant: [
+                { icon: '🔧', textKey: 'suggest_fixed_something' },
+                { icon: '💡', textKey: 'suggest_changed_bulb' },
+                { icon: '🪴', textKey: 'suggest_garden_care' },
+                { icon: '🚗', textKey: 'suggest_car_maintenance' }
+            ],
+            cat_logistica: [
+                { icon: '🚗', textKey: 'suggest_drove_someone' },
+                { icon: '📦', textKey: 'suggest_received_package' },
+                { icon: '🗓️', textKey: 'suggest_coordinated_schedules' },
+                { icon: '✈️', textKey: 'suggest_travel_planning' }
+            ],
+            cat_limpieza: [
+                { icon: '🧹', textKey: 'suggest_cleaned_bathroom' },
+                { icon: '🧺', textKey: 'suggest_did_laundry' },
+                { icon: '🗄️', textKey: 'suggest_organized_closet' },
+                { icon: '🪣', textKey: 'suggest_mopped_floors' },
+                { icon: '🛏️', textKey: 'suggest_changed_sheets' }
+            ],
+            cat_emocional: [
+                { icon: '💬', textKey: 'suggest_difficult_conversation' },
+                { icon: '🤗', textKey: 'suggest_emotional_support' },
+                { icon: '👨‍👩‍👧', textKey: 'suggest_family_mediation' },
+                { icon: '📱', textKey: 'suggest_checked_in' }
+            ]
+        };
 
         // Filtered questions based on context
         let questions = [];
@@ -4594,6 +5309,9 @@
             // Show refresh FAB and start polling
             showRefreshFAB();
             startPolling();
+
+            // Check for partner updates (with delay to let dashboard load)
+            setTimeout(() => showPartnerUpdatesIfAny(), 2000);
         }
 
         function saveTestToHistory(pairData) {
@@ -4624,6 +5342,8 @@
                 }
 
                 localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(history));
+                // Sync to Supabase
+                syncTestHistoryToSharedContext(history);
             }
         }
 
@@ -5328,6 +6048,139 @@
                 `;
                 container.appendChild(div);
             });
+
+            // Render achievement suggestions based on gaps
+            renderAchievementSuggestions(gaps);
+        }
+
+        // ==========================================
+        // ACHIEVEMENT SUGGESTIONS SYSTEM
+        // ==========================================
+        let currentSuggestionsCategory = null;
+        let allSuggestionsForCategory = [];
+
+        function renderAchievementSuggestions(gaps) {
+            const section = document.getElementById('suggestions-section');
+            const listContainer = document.getElementById('suggestions-list');
+            const categorySpan = document.getElementById('suggestions-category');
+            const moreBtn = document.getElementById('suggestions-more-btn');
+
+            if (!section || !listContainer) return;
+
+            // Filter gaps with significant differences (high or medium)
+            const significantGaps = gaps.filter(g => g.diff >= 1);
+
+            if (significantGaps.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+
+            // Get the category with the highest gap
+            const topGap = significantGaps[0];
+            currentSuggestionsCategory = topGap.category;
+
+            // Map category name (e.g., "Hogar" -> "cat_hogar")
+            const categoryKey = 'cat_' + topGap.category.toLowerCase();
+            const suggestions = achievementSuggestions[categoryKey] || [];
+
+            if (suggestions.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            // Store all suggestions for "show more" functionality
+            allSuggestionsForCategory = [...suggestions];
+
+            // Update category name
+            categorySpan.textContent = topGap.category;
+
+            // Show first 3 suggestions
+            const visibleSuggestions = suggestions.slice(0, 3);
+            renderSuggestionsList(listContainer, visibleSuggestions, categoryKey);
+
+            // Show "more" button if there are more suggestions
+            if (suggestions.length > 3) {
+                moreBtn.classList.remove('hidden');
+            } else {
+                moreBtn.classList.add('hidden');
+            }
+        }
+
+        function renderSuggestionsList(container, suggestions, categoryKey) {
+            container.innerHTML = suggestions.map((sug, index) => {
+                const text = translations[currentLang][sug.textKey] || sug.textKey;
+                return `
+                    <div class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-amber-100 hover:border-amber-300 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${sug.icon}</span>
+                            <span class="text-gray-700">${text}</span>
+                        </div>
+                        <button onclick="addSuggestionAsAchievement('${sug.textKey}', '${categoryKey}')" class="px-3 py-1.5 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <span data-i18n="suggestions_add">Agregar</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showMoreSuggestions() {
+            const listContainer = document.getElementById('suggestions-list');
+            const moreBtn = document.getElementById('suggestions-more-btn');
+            const categoryKey = 'cat_' + currentSuggestionsCategory.toLowerCase();
+
+            // Show all suggestions
+            renderSuggestionsList(listContainer, allSuggestionsForCategory, categoryKey);
+
+            // Hide the "more" button
+            moreBtn.classList.add('hidden');
+        }
+
+        function addSuggestionAsAchievement(textKey, categoryKey) {
+            const text = translations[currentLang][textKey] || textKey;
+            const categoryName = translations[currentLang][categoryKey] || categoryKey;
+
+            // Get current achievements
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+
+            // Create new achievement
+            const newAchievement = {
+                id: `ach_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                text: text,
+                category: categoryName,
+                date: new Date().toISOString(),
+                user: currentUser,
+                status: 'pending',
+                approvals: { [currentUser]: true }
+            };
+
+            achievements.push(newAchievement);
+            localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
+
+            // Sync to Supabase
+            syncAchievementsToSharedContext(achievements);
+
+            // Show feedback
+            showToast('✅', 'success', translations[currentLang].suggestions_added || '¡Agregado!');
+            SoundSystem.playSuccess();
+
+            // Refresh achievements section
+            loadAchievements();
+
+            // Update the button to show it was added
+            event.target.closest('button').innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>✓</span>
+            `;
+            event.target.closest('button').disabled = true;
+            event.target.closest('button').classList.remove('bg-amber-500', 'hover:bg-amber-600');
+            event.target.closest('button').classList.add('bg-green-500', 'cursor-default');
         }
 
         // ==========================================
@@ -5966,6 +6819,9 @@
             if (!badges.includes(badgeId)) {
                 badges.push(badgeId);
                 localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(badges));
+                // Sync to Supabase
+                const userType = currentUser === 'A' ? 'userA' : 'userB';
+                syncBadgesToSharedContext(badges, userType);
                 return true; // New badge unlocked
             }
             return false; // Already had badge
@@ -6035,20 +6891,29 @@
             const month = monthSelect ? monthSelect.value : '';
 
             if (day && month) {
+                const anniversaryData = { month: parseInt(month), day: parseInt(day) };
                 const anniversaryStr = `${month}-${day}`;
 
                 // Save locally
-                localStorage.setItem(`us2_anniversary_${pairID}`, anniversaryStr);
+                localStorage.setItem(`us2_anniversary_${pairID}`, JSON.stringify(anniversaryData));
 
-                // Save to Supabase
+                // Save to Supabase (both column and shared_context)
                 try {
+                    const pair = await db.getPair(pairID);
+                    const currentContext = pair?.shared_context || {};
+
                     await supabaseClient
                         .from('pairs')
                         .update({
                             anniversary_date: anniversaryStr,
-                            anniversary_email_sent: false
+                            anniversary_email_sent: false,
+                            shared_context: {
+                                ...currentContext,
+                                anniversary: anniversaryData
+                            }
                         })
                         .eq('pair_id', pairID);
+                    console.log('✅ Anniversary synced to shared_context');
                 } catch (e) {
                     console.log('Anniversary save to Supabase failed, saved locally');
                 }
@@ -6065,7 +6930,19 @@
             const anniversaryStr = localStorage.getItem(`us2_anniversary_${pairID}`);
             if (!anniversaryStr) return;
 
-            const [annMonth, annDay] = anniversaryStr.split('-').map(Number);
+            // Handle both old string format ("6-14") and new object format ({ month: 6, day: 14 })
+            let annMonth, annDay;
+            try {
+                const parsed = JSON.parse(anniversaryStr);
+                annMonth = parsed.month;
+                annDay = parsed.day;
+            } catch (e) {
+                // Old string format
+                [annMonth, annDay] = anniversaryStr.split('-').map(Number);
+            }
+
+            if (!annMonth || !annDay) return;
+
             const now = new Date();
             const thisYear = now.getFullYear();
 
@@ -6256,10 +7133,9 @@
             }
 
             // Anniversary - check stored date
-            const anniversaryDate = localStorage.getItem(`us2_anniversary_${pairID}`);
-            if (anniversaryDate) {
-                const [annMonth, annDay] = anniversaryDate.split('-').map(Number);
-                if (month === annMonth && date === annDay) {
+            const anniversaryData = getAnniversaryData();
+            if (anniversaryData && anniversaryData.month && anniversaryData.day) {
+                if (month === anniversaryData.month && date === anniversaryData.day) {
                     if (saveBadge('anniversary')) newBadges.push('anniversary');
                 }
             }
@@ -6316,6 +7192,8 @@
             }
 
             localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(data));
+            // Sync to Supabase
+            syncStreakToSharedContext(data);
 
             // Check for streak milestones
             if (data.current === 3 || data.current === 7 || data.current === 14 || data.current === 30) {
@@ -6621,6 +7499,250 @@
                 showToast(currentLevel.icon, 'success', `${translations[currentLang].level_up_toast} ${translations[currentLang][currentLevel.name]}`);
                 triggerConfetti();
             }
+        }
+
+        // ==========================================
+        // PROFILE SECTION
+        // ==========================================
+        let profileEvolutionChart = null;
+
+        function renderProfileData() {
+            // Get user data
+            const userData = JSON.parse(localStorage.getItem(`us2_user_${pairID}`) || '{}');
+            const userName = userData.name || 'Usuario';
+            const userInitial = userName.charAt(0).toUpperCase();
+
+            // Update avatar
+            const avatarEl = document.getElementById('profile-avatar');
+            if (avatarEl) avatarEl.textContent = userInitial;
+
+            // Update name
+            const nameEl = document.getElementById('profile-name');
+            if (nameEl) nameEl.textContent = userName;
+
+            // Update level info
+            const xpData = calculateTotalXP();
+            const currentLevel = getCurrentLevel(xpData.total);
+
+            const levelIconEl = document.getElementById('profile-level-icon');
+            const levelNameEl = document.getElementById('profile-level-name');
+            const xpEl = document.getElementById('profile-xp');
+
+            if (levelIconEl) levelIconEl.textContent = currentLevel.icon;
+            if (levelNameEl) levelNameEl.textContent = translations[currentLang][currentLevel.name] || currentLevel.name;
+            if (xpEl) xpEl.textContent = `${xpData.total} XP`;
+
+            // Render badges
+            renderProfileBadges();
+
+            // Render test history
+            renderProfileHistory();
+
+            // Render evolution chart
+            renderProfileEvolutionChart();
+
+            // Update settings
+            renderProfileSettings();
+        }
+
+        function renderProfileBadges() {
+            const badgesGrid = document.getElementById('profile-badges-grid');
+            const badgesCount = document.getElementById('profile-badges-count');
+            if (!badgesGrid) return;
+
+            const unlockedBadges = getUnlockedBadges();
+            const totalBadges = badgesData.length;
+
+            if (badgesCount) badgesCount.textContent = `(${unlockedBadges.length}/${totalBadges})`;
+
+            badgesGrid.innerHTML = badgesData.map(badge => {
+                const isUnlocked = unlockedBadges.includes(badge.id);
+                const badgeName = translations[currentLang][`badge_${badge.id}`] || badge.id;
+                return `
+                    <div class="relative group" title="${badgeName}">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-transform hover:scale-110 ${isUnlocked ? 'bg-gradient-to-br from-yellow-100 to-yellow-200' : 'bg-gray-100 grayscale opacity-40'}">
+                            ${badge.icon}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderProfileHistory() {
+            const historyList = document.getElementById('profile-history-list');
+            const noTests = document.getElementById('profile-no-tests');
+            if (!historyList) return;
+
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            if (testHistory.length === 0) {
+                historyList.classList.add('hidden');
+                if (noTests) noTests.classList.remove('hidden');
+                return;
+            }
+
+            historyList.classList.remove('hidden');
+            if (noTests) noTests.classList.add('hidden');
+
+            // Sort by date (newest first)
+            const sortedHistory = [...testHistory].reverse();
+
+            historyList.innerHTML = sortedHistory.map((test, index) => {
+                const date = new Date(test.savedAt);
+                const dateStr = date.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                // Determine which user is the current user
+                const myScore = currentUser === 'A' ? test.userA?.score : test.userB?.score;
+                const partnerScore = currentUser === 'A' ? test.userB?.score : test.userA?.score;
+
+                return `
+                    <div class="flex items-center justify-between py-3 ${index < sortedHistory.length - 1 ? 'border-b border-gray-100' : ''}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+                                #${sortedHistory.length - index}
+                            </div>
+                            <span class="text-gray-600">${dateStr}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm text-gray-500">${translations[currentLang].my_score || 'Mi score'}: </span>
+                            <span class="font-bold text-indigo-600">${myScore || '-'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderProfileEvolutionChart() {
+            const chartCanvas = document.getElementById('profile-evolution-chart');
+            const noHistory = document.getElementById('profile-no-history');
+            if (!chartCanvas) return;
+
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            if (testHistory.length < 2) {
+                chartCanvas.style.display = 'none';
+                if (noHistory) noHistory.classList.remove('hidden');
+                return;
+            }
+
+            chartCanvas.style.display = 'block';
+            if (noHistory) noHistory.classList.add('hidden');
+
+            // Prepare data
+            const labels = testHistory.map((test, i) => `Test ${i + 1}`);
+            const myScores = testHistory.map(test =>
+                currentUser === 'A' ? test.userA?.score || 0 : test.userB?.score || 0
+            );
+            const partnerScores = testHistory.map(test =>
+                currentUser === 'A' ? test.userB?.score || 0 : test.userA?.score || 0
+            );
+
+            // Destroy previous chart if exists
+            if (profileEvolutionChart) {
+                profileEvolutionChart.destroy();
+            }
+
+            profileEvolutionChart = new Chart(chartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: translations[currentLang].my_score || 'Mi Score',
+                            data: myScores,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: translations[currentLang].partner_score || 'Score Pareja',
+                            data: partnerScores,
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 60
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderProfileSettings() {
+            // Anniversary
+            const anniversaryEl = document.getElementById('profile-anniversary');
+            if (anniversaryEl) {
+                const anniversary = getAnniversaryData();
+                if (anniversary && anniversary.month && anniversary.day) {
+                    const months = currentLang === 'es'
+                        ? ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                        : ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    anniversaryEl.textContent = `${anniversary.day} de ${months[anniversary.month]}`;
+                } else {
+                    anniversaryEl.textContent = translations[currentLang].not_configured || 'No configurado';
+                }
+            }
+
+            // Language
+            const languageEl = document.getElementById('profile-language');
+            if (languageEl) {
+                languageEl.textContent = currentLang === 'es' ? 'Español' : 'English';
+            }
+        }
+
+        function confirmLogout() {
+            const message = currentLang === 'es'
+                ? '¿Estás seguro de que quieres cerrar sesión? Tus datos locales se mantendrán.'
+                : 'Are you sure you want to log out? Your local data will be kept.';
+
+            if (confirm(message)) {
+                // Clear session-specific data but keep pair data
+                localStorage.removeItem(`us2_user_${pairID}`);
+                localStorage.removeItem(`us2_current_user_${pairID}`);
+
+                // Show home
+                showSection('home');
+                showToast('👋', 'info', translations[currentLang].logged_out || 'Sesión cerrada');
+            }
+        }
+
+        function getAnniversaryData() {
+            const localData = localStorage.getItem(`us2_anniversary_${pairID}`);
+            if (!localData) return null;
+
+            // Handle both old string format ("6-14") and new object format ({ month: 6, day: 14 })
+            try {
+                const parsed = JSON.parse(localData);
+                if (parsed.month && parsed.day) {
+                    return parsed;
+                }
+            } catch (e) {
+                // Old string format
+                const [month, day] = localData.split('-').map(Number);
+                if (month && day) {
+                    return { month, day };
+                }
+            }
+            return null;
         }
 
         // ==========================================
