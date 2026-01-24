@@ -59,4 +59,11 @@
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>
+
+    <url>
+        <loc>https://us2.fun/contact.html</loc>
+        <lastmod>2026-01-23</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
 </urlset>
