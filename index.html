@@ -4830,17 +4830,24 @@
         // INITIALIZATION
         // ==========================================
         async function init() {
-            // Check saved language
-            const savedLang = localStorage.getItem('us2_lang');
-            if (savedLang) {
-                setLanguage(savedLang);
+            // Check URL lang parameter first (from /en/ landing)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            if (urlLang === 'en' || urlLang === 'es') {
+                setLanguage(urlLang);
+                localStorage.setItem('us2_lang', urlLang);
+            } else {
+                // Fall back to saved language
+                const savedLang = localStorage.getItem('us2_lang');
+                if (savedLang) {
+                    setLanguage(savedLang);
+                }
             }
 
             // Update sound icon based on preference
             updateSoundIcon();
 
-            // Check URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
+            // Check URL parameters (urlParams already declared above for lang)
             const urlPairID = urlParams.get('pairID');
             const urlUser = urlParams.get('user');
 
