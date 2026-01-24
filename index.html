@@ -938,19 +938,19 @@
                         </div>
                     </div>
 
-                    <!-- XP Sources Info -->
+                    <!-- Counters -->
                     <div class="grid grid-cols-3 gap-3 text-center">
                         <div class="bg-white/10 rounded-lg p-3">
-                            <p class="text-xl font-bold" id="xp-from-achievements">0</p>
-                            <p class="text-xs text-white/70" data-i18n="xp_achievements">Logros</p>
+                            <p class="text-xl font-bold" id="count-achievements">0</p>
+                            <p class="text-xs text-white/70" data-i18n="counter_achievements">Logros</p>
                         </div>
                         <div class="bg-white/10 rounded-lg p-3">
-                            <p class="text-xl font-bold" id="xp-from-badges">0</p>
-                            <p class="text-xs text-white/70" data-i18n="xp_badges">Badges</p>
+                            <p class="text-xl font-bold" id="count-badges">0</p>
+                            <p class="text-xs text-white/70" data-i18n="counter_badges">Insignias</p>
                         </div>
                         <div class="bg-white/10 rounded-lg p-3">
-                            <p class="text-xl font-bold" id="xp-from-challenges">0</p>
-                            <p class="text-xs text-white/70" data-i18n="xp_challenges">Desafíos</p>
+                            <p class="text-xl font-bold" id="count-challenges">0</p>
+                            <p class="text-xs text-white/70" data-i18n="counter_challenges">Desafíos</p>
                         </div>
                     </div>
                 </div>
@@ -1670,6 +1670,18 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Refresh Button (only visible on dashboard) -->
+    <div id="refresh-fab" class="fixed bottom-6 right-6 z-40 hidden">
+        <button onclick="refreshDashboardData()" class="relative bg-gradient-to-r from-teal-soft to-teal-dark text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
+            <svg id="refresh-icon" class="w-6 h-6 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <!-- Notification badge -->
+            <span id="refresh-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">!</span>
+        </button>
+        <p class="text-xs text-gray-500 text-center mt-1" data-i18n="refresh_hint">Actualizar</p>
     </div>
 
     <!-- ========== JAVASCRIPT ========== -->
@@ -2644,6 +2656,12 @@
                 xp_achievements: "de Logros",
                 xp_badges: "de Insignias",
                 xp_challenges: "de Desafíos",
+                counter_achievements: "Logros",
+                counter_badges: "Insignias",
+                counter_challenges: "Desafíos",
+                refresh_hint: "Actualizar",
+                refresh_success: "¡Actualizado!",
+                refresh_error: "Error al actualizar",
                 level_up_toast: "¡Subieron de nivel!",
 
                 // Rewards System
@@ -3208,6 +3226,12 @@
                 xp_achievements: "from Achievements",
                 xp_badges: "from Badges",
                 xp_challenges: "from Challenges",
+                counter_achievements: "Achievements",
+                counter_badges: "Badges",
+                counter_challenges: "Challenges",
+                refresh_hint: "Refresh",
+                refresh_success: "Updated!",
+                refresh_error: "Update failed",
                 level_up_toast: "Level up!",
 
                 // Rewards System
@@ -3400,7 +3424,7 @@
 
         function initEmailModalTracking() {
             // Only track if on dashboard and both users completed
-            const dashboard = document.getElementById('dashboard');
+            const dashboard = document.getElementById('section-dashboard');
             if (!dashboard || dashboard.classList.contains('hidden')) return;
 
             // Check both users completed
@@ -3411,22 +3435,25 @@
             // Already shown or dismissed?
             if (emailModalShown || sessionStorage.getItem('us2_email_modal_dismissed')) return;
 
-            // Timer: 45 seconds
+            // Already captured email?
+            const capturedEmails = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
+            if (capturedEmails.length > 0) return;
+
+            // Timer: 15 seconds (reduced for better conversion)
             dashboardTimer = setTimeout(() => {
                 showEmailModal();
-            }, 45000);
+            }, 15000);
 
-            // Scroll: 75% of dashboard
+            // Also trigger on scroll past radar chart (about 50% of visible area)
             dashboardScrollHandler = () => {
-                const dashboardRect = dashboard.getBoundingClientRect();
-                const scrollPercent = Math.abs(dashboardRect.top) / (dashboardRect.height - window.innerHeight);
-
-                if (scrollPercent >= 0.75) {
+                const scrollY = window.scrollY || window.pageYOffset;
+                // Trigger after scrolling 400px (past the chart area)
+                if (scrollY >= 400) {
                     showEmailModal();
                 }
             };
 
-            window.addEventListener('scroll', dashboardScrollHandler);
+            window.addEventListener('scroll', dashboardScrollHandler, { passive: true });
         }
 
         function cleanupEmailModalTracking() {
@@ -3437,6 +3464,163 @@
             if (dashboardScrollHandler) {
                 window.removeEventListener('scroll', dashboardScrollHandler);
                 dashboardScrollHandler = null;
+            }
+        }
+
+        // ==========================================
+        // REFRESH & POLLING SYSTEM
+        // ==========================================
+        let pollingInterval = null;
+        let lastKnownState = null;
+
+        function showRefreshFAB() {
+            const fab = document.getElementById('refresh-fab');
+            if (fab) fab.classList.remove('hidden');
+        }
+
+        function hideRefreshFAB() {
+            const fab = document.getElementById('refresh-fab');
+            if (fab) fab.classList.add('hidden');
+        }
+
+        function startPolling() {
+            // Clear any existing interval
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            // Save current state for comparison
+            lastKnownState = getCurrentState();
+
+            // Poll every 30 seconds
+            pollingInterval = setInterval(async () => {
+                await checkForUpdates();
+            }, 30000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        function getCurrentState() {
+            return {
+                achievements: JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]'),
+                badges: JSON.parse(localStorage.getItem(`us2_badges_${pairID}`) || '[]'),
+                challengeHistory: JSON.parse(localStorage.getItem(`us2_challenge_history_${pairID}`) || '[]')
+            };
+        }
+
+        async function checkForUpdates() {
+            try {
+                // Fetch latest from Supabase
+                const pair = await db.getPair(pairID);
+                if (!pair || !pair.shared_context) return;
+
+                const serverState = pair.shared_context;
+
+                // Compare with local state
+                const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+                const serverAchievements = serverState.achievements || [];
+
+                // Check for pending approvals (achievements proposed by partner that need my approval)
+                const pendingForMe = serverAchievements.filter(a => {
+                    const local = localAchievements.find(l => l.id === a.id);
+                    // New achievement not in local, or status changed
+                    return !local || (a.status !== local.status);
+                });
+
+                // Check for any changes
+                const hasChanges = pendingForMe.length > 0 ||
+                    serverAchievements.length !== localAchievements.length;
+
+                // Show/hide notification badge
+                const badge = document.getElementById('refresh-badge');
+                if (badge) {
+                    if (hasChanges) {
+                        badge.classList.remove('hidden');
+                        badge.textContent = pendingForMe.length > 0 ? pendingForMe.length : '!';
+                    } else {
+                        badge.classList.add('hidden');
+                    }
+                }
+            } catch (e) {
+                console.log('Polling check failed:', e);
+            }
+        }
+
+        async function refreshDashboardData() {
+            const icon = document.getElementById('refresh-icon');
+            const badge = document.getElementById('refresh-badge');
+
+            // Animate icon
+            if (icon) icon.classList.add('animate-spin');
+
+            try {
+                // Sync from Supabase
+                await syncFromSupabase();
+
+                // Reload the dashboard
+                const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
+                const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
+
+                if (dataA && dataB) {
+                    const pairData = {
+                        userA: dataA,
+                        userB: dataB
+                    };
+
+                    // Refresh UI elements
+                    loadAchievements();
+                    loadGoals();
+                    renderBadges();
+                    renderStreak();
+                    renderChallenge();
+                    renderLevelSystem();
+                    renderRewardSystem();
+
+                    // Hide badge after refresh
+                    if (badge) badge.classList.add('hidden');
+
+                    // Show success feedback
+                    showToast('🔄', 'success', translations[currentLang].refresh_success || '¡Actualizado!');
+                }
+            } catch (e) {
+                console.error('Refresh failed:', e);
+                showToast('⚠️', 'error', translations[currentLang].refresh_error || 'Error al actualizar');
+            } finally {
+                // Stop animation
+                if (icon) icon.classList.remove('animate-spin');
+            }
+        }
+
+        async function syncFromSupabase() {
+            try {
+                const pair = await db.getPair(pairID);
+                if (pair && pair.shared_context) {
+                    // Sync achievements
+                    if (pair.shared_context.achievements) {
+                        localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(pair.shared_context.achievements));
+                    }
+                    // Sync goals
+                    if (pair.shared_context.goals) {
+                        localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(pair.shared_context.goals));
+                    }
+                    // Sync badges
+                    if (pair.shared_context.badges) {
+                        localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(pair.shared_context.badges));
+                    }
+                    // Sync challenge history
+                    if (pair.shared_context.challengeHistory) {
+                        localStorage.setItem(`us2_challenge_history_${pairID}`, JSON.stringify(pair.shared_context.challengeHistory));
+                    }
+                    // Sync streak
+                    if (pair.shared_context.streak) {
+                        localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(pair.shared_context.streak));
+                    }
+                }
+            } catch (e) {
+                console.error('Sync from Supabase failed:', e);
             }
         }
 
@@ -3627,6 +3811,15 @@
                 link.classList.remove('text-teal-dark', 'font-semibold');
                 link.classList.add('text-gray-600');
             });
+
+            // Show/hide refresh FAB based on section
+            if (section === 'dashboard') {
+                showRefreshFAB();
+                startPolling();
+            } else {
+                hideRefreshFAB();
+                stopPolling();
+            }
         }
 
         // ==========================================
@@ -4231,6 +4424,10 @@
 
             // Initialize email capture modal tracking (scroll/timer)
             setTimeout(() => initEmailModalTracking(), 1000);
+
+            // Show refresh FAB and start polling
+            showRefreshFAB();
+            startPolling();
         }
 
         function saveTestToHistory(pairData) {
@@ -6126,7 +6323,11 @@
                 total: xpFromAchievements + xpFromBadges + xpFromChallenges,
                 achievements: xpFromAchievements,
                 badges: xpFromBadges,
-                challenges: xpFromChallenges
+                challenges: xpFromChallenges,
+                // Counts for display
+                achievementCount: approvedAchievements.length,
+                badgeCount: badges.length,
+                challengeCount: challengeHistory.length
             };
         }
 
@@ -6157,18 +6358,19 @@
             const totalXPEl = document.getElementById('total-xp');
             const xpProgressTextEl = document.getElementById('xp-progress-text');
             const xpProgressBarEl = document.getElementById('xp-progress-bar');
-            const xpAchEl = document.getElementById('xp-from-achievements');
-            const xpBadgeEl = document.getElementById('xp-from-badges');
-            const xpChallengeEl = document.getElementById('xp-from-challenges');
+            const countAchEl = document.getElementById('count-achievements');
+            const countBadgeEl = document.getElementById('count-badges');
+            const countChallengeEl = document.getElementById('count-challenges');
 
             if (levelIconEl) levelIconEl.textContent = currentLevel.icon;
             if (levelNameEl) levelNameEl.textContent = translations[currentLang][currentLevel.name] || currentLevel.name;
             if (levelNumberEl) levelNumberEl.textContent = currentLevel.level;
             if (totalXPEl) totalXPEl.textContent = xpData.total;
 
-            if (xpAchEl) xpAchEl.textContent = xpData.achievements;
-            if (xpBadgeEl) xpBadgeEl.textContent = xpData.badges;
-            if (xpChallengeEl) xpChallengeEl.textContent = xpData.challenges;
+            // Show counts, not XP values
+            if (countAchEl) countAchEl.textContent = xpData.achievementCount;
+            if (countBadgeEl) countBadgeEl.textContent = xpData.badgeCount;
+            if (countChallengeEl) countChallengeEl.textContent = xpData.challengeCount;
 
             // Calculate progress to next level
             if (nextLevel) {
