@@ -3483,32 +3483,58 @@
         }
 
         function initEmailModalTracking() {
-            // Only track if on dashboard and both users completed
-            const dashboard = document.getElementById('section-dashboard');
-            if (!dashboard || dashboard.classList.contains('hidden')) return;
+            console.log('📧 Email modal tracking: starting checks...');
 
-            // Check both users completed
+            // Check 1: Dashboard visible?
+            const dashboard = document.getElementById('section-dashboard');
+            if (!dashboard || dashboard.classList.contains('hidden')) {
+                console.log('📧 ❌ Dashboard not visible');
+                return;
+            }
+            console.log('📧 ✓ Dashboard visible');
+
+            // Check 2: Both users completed?
             const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
             const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
-            if (!dataA || !dataB) return;
+            if (!dataA || !dataB) {
+                console.log('📧 ❌ Not both users completed', { dataA: !!dataA, dataB: !!dataB });
+                return;
+            }
+            console.log('📧 ✓ Both users completed');
 
-            // Already shown or dismissed?
-            if (emailModalShown || sessionStorage.getItem('us2_email_modal_dismissed')) return;
+            // Check 3: Already shown this page load?
+            if (emailModalShown) {
+                console.log('📧 ❌ Already shown this session (JS var)');
+                return;
+            }
 
-            // Already captured email?
+            // Check 4: Dismissed this session?
+            if (sessionStorage.getItem('us2_email_modal_dismissed')) {
+                console.log('📧 ❌ Dismissed this session (sessionStorage)');
+                return;
+            }
+
+            // Check 5: Already captured email?
             const capturedEmails = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
-            if (capturedEmails.length > 0) return;
+            const newsletter = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
+            if (capturedEmails.length > 0 || newsletter.length > 0) {
+                console.log('📧 ❌ Email already captured');
+                return;
+            }
 
-            // Timer: 15 seconds (reduced for better conversion)
+            console.log('📧 ✓ All checks passed! Setting up timer (15s) and scroll listener...');
+
+            // Timer: 15 seconds
             dashboardTimer = setTimeout(() => {
+                console.log('📧 ⏰ Timer fired! Showing modal...');
                 showEmailModal();
             }, 15000);
 
-            // Also trigger on scroll past radar chart (about 50% of visible area)
+            // Scroll trigger: after 400px
             dashboardScrollHandler = () => {
                 const scrollY = window.scrollY || window.pageYOffset;
-                // Trigger after scrolling 400px (past the chart area)
                 if (scrollY >= 400) {
+                    console.log('📧 📜 Scroll trigger fired! Showing modal...');
                     showEmailModal();
                 }
             };
