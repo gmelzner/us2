@@ -3513,33 +3513,32 @@
 
         async function checkForUpdates() {
             try {
-                // Fetch latest from Supabase
-                const pair = await db.getPair(pairID);
-                if (!pair || !pair.shared_context) return;
-
-                const serverState = pair.shared_context;
+                // Fetch achievements from Supabase (separate table)
+                const serverAchievements = await db.getAchievements(pairID);
 
                 // Compare with local state
                 const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
-                const serverAchievements = serverState.achievements || [];
 
-                // Check for pending approvals (achievements proposed by partner that need my approval)
-                const pendingForMe = serverAchievements.filter(a => {
-                    const local = localAchievements.find(l => l.id === a.id);
-                    // New achievement not in local, or status changed
-                    return !local || (a.status !== local.status);
+                // Check for changes: new achievements or status changes
+                let changesCount = 0;
+                serverAchievements.forEach(serverAch => {
+                    const localAch = localAchievements.find(l => l.id === serverAch.id);
+                    if (!localAch || localAch.status !== serverAch.status) {
+                        changesCount++;
+                    }
                 });
 
-                // Check for any changes
-                const hasChanges = pendingForMe.length > 0 ||
-                    serverAchievements.length !== localAchievements.length;
+                // Also check if there are more achievements on server
+                if (serverAchievements.length > localAchievements.length) {
+                    changesCount += serverAchievements.length - localAchievements.length;
+                }
 
                 // Show/hide notification badge
                 const badge = document.getElementById('refresh-badge');
                 if (badge) {
-                    if (hasChanges) {
+                    if (changesCount > 0) {
                         badge.classList.remove('hidden');
-                        badge.textContent = pendingForMe.length > 0 ? pendingForMe.length : '!';
+                        badge.textContent = changesCount > 9 ? '9+' : changesCount;
                     } else {
                         badge.classList.add('hidden');
                     }
@@ -3596,25 +3595,40 @@
 
         async function syncFromSupabase() {
             try {
+                // Sync achievements from separate table
+                const serverAchievements = await db.getAchievements(pairID);
+                if (serverAchievements && serverAchievements.length > 0) {
+                    // Merge with local, keeping server as source of truth for status
+                    const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+
+                    // Create a map of server achievements
+                    const mergedAchievements = serverAchievements.map(serverAch => {
+                        const localAch = localAchievements.find(l => l.id === serverAch.id);
+                        return {
+                            id: serverAch.id,
+                            text: serverAch.text,
+                            category: serverAch.category,
+                            status: serverAch.status,
+                            proposedBy: serverAch.user_role,
+                            createdAt: serverAch.created_at
+                        };
+                    });
+
+                    localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(mergedAchievements));
+                }
+
+                // Sync other data from shared_context if available
                 const pair = await db.getPair(pairID);
                 if (pair && pair.shared_context) {
-                    // Sync achievements
-                    if (pair.shared_context.achievements) {
-                        localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(pair.shared_context.achievements));
-                    }
-                    // Sync goals
                     if (pair.shared_context.goals) {
                         localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(pair.shared_context.goals));
                     }
-                    // Sync badges
                     if (pair.shared_context.badges) {
                         localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(pair.shared_context.badges));
                     }
-                    // Sync challenge history
                     if (pair.shared_context.challengeHistory) {
                         localStorage.setItem(`us2_challenge_history_${pairID}`, JSON.stringify(pair.shared_context.challengeHistory));
                     }
-                    // Sync streak
                     if (pair.shared_context.streak) {
                         localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(pair.shared_context.streak));
                     }
