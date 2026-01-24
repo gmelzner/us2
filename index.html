@@ -719,12 +719,6 @@
         <section id="section-dashboard" class="py-12 hidden">
             <div class="max-w-4xl mx-auto relative">
 
-                <!-- Profile Button (Fixed Top Right when in dashboard) -->
-                <button id="profile-btn" onclick="showSection('profile'); renderProfileData();" class="fixed top-20 right-4 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 z-50" style="display: none;">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                </button>
 
                 <!-- AdSense Pre-Dashboard -->
                 <div class="adsense-placeholder mb-8 py-6">
@@ -814,17 +808,13 @@
 
                 <!-- ========== ACHIEVEMENT SUGGESTIONS ========== -->
                 <div id="suggestions-section" class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl shadow-sm mb-12 border border-amber-200">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                            <span class="text-xl">💡</span>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-800" data-i18n="suggestions_title">Sugerencias para Equilibrar</h3>
-                            <p class="text-sm text-gray-600">
-                                <span data-i18n="suggestions_subtitle">Tu mayor diferencia está en</span>
-                                <span id="suggestions-category" class="font-semibold text-amber-700">-</span>
-                            </p>
-                        </div>
+                    <div class="mb-4">
+                        <h3 id="suggestions-title" class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                            <span class="text-xl">💡</span> Sugerencias para Equilibrar
+                        </h3>
+                        <p id="suggestions-subtitle" class="text-sm text-gray-600 mt-1">
+                            Tu mayor diferencia está en <span id="suggestions-category" class="font-semibold text-amber-700">-</span>
+                        </p>
                     </div>
                     <div id="suggestions-list" class="space-y-2">
                         <!-- Dynamic suggestions will be inserted here -->
@@ -1883,7 +1873,15 @@
     </div>
 
     <!-- Floating Refresh Button (only visible on dashboard) -->
-    <div id="refresh-fab" class="fixed bottom-6 right-6 z-40 hidden">
+    <!-- FAB Group (Profile + Refresh) -->
+    <div id="fab-group" class="fixed bottom-6 right-6 z-40 hidden flex flex-col items-center gap-3">
+        <!-- Profile FAB -->
+        <button id="profile-fab" onclick="showSection('profile'); renderProfileData();" class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+        </button>
+        <!-- Refresh FAB -->
         <button onclick="refreshDashboardData()" class="relative bg-gradient-to-r from-teal-soft to-teal-dark text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
             <svg id="refresh-icon" class="w-6 h-6 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -1891,8 +1889,10 @@
             <!-- Notification badge -->
             <span id="refresh-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">!</span>
         </button>
-        <p class="text-xs text-gray-500 text-center mt-1" data-i18n="refresh_hint">Actualizar</p>
+        <p class="text-xs text-gray-500 text-center" data-i18n="refresh_hint">Actualizar</p>
     </div>
+    <!-- Legacy refresh-fab ID for compatibility -->
+    <div id="refresh-fab" class="hidden"></div>
 
     <!-- ========== JAVASCRIPT ========== -->
     <script>
@@ -4076,13 +4076,13 @@
         let lastKnownState = null;
 
         function showRefreshFAB() {
-            const fab = document.getElementById('refresh-fab');
-            if (fab) fab.classList.remove('hidden');
+            const fabGroup = document.getElementById('fab-group');
+            if (fabGroup) fabGroup.classList.remove('hidden');
         }
 
         function hideRefreshFAB() {
-            const fab = document.getElementById('refresh-fab');
-            if (fab) fab.classList.add('hidden');
+            const fabGroup = document.getElementById('fab-group');
+            if (fabGroup) fabGroup.classList.add('hidden');
         }
 
         function startPolling() {
@@ -4654,16 +4654,13 @@
                 link.classList.add('text-gray-600');
             });
 
-            // Show/hide refresh FAB and profile button based on section
-            const profileBtn = document.getElementById('profile-btn');
+            // Show/hide FAB group (profile + refresh) based on section
             if (section === 'dashboard') {
                 showRefreshFAB();
                 startPolling();
-                if (profileBtn) profileBtn.style.display = 'flex';
             } else {
                 hideRefreshFAB();
                 stopPolling();
-                if (profileBtn) profileBtn.style.display = 'none';
             }
         }
 
@@ -6104,6 +6101,8 @@
             const listContainer = document.getElementById('suggestions-list');
             const categorySpan = document.getElementById('suggestions-category');
             const moreBtn = document.getElementById('suggestions-more-btn');
+            const titleEl = document.getElementById('suggestions-title');
+            const subtitleEl = document.getElementById('suggestions-subtitle');
 
             if (!section || !listContainer) return;
 
@@ -6121,6 +6120,25 @@
             const topGap = significantGaps[0];
             currentSuggestionsCategory = topGap.category;
 
+            // Determine who does LESS in this category (they should take more tasks)
+            // Higher score = does MORE of that category
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            const nameA = pairData.userA?.context?.name || 'Usuario A';
+            const nameB = pairData.userB?.context?.name || 'Usuario B';
+
+            const userWhoDoesLess = topGap.scoreA > topGap.scoreB ? 'B' : 'A';
+            const nameWhoDoesLess = userWhoDoesLess === 'A' ? nameA : nameB;
+            const nameWhoDoesMore = userWhoDoesLess === 'A' ? nameB : nameA;
+            const isCurrentUserWhoDoesLess = currentUser === userWhoDoesLess;
+
+            // Store for use in renderSuggestionsList
+            window.suggestionContext = {
+                userWhoDoesLess,
+                nameWhoDoesLess,
+                nameWhoDoesMore,
+                isCurrentUserWhoDoesLess
+            };
+
             // Map category name (e.g., "Hogar" -> "cat_hogar")
             const categoryKey = 'cat_' + topGap.category.toLowerCase();
             const suggestions = achievementSuggestions[categoryKey] || [];
@@ -6133,8 +6151,33 @@
             // Store all suggestions for "show more" functionality
             allSuggestionsForCategory = [...suggestions];
 
-            // Update category name
-            categorySpan.textContent = topGap.category;
+            // Update title and subtitle based on who's viewing
+            if (titleEl) {
+                if (isCurrentUserWhoDoesLess) {
+                    titleEl.innerHTML = currentLang === 'es'
+                        ? `<span class="text-xl">💪</span> Tareas que podrías tomar`
+                        : `<span class="text-xl">💪</span> Tasks you could take on`;
+                } else {
+                    titleEl.innerHTML = currentLang === 'es'
+                        ? `<span class="text-xl">💡</span> Sugerencias para ${nameWhoDoesLess}`
+                        : `<span class="text-xl">💡</span> Suggestions for ${nameWhoDoesLess}`;
+                }
+            }
+
+            if (subtitleEl) {
+                if (isCurrentUserWhoDoesLess) {
+                    subtitleEl.innerHTML = currentLang === 'es'
+                        ? `${nameWhoDoesMore} hace más en <strong class="text-amber-600">${topGap.category}</strong>. Estas acciones ayudarían a equilibrar:`
+                        : `${nameWhoDoesMore} does more in <strong class="text-amber-600">${topGap.category}</strong>. These actions would help balance:`;
+                } else {
+                    subtitleEl.innerHTML = currentLang === 'es'
+                        ? `Tú haces más en <strong class="text-amber-600">${topGap.category}</strong>. ${nameWhoDoesLess} podría ayudar con:`
+                        : `You do more in <strong class="text-amber-600">${topGap.category}</strong>. ${nameWhoDoesLess} could help with:`;
+                }
+            }
+
+            // Update category name (hidden now, info is in subtitle)
+            if (categorySpan) categorySpan.textContent = topGap.category;
 
             // Show first 3 suggestions
             const visibleSuggestions = suggestions.slice(0, 3);
@@ -6149,20 +6192,30 @@
         }
 
         function renderSuggestionsList(container, suggestions, categoryKey) {
+            const ctx = window.suggestionContext || {};
+            const isCurrentUserWhoDoesLess = ctx.isCurrentUserWhoDoesLess;
+
             container.innerHTML = suggestions.map((sug, index) => {
                 const text = translations[currentLang][sug.textKey] || sug.textKey;
+
+                // If current user should take these tasks, show "Lo hice" button
+                // If it's for partner, show as suggestion without button
+                const actionButton = isCurrentUserWhoDoesLess
+                    ? `<button onclick="addSuggestionAsAchievement('${sug.textKey}', '${categoryKey}')" class="px-3 py-1.5 bg-teal-500 text-white text-sm font-medium rounded-lg hover:bg-teal-600 transition-colors flex items-center gap-1 whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>${currentLang === 'es' ? 'Lo hice' : 'I did it'}</span>
+                        </button>`
+                    : `<span class="text-xs text-gray-400 italic">${currentLang === 'es' ? 'Sugerencia' : 'Suggestion'}</span>`;
+
                 return `
                     <div class="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-amber-100 hover:border-amber-300 transition-colors">
                         <div class="flex items-center gap-3">
                             <span class="text-xl">${sug.icon}</span>
                             <span class="text-gray-700">${text}</span>
                         </div>
-                        <button onclick="addSuggestionAsAchievement('${sug.textKey}', '${categoryKey}')" class="px-3 py-1.5 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition-colors flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                            <span data-i18n="suggestions_add">Agregar</span>
-                        </button>
+                        ${actionButton}
                     </div>
                 `;
             }).join('');
