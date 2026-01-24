@@ -1,64 +1,52 @@
-# US2 - Plan de Email Marketing
+# US2 - Sistema de Email Marketing
 
-> Documento de planificación para campañas de email futuras.
-> **Estado**: En planificación (no implementado)
+> Documentación del sistema de emails automatizados.
+> **Estado**: IMPLEMENTADO Y OPERATIVO
 > **Última actualización**: Enero 2026
 
 ---
 
-## 1. Datos Disponibles en Supabase
+## 1. Infraestructura Implementada
+
+### Servicios Configurados
+
+| Servicio | Propósito | Estado |
+|----------|-----------|--------|
+| **Zoho Mail** | Recibir emails en hola@us2.fun | Operativo |
+| **Resend** | Enviar emails transaccionales | Operativo |
+| **Supabase Edge Function** | Procesar y enviar emails | Desplegada |
+| **pg_cron** | Ejecutar checks diarios | Configurado (9:00 UTC) |
+
+### Credenciales y Endpoints
+
+- **Edge Function URL**: `https://lcmooxztnwdvhmnhfwyu.supabase.co/functions/v1/send-scheduled-emails`
+- **Remitente**: `US2 <hola@us2.fun>`
+- **Cron Schedule**: Todos los días a las 9:00 UTC (6:00 Argentina)
+
+---
+
+## 2. Datos en Supabase
 
 ### Tabla `newsletter_subscribers`
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
-| `email` | string | Email del usuario |
-| `source` | string | Origen del registro (pdf_capture, modal, etc.) |
+| `id` | uuid | ID único |
+| `email` | text | Email del usuario |
+| `source` | text | Origen (pdf_capture, waiting_notification, modal) |
+| `pair_id` | text | ID de la pareja (si aplica) |
 | `created_at` | timestamp | Fecha de suscripción |
 
-### Tabla `pairs`
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `pair_id` | string | ID único de la pareja |
-| `anniversary_date` | string | Fecha de aniversario (MM-DD) |
-| `shared_context` | JSONB | Objeto con todos los datos compartidos |
-| `created_at` | timestamp | Fecha de creación de la pareja |
+### Tabla `pairs` - `shared_context` (JSONB)
 
-### Contenido de `shared_context` (JSONB)
+Campos relevantes para emails:
 
 ```javascript
 {
-  // Logros registrados por la pareja
-  achievements: [
-    {
-      id: "uuid",
-      text: "Cociné la cena",
-      user: "A" | "B",
-      category: "hogar",
-      status: "pending" | "approved" | "rejected",
-      timestamp: "ISO date"
-    }
-  ],
+  // Email de User A para notificaciones
+  userA_email: "email@example.com",
+  userA_returnLink: "https://us2.fun?pairID=xxx&user=A",
 
-  // Objetivo actual de pareja
-  goals: {
-    current: {
-      text: "Cocinar juntos 3 veces esta semana",
-      proposedBy: "A",
-      approvedBy: "B",
-      startedAt: "ISO date",
-      progress: 0-100
-    },
-    pending: { ... },
-    completed: [{ text, completedAt }]
-  },
-
-  // Insignias desbloqueadas (por usuario)
-  badges: {
-    userA: ["first_test", "streak_7", "balance_master"],
-    userB: ["first_test", "communicator"]
-  },
-
-  // Historial de tests
+  // Historial de tests (para retest reminders)
   testHistory: [
     {
       userA: { score: 32, timestamp: "ISO date" },
@@ -67,95 +55,131 @@
     }
   ],
 
-  // Racha de actividad
-  streak: {
-    currentStreak: 5,
-    lastActiveDate: "YYYY-MM-DD",
-    longestStreak: 12
-  },
-
-  // Seguimientos agendados por categoría
+  // Seguimientos programados (para followup reminders)
   scheduledReevals: {
     "cat_limpieza": {
       scheduledAt: "ISO date",
       category: "cat_limpieza",
-      scheduledBy: "A"
+      reminderSent: false
     }
   },
 
-  // Aniversario
+  // Aniversario (para anniversary reminders)
   anniversary: {
     month: 6,
     day: 14
-  }
+  },
+
+  // Tracking de emails enviados
+  lastRetestReminderSent: "ISO date",
+  lastAnniversaryReminderYear: 2026
 }
 ```
 
-### Tabla `tests`
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `pair_id` | string | ID de la pareja |
-| `user_role` | "A" \| "B" | Usuario que hizo el test |
-| `score` | int | Puntaje total (0-45) |
-| `category_scores` | JSONB | Puntajes por categoría |
-| `answers` | JSONB | Respuestas individuales |
-| `created_at` | timestamp | Fecha del test |
+---
+
+## 3. Emails Implementados
+
+### 3.1 Emails Automáticos (Cron Diario)
+
+| Trigger | Template | Cuándo se envía |
+|---------|----------|-----------------|
+| **Retest Reminder** | `retest_reminder` | 7 días después del último test |
+| **Scheduled Followup** | `scheduled_followup` | Cuando llega la fecha programada |
+| **Anniversary** | `anniversary` | 7 días antes del aniversario |
+
+### 3.2 Emails Inmediatos (Event-driven)
+
+| Trigger | Template | Cuándo se envía |
+|---------|----------|-----------------|
+| **Partner Completed** | `partner_completed` | Cuando User B completa y User A dejó email |
 
 ---
 
-## 2. Campañas de Email Propuestas
+## 4. Cómo Funciona
 
-### 2.1 Emails Transaccionales (Automáticos)
+### Flujo de Captura de Email
 
-| Trigger | Email | Timing | Datos necesarios |
-|---------|-------|--------|------------------|
-| Pareja completa primer test | "Bienvenidos a US2" | Inmediato | pair_id, nombres |
-| Usuario agenda seguimiento | "Recordatorio de seguimiento" | 14 días después | scheduledReevals |
-| Aniversario cercano | "¡Su aniversario se acerca!" | 7 días antes | anniversary_date |
-| Racha de 7 días | "¡Felicitaciones por su racha!" | Cuando streak = 7 | streak |
-| Sin actividad 14 días | "Los extrañamos" | 14 días inactivo | lastActiveDate |
-| Nuevo badge desbloqueado | "¡Nuevo logro!" | Inmediato | badges |
+1. **User A completa test** → Ve pantalla de espera
+2. **User A ingresa email** → Se guarda en:
+   - `newsletter_subscribers` (con source: `waiting_notification`)
+   - `pairs.shared_context.userA_email`
+3. **User B completa test** → Se dispara:
+   - Email automático a User A (si dejó email)
+   - Modal sugiriendo notificar por WhatsApp
 
-### 2.2 Emails de Nurturing (Secuencia)
+### Flujo del Cron Job (Diario 9:00 UTC)
 
-**Secuencia post-registro:**
-1. **Día 0**: Bienvenida + cómo interpretar resultados
-2. **Día 3**: Tips para mejorar la categoría con mayor gap
-3. **Día 7**: Invitación a registrar primer logro
-4. **Día 14**: Recordatorio de re-evaluar (si agendaron seguimiento)
-5. **Día 30**: Resumen mensual de progreso
-
-### 2.3 Emails Estacionales
-
-| Fecha | Campaña | Contenido |
-|-------|---------|-----------|
-| 14 Feb | San Valentín | "Celebren con una conversación sobre su equipo" |
-| Día Madre/Padre | Reconocimiento | "El trabajo invisible que hacen" |
-| Fin de año | Retrospectiva | "Su año como equipo en números" |
-| Aniversario pareja | Personalizado | "X años juntos - miren cuánto crecieron" |
+```
+pg_cron → HTTP POST → Edge Function
+                          ↓
+              ┌───────────┴───────────┐
+              ↓           ↓           ↓
+        checkRetest  checkFollowup  checkAnniversary
+              ↓           ↓           ↓
+         Resend API  Resend API  Resend API
+```
 
 ---
 
-## 3. Segmentación de Audiencia
+## 5. Templates de Email
 
-### Por engagement
-- **Activos**: Actividad en últimos 7 días
-- **Dormidos**: Sin actividad 14-30 días
-- **En riesgo**: Sin actividad 30+ días
+### retest_reminder
+- **Subject**: 📊 ¿Cómo va el equilibrio? Es hora de re-evaluar
+- **Contenido**: Invitación a hacer el test de seguimiento después de 7 días
 
-### Por resultados del test
-- **Equilibrados**: Gap promedio < 0.5
-- **En proceso**: Gap promedio 0.5-1.0
-- **Necesitan ayuda**: Gap promedio > 1.0
+### scheduled_followup
+- **Subject**: 🔔 Recordatorio: Seguimiento programado de {category}
+- **Contenido**: Recordatorio de la re-evaluación que programaron
 
-### Por categoría problemática
-- Parejas con gap alto en "Limpieza"
-- Parejas con gap alto en "Carga emocional"
-- etc.
+### anniversary
+- **Subject**: 💕 ¡Su aniversario se acerca! Un regalo especial
+- **Contenido**: Felicitación y sugerencia de revisar progreso juntos
+
+### partner_completed
+- **Subject**: 🎉 ¡Tu pareja completó el test! Vean los resultados juntos
+- **Contenido**: Notificación con link directo a resultados
 
 ---
 
-## 4. Métricas a Trackear
+## 6. Comandos Útiles
+
+### Enviar email de prueba
+```bash
+curl -X POST 'https://lcmooxztnwdvhmnhfwyu.supabase.co/functions/v1/send-scheduled-emails' \
+  -H 'Authorization: Bearer [ANON_KEY]' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "manual",
+    "email": "destino@email.com",
+    "data": {
+      "template": "retest_reminder",
+      "returnLink": "https://us2.fun"
+    }
+  }'
+```
+
+### Ejecutar cron manualmente
+```bash
+curl -X POST 'https://lcmooxztnwdvhmnhfwyu.supabase.co/functions/v1/send-scheduled-emails' \
+  -H 'Authorization: Bearer [ANON_KEY]' \
+  -H 'Content-Type: application/json' \
+  -d '{"type": "cron"}'
+```
+
+### Ver cron jobs configurados
+```sql
+SELECT * FROM cron.job;
+```
+
+### Ver historial de ejecuciones
+```sql
+SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
+```
+
+---
+
+## 7. Métricas a Trackear (Futuro)
 
 | Métrica | Descripción | Objetivo |
 |---------|-------------|----------|
@@ -166,74 +190,24 @@
 
 ---
 
-## 5. Herramientas Sugeridas
+## 8. Pendientes para Futuras Mejoras
 
-| Necesidad | Opciones | Notas |
-|-----------|----------|-------|
-| Envío de emails | Resend, Postmark, SendGrid | Resend tiene free tier generoso |
-| Templates | React Email, MJML | React Email integra bien con Vercel |
-| Scheduling | Supabase Edge Functions, Vercel Cron | Ya tenemos Supabase |
-| Analytics | Propio en Supabase | Guardar opens/clicks |
-
----
-
-## 6. Queries SQL Útiles (para cuando implementemos)
-
-```sql
--- Parejas que agendaron seguimiento hace 14+ días
-SELECT p.pair_id, p.shared_context->'scheduledReevals' as reevals
-FROM pairs p
-WHERE p.shared_context->'scheduledReevals' IS NOT NULL
-AND EXISTS (
-  SELECT 1 FROM jsonb_each(p.shared_context->'scheduledReevals') as r
-  WHERE (r.value->>'scheduledAt')::timestamp < NOW() - INTERVAL '14 days'
-);
-
--- Parejas con aniversario en los próximos 7 días
-SELECT pair_id, anniversary_date
-FROM pairs
-WHERE anniversary_date IS NOT NULL
-AND (
-  TO_DATE(anniversary_date || '-' || EXTRACT(YEAR FROM NOW()), 'MM-DD-YYYY')
-  BETWEEN NOW() AND NOW() + INTERVAL '7 days'
-);
-
--- Parejas sin actividad en 14 días
-SELECT p.pair_id
-FROM pairs p
-WHERE (p.shared_context->>'lastGoalsSync')::timestamp < NOW() - INTERVAL '14 days'
-OR p.shared_context->>'lastGoalsSync' IS NULL;
-
--- Top categorías con mayor gap (para contenido)
-SELECT
-  t.category_scores,
-  COUNT(*) as frequency
-FROM tests t
-GROUP BY t.category_scores
-ORDER BY frequency DESC;
-```
+- [ ] Agregar tracking de opens/clicks (Resend lo soporta)
+- [ ] Email de bienvenida cuando ambos completan primer test
+- [ ] Email de racha (streak de 7 días)
+- [ ] Email de inactividad (14 días sin actividad)
+- [ ] Dashboard de métricas de email
+- [ ] Unsubscribe automático
 
 ---
 
-## 7. Próximos Pasos (cuando implementemos)
+## 9. Archivos Relacionados
 
-1. [ ] Elegir proveedor de email (Resend recomendado)
-2. [ ] Crear templates base con React Email
-3. [ ] Configurar Supabase Edge Function para triggers
-4. [ ] Implementar tracking de opens/clicks
-5. [ ] Crear dashboard de métricas
-6. [ ] A/B testing de subject lines
+- **Edge Function**: `/supabase/functions/send-scheduled-emails/index.ts`
+- **Frontend (captura email)**: `/index.html` → `saveWaitingEmail()`
+- **Frontend (notificación)**: `/index.html` → `sendPartnerCompletedEmail()`
 
 ---
 
-## 8. Consideraciones Legales
-
-- [ ] Agregar checkbox de consentimiento explícito
-- [ ] Link de unsubscribe en todos los emails
-- [ ] Política de privacidad actualizada
-- [ ] Cumplimiento GDPR (si hay usuarios EU)
-
----
-
-*Documento creado: Enero 2026*
-*Para implementar: Cuando tengamos volumen de usuarios suficiente*
+*Documento actualizado: Enero 2026*
+*Sistema implementado y operativo*

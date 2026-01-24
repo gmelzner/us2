@@ -699,12 +699,45 @@
 
                         <p id="copy-feedback" class="text-sm text-green-600 mt-3 hidden" data-i18n="copy_success">¡Copiado al portapapeles!</p>
 
+                        <!-- Email notification section -->
+                        <div id="waiting-email-section" class="mt-8 pt-6 border-t border-gray-100">
+                            <div class="bg-gradient-to-r from-purple-50 to-teal-50 p-5 rounded-xl">
+                                <div class="flex items-start gap-3 mb-4">
+                                    <span class="text-2xl">📧</span>
+                                    <div class="text-left">
+                                        <h3 class="font-semibold text-gray-800" data-i18n="waiting_email_title">¿Querés que te avisemos cuando complete?</h3>
+                                        <p class="text-sm text-gray-600" data-i18n="waiting_email_desc">Te enviamos un email con el link para volver a ver los resultados juntos.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="email" id="waiting-email-input" placeholder="tu@email.com" class="flex-1 p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-soft focus:border-transparent">
+                                    <button onclick="saveWaitingEmail()" class="px-5 py-3 bg-teal-dark text-white font-medium rounded-lg hover:bg-teal-700 transition-colors" data-i18n="waiting_email_btn">
+                                        Avisarme
+                                    </button>
+                                </div>
+                                <p id="waiting-email-error" class="text-sm text-red-500 mt-2 hidden"></p>
+                            </div>
+                        </div>
+
+                        <!-- Email saved success (hidden by default) -->
+                        <div id="waiting-email-success" class="mt-8 pt-6 border-t border-gray-100 hidden">
+                            <div class="bg-green-50 p-5 rounded-xl">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">✅</span>
+                                    <div class="text-left">
+                                        <p class="font-semibold text-green-800" data-i18n="waiting_email_saved">¡Listo! Te avisaremos cuando tu pareja complete el test.</p>
+                                        <p class="text-sm text-green-600" data-i18n="waiting_email_saved_desc">También te enviamos el link para volver a esta página.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- AdSense Waiting Screen -->
                         <div class="adsense-placeholder mt-8 py-6">
                             <span>Ad Space - Waiting Screen</span>
                         </div>
 
-                        <div class="mt-8 pt-6 border-t border-gray-100">
+                        <div class="mt-6 pt-6 border-t border-gray-100">
                             <button onclick="checkPartnerStatus()" class="text-teal-dark hover:text-teal-soft transition-colors font-medium" data-i18n="check_status_btn">
                                 Verificar si mi pareja completó el test →
                             </button>
@@ -1811,6 +1844,47 @@
     <div id="confetti-container" class="confetti-container"></div>
 
     <!-- Email Capture Modal -->
+    <!-- Notify Partner Modal (shown to User B when User A left email) -->
+    <div id="notify-partner-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative animate-slideUp">
+            <!-- Close button -->
+            <button onclick="closeNotifyPartnerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Icon -->
+            <div class="w-20 h-20 bg-gradient-to-br from-green-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-4xl">🎉</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-2" data-i18n="notify_partner_title">
+                ¡Test completado!
+            </h3>
+
+            <!-- Description -->
+            <p class="text-gray-600 text-center mb-6" data-i18n="notify_partner_desc">
+                Tu pareja está esperando los resultados. ¡Avísale que ya pueden verlos juntos!
+            </p>
+
+            <!-- Buttons -->
+            <div class="space-y-3">
+                <button onclick="notifyPartnerWhatsApp()" class="w-full p-4 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition-colors flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.458-1.495A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.487 0-4.807-.798-6.694-2.151l-.481-.353-2.645.887.887-2.645-.353-.481A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+                    </svg>
+                    <span data-i18n="notify_partner_whatsapp">Avisar por WhatsApp</span>
+                </button>
+                <button onclick="closeNotifyPartnerModal()" class="w-full p-4 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors" data-i18n="notify_partner_skip">
+                    Ver resultados primero
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="email-capture-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-8 relative animate-slideUp">
             <!-- Close button -->
@@ -2712,6 +2786,20 @@
                 copy_message_btn: "Copiar mensaje de invitación",
                 copy_success: "¡Copiado al portapapeles!",
                 check_status_btn: "Verificar si mi pareja completó el test →",
+                waiting_email_title: "¿Querés que te avisemos cuando complete?",
+                waiting_email_desc: "Te enviamos un email con el link para volver a ver los resultados juntos.",
+                waiting_email_btn: "Avisarme",
+                waiting_email_saved: "¡Listo! Te avisaremos cuando tu pareja complete el test.",
+                waiting_email_saved_desc: "También te enviamos el link para volver a esta página.",
+                waiting_email_invalid: "Por favor ingresa un email válido",
+                waiting_email_error: "Error al guardar. Intenta de nuevo.",
+
+                // Notify partner (User B completes)
+                notify_partner_title: "¡Test completado!",
+                notify_partner_desc: "Tu pareja está esperando los resultados. ¡Avísale que ya pueden verlos juntos!",
+                notify_partner_whatsapp: "Avisar por WhatsApp",
+                notify_partner_skip: "Ver resultados primero",
+                notify_partner_message: "¡Ya completé el test de US2! 🎉\n\n¿Vemos los resultados juntos?",
 
                 // Invite message
                 invite_message: "¡Hola! Entré en US2 para que veamos cómo nos repartimos la 'gestión invisible' de casa. Cuando lo termines, vemos los resultados juntos. ¡Es para sumar!",
@@ -3377,6 +3465,20 @@
                 copy_message_btn: "Copy invitation message",
                 copy_success: "Copied to clipboard!",
                 check_status_btn: "Check if my partner completed the test →",
+                waiting_email_title: "Want us to notify you when they complete?",
+                waiting_email_desc: "We'll send you an email with the link to see the results together.",
+                waiting_email_btn: "Notify me",
+                waiting_email_saved: "Done! We'll notify you when your partner completes the test.",
+                waiting_email_saved_desc: "We also sent you the link to come back to this page.",
+                waiting_email_invalid: "Please enter a valid email",
+                waiting_email_error: "Error saving. Please try again.",
+
+                // Notify partner (User B completes)
+                notify_partner_title: "Test completed!",
+                notify_partner_desc: "Your partner is waiting for the results. Let them know you can view them together!",
+                notify_partner_whatsapp: "Notify via WhatsApp",
+                notify_partner_skip: "View results first",
+                notify_partner_message: "I completed the US2 test! 🎉\n\nShall we see the results together?",
 
                 // Invite message
                 invite_message: "Hi! I started US2 so we can see how we share the 'invisible management' at home. When you finish, we'll see the results together. It's about teamwork!",
@@ -4123,10 +4225,9 @@
             console.log('📧 ✓ Dashboard visible');
 
             // Check 2: Both users completed?
-            const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
-            const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
-            if (!dataA || !dataB) {
-                console.log('📧 ❌ Not both users completed', { dataA: !!dataA, dataB: !!dataB });
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            if (!pairData.userA || !pairData.userB) {
+                console.log('📧 ❌ Not both users completed', { userA: !!pairData.userA, userB: !!pairData.userB });
                 return;
             }
             console.log('📧 ✓ Both users completed');
@@ -4409,14 +4510,9 @@
                 await syncFromSupabase();
 
                 // Reload the dashboard
-                const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
-                const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
+                const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
 
-                if (dataA && dataB) {
-                    const pairData = {
-                        userA: dataA,
-                        userB: dataB
-                    };
+                if (pairData.userA && pairData.userB) {
 
                     // Refresh UI elements
                     loadAchievements();
@@ -5158,6 +5254,9 @@
                 // Play completion sound
                 SoundSystem.playComplete();
 
+                // Check if User A wants to be notified
+                checkAndShowNotifyPartner();
+
                 showDashboard(pairData);
             }
         }
@@ -5191,6 +5290,149 @@
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
         }
 
+        async function saveWaitingEmail() {
+            const emailInput = document.getElementById('waiting-email-input');
+            const email = emailInput.value.trim().toLowerCase();
+            const errorEl = document.getElementById('waiting-email-error');
+
+            // Validate email
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                errorEl.textContent = translations[currentLang].waiting_email_invalid || 'Por favor ingresa un email válido';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+
+            // Generate return link for User A
+            const returnLink = `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=A`;
+
+            try {
+                // 1. Save to newsletter_subscribers
+                await supabaseClient
+                    .from('newsletter_subscribers')
+                    .upsert({
+                        email,
+                        source: 'waiting_notification',
+                        pair_id: pairID
+                    }, { onConflict: 'email' });
+
+                // 2. Save email in pair's shared_context
+                const { data: pairData } = await supabaseClient
+                    .from('pairs')
+                    .select('shared_context')
+                    .eq('pair_id', pairID)
+                    .single();
+
+                const currentContext = pairData?.shared_context || {};
+                currentContext.userA_email = email;
+                currentContext.userA_returnLink = returnLink;
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: currentContext })
+                    .eq('pair_id', pairID);
+
+                // 3. Save locally too
+                localStorage.setItem(`us2_waiting_email_${pairID}`, email);
+
+                console.log('📧 Waiting notification email saved:', email);
+
+                // Show success, hide form
+                document.getElementById('waiting-email-section').classList.add('hidden');
+                document.getElementById('waiting-email-success').classList.remove('hidden');
+
+            } catch (err) {
+                console.error('Error saving waiting email:', err);
+                errorEl.textContent = translations[currentLang].waiting_email_error || 'Error al guardar. Intenta de nuevo.';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        // Notify partner functions (shown to User B when they complete)
+        async function checkAndShowNotifyPartner() {
+            // Only for User B
+            if (currentUser !== 'B') return;
+
+            try {
+                // Check if User A left their email
+                const { data: pairData } = await supabaseClient
+                    .from('pairs')
+                    .select('shared_context')
+                    .eq('pair_id', pairID)
+                    .single();
+
+                const userAEmail = pairData?.shared_context?.userA_email;
+                const userAReturnLink = pairData?.shared_context?.userA_returnLink;
+
+                if (userAEmail || userAReturnLink) {
+                    // Store the return link for WhatsApp message
+                    window.partnerReturnLink = userAReturnLink || `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=A`;
+
+                    // If User A left email, send automatic notification
+                    if (userAEmail) {
+                        sendPartnerCompletedEmail(userAEmail, window.partnerReturnLink);
+                    }
+
+                    showNotifyPartnerModal();
+                }
+            } catch (err) {
+                console.warn('Could not check for partner email:', err);
+            }
+        }
+
+        // Send email notification via Edge Function
+        async function sendPartnerCompletedEmail(email, returnLink) {
+            try {
+                const response = await fetch('https://lcmooxztnwdvhmnhfwyu.supabase.co/functions/v1/send-scheduled-emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjbW9veHp0bndkdmhtbmhmd3l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkyMDIxNDcsImV4cCI6MjA4NDc3ODE0N30.96aIqPR0lt8mqId8lPKuIg-lNKt92AbAAFvGRIG-fj8'
+                    },
+                    body: JSON.stringify({
+                        type: 'manual',
+                        email: email,
+                        data: {
+                            template: 'partner_completed',
+                            returnLink: returnLink
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    console.log('📧 Partner notification email sent to:', email);
+                } else {
+                    console.warn('Failed to send partner notification:', result);
+                }
+            } catch (err) {
+                console.warn('Error sending partner notification email:', err);
+            }
+        }
+
+        function showNotifyPartnerModal() {
+            const modal = document.getElementById('notify-partner-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeNotifyPartnerModal() {
+            const modal = document.getElementById('notify-partner-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function notifyPartnerWhatsApp() {
+            const link = window.partnerReturnLink || `${window.location.origin}${window.location.pathname}?pairID=${pairID}`;
+            const baseMessage = translations[currentLang].notify_partner_message ||
+                `¡Ya completé el test de US2! 🎉\n\n¿Vemos los resultados juntos?`;
+            const message = `${baseMessage}\n\n${link}`;
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+            closeNotifyPartnerModal();
+        }
+
         function shareResults() {
             const siteUrl = window.location.origin + window.location.pathname;
             const message = translations[currentLang].share_message + '\n\n' + siteUrl;
@@ -5218,8 +5460,9 @@
 
         function shareOnWhatsApp() {
             // Get user data
-            const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
-            const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            const dataA = pairData.userA;
+            const dataB = pairData.userB;
 
             if (!dataA || !dataB) {
                 shareResults();
