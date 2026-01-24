@@ -750,13 +750,6 @@
                             </svg>
                             <span data-i18n="share_results">Compartir Resultados</span>
                         </button>
-                        <!-- Retake Test -->
-                        <button onclick="retakeTest()" class="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-full hover:border-teal-soft hover:text-teal-dark transition-all flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            <span data-i18n="retake_test">Volver a Hacer el Test</span>
-                        </button>
                     </div>
                 </div>
 
@@ -1204,7 +1197,7 @@
                     <!-- Tabs -->
                     <div class="flex gap-2 mb-4 border-b border-gray-100 overflow-x-auto">
                         <button onclick="switchAchievementTab('pending')" id="tab-pending" class="achievement-tab px-4 py-2 text-sm font-medium text-teal-dark border-b-2 border-teal-dark whitespace-nowrap">
-                            <span data-i18n="tab_pending">Por aprobar</span>
+                            <span data-i18n="tab_pending">Pendientes de aprobar</span>
                             <span id="pending-count" class="ml-1 px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full text-xs">0</span>
                         </button>
                         <button onclick="switchAchievementTab('mine')" id="tab-mine" class="achievement-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-teal-dark whitespace-nowrap">
@@ -1388,11 +1381,30 @@
                     </div>
                 </div>
 
+                <!-- Re-test Section -->
+                <div id="retest-section" class="bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl shadow-sm mb-12 border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                        <span>🔄</span>
+                        <span data-i18n="retest_title">Re-evaluar como Equipo</span>
+                    </h3>
+                    <p class="text-gray-500 text-sm mb-6" data-i18n="retest_desc">Vuelvan a hacer el test para medir su progreso. Recomendamos esperar al menos 7 días entre tests.</p>
+
+                    <!-- Test History -->
+                    <div id="test-history-container" class="mb-6">
+                        <p class="text-sm text-gray-600 mb-2" data-i18n="history_label">Historial de tests:</p>
+                        <div id="test-history-list" class="space-y-2 max-h-32 overflow-y-auto">
+                            <!-- Filled dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Retest Button (with 7-day check) -->
+                    <div id="retest-button-container" class="text-center">
+                        <!-- Button inserted dynamically based on timing -->
+                    </div>
+                </div>
+
                 <!-- Share Results -->
                 <div class="text-center space-y-6">
-                    <button onclick="restartTest()" class="px-8 py-4 bg-white text-teal-dark font-semibold rounded-full shadow-md hover:shadow-lg transition-all border-2 border-teal-soft" data-i18n="restart_btn">
-                        Hacer el Test de Nuevo
-                    </button>
 
                     <!-- Share Section -->
                     <div class="pt-6 border-t border-gray-100">
@@ -1636,7 +1648,26 @@
                 <span data-i18n="anniversary_modal_title">Fecha de Aniversario</span>
             </h3>
             <p class="text-gray-600 text-sm mb-4" data-i18n="anniversary_modal_desc">¿Cuándo celebran su aniversario?</p>
-            <input type="date" id="anniversary-input" class="w-full p-3 border-2 border-gray-200 rounded-xl mb-4 focus:border-purple-400 focus:outline-none">
+            <div class="flex gap-3 mb-4">
+                <select id="anniversary-day" class="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none bg-white">
+                    <option value="" data-i18n="select_day">Día</option>
+                </select>
+                <select id="anniversary-month" class="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none bg-white">
+                    <option value="" data-i18n="select_month">Mes</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
             <div class="flex gap-3">
                 <button onclick="closeAnniversaryModal()" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium" data-i18n="cancel_btn">
                     Cancelar
@@ -1909,7 +1940,30 @@
             }
         }
 
-        // Sync achievement to Supabase
+        // Sync full achievements array to shared_context
+        async function syncAchievementsToSharedContext(achievements) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                const updatedContext = {
+                    ...currentContext,
+                    achievements: achievements,
+                    lastAchievementSync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Achievements synced to shared_context');
+            } catch (e) {
+                console.error('Achievements sync error:', e);
+            }
+        }
+
+        // Legacy: Sync single achievement to separate table (keeping for backup)
         async function syncAchievementToSupabase(achievement) {
             try {
                 await db.saveAchievement(
@@ -1919,7 +1973,7 @@
                     achievement.category,
                     achievement.status || 'pending'
                 );
-                console.log('✅ Achievement synced');
+                console.log('✅ Achievement synced to table');
             } catch (e) {
                 console.error('Achievement sync error:', e);
             }
@@ -2662,6 +2716,9 @@
                 refresh_hint: "Actualizar",
                 refresh_success: "¡Actualizado!",
                 refresh_error: "Error al actualizar",
+                retest_title: "Re-evaluar como Equipo",
+                retest_desc: "Vuelvan a hacer el test para medir su progreso. Recomendamos esperar al menos 7 días entre tests.",
+                history_label: "Historial de tests:",
                 level_up_toast: "¡Subieron de nivel!",
 
                 // Rewards System
@@ -3232,6 +3289,9 @@
                 refresh_hint: "Refresh",
                 refresh_success: "Updated!",
                 refresh_error: "Update failed",
+                retest_title: "Re-evaluate as a Team",
+                retest_desc: "Retake the test to measure your progress. We recommend waiting at least 7 days between tests.",
+                history_label: "Test history:",
                 level_up_toast: "Level up!",
 
                 // Rewards System
@@ -3513,8 +3573,9 @@
 
         async function checkForUpdates() {
             try {
-                // Fetch achievements from Supabase (separate table)
-                const serverAchievements = await db.getAchievements(pairID);
+                // Fetch from shared_context (primary source)
+                const pair = await db.getPair(pairID);
+                const serverAchievements = pair?.shared_context?.achievements || [];
 
                 // Compare with local state
                 const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
@@ -3523,15 +3584,12 @@
                 let changesCount = 0;
                 serverAchievements.forEach(serverAch => {
                     const localAch = localAchievements.find(l => l.id === serverAch.id);
-                    if (!localAch || localAch.status !== serverAch.status) {
-                        changesCount++;
+                    if (!localAch) {
+                        changesCount++; // New achievement from partner
+                    } else if (localAch.status !== serverAch.status) {
+                        changesCount++; // Status changed (approved/rejected)
                     }
                 });
-
-                // Also check if there are more achievements on server
-                if (serverAchievements.length > localAchievements.length) {
-                    changesCount += serverAchievements.length - localAchievements.length;
-                }
 
                 // Show/hide notification badge
                 const badge = document.getElementById('refresh-badge');
@@ -3595,43 +3653,46 @@
 
         async function syncFromSupabase() {
             try {
-                // Sync achievements from separate table
-                const serverAchievements = await db.getAchievements(pairID);
-                if (serverAchievements && serverAchievements.length > 0) {
-                    // Merge with local, keeping server as source of truth for status
-                    const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
-
-                    // Create a map of server achievements
-                    const mergedAchievements = serverAchievements.map(serverAch => {
-                        const localAch = localAchievements.find(l => l.id === serverAch.id);
-                        return {
-                            id: serverAch.id,
-                            text: serverAch.text,
-                            category: serverAch.category,
-                            status: serverAch.status,
-                            proposedBy: serverAch.user_role,
-                            createdAt: serverAch.created_at
-                        };
-                    });
-
-                    localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(mergedAchievements));
+                const pair = await db.getPair(pairID);
+                if (!pair || !pair.shared_context) {
+                    console.log('No shared_context to sync');
+                    return;
                 }
 
-                // Sync other data from shared_context if available
-                const pair = await db.getPair(pairID);
-                if (pair && pair.shared_context) {
-                    if (pair.shared_context.goals) {
-                        localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(pair.shared_context.goals));
-                    }
-                    if (pair.shared_context.badges) {
-                        localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(pair.shared_context.badges));
-                    }
-                    if (pair.shared_context.challengeHistory) {
-                        localStorage.setItem(`us2_challenge_history_${pairID}`, JSON.stringify(pair.shared_context.challengeHistory));
-                    }
-                    if (pair.shared_context.streak) {
-                        localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(pair.shared_context.streak));
-                    }
+                const ctx = pair.shared_context;
+
+                // Sync achievements from shared_context (primary source)
+                if (ctx.achievements && ctx.achievements.length > 0) {
+                    const localAchievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+
+                    // Merge: prefer server data but keep local-only items
+                    const serverIds = new Set(ctx.achievements.map(a => a.id));
+                    const localOnly = localAchievements.filter(a => !serverIds.has(a.id));
+
+                    // Server achievements + any local-only ones (edge case during sync)
+                    const merged = [...ctx.achievements, ...localOnly];
+                    localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(merged));
+                    console.log('✅ Achievements synced from shared_context');
+                }
+
+                // Sync goals
+                if (ctx.goals) {
+                    localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(ctx.goals));
+                }
+
+                // Sync badges
+                if (ctx.badges) {
+                    localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(ctx.badges));
+                }
+
+                // Sync challenge history
+                if (ctx.challengeHistory) {
+                    localStorage.setItem(`us2_challenge_history_${pairID}`, JSON.stringify(ctx.challengeHistory));
+                }
+
+                // Sync streak
+                if (ctx.streak) {
+                    localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(ctx.streak));
                 }
             } catch (e) {
                 console.error('Sync from Supabase failed:', e);
@@ -4337,6 +4398,68 @@
             startTest();
         }
 
+        function renderRetestSection() {
+            const historyList = document.getElementById('test-history-list');
+            const buttonContainer = document.getElementById('retest-button-container');
+
+            if (!historyList || !buttonContainer) return;
+
+            // Get test history
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+
+            // Render history
+            if (testHistory.length > 0) {
+                historyList.innerHTML = testHistory.slice(-5).reverse().map((test, i) => {
+                    const date = new Date(test.userA?.timestamp || test.userB?.timestamp);
+                    const dateStr = date.toLocaleDateString(currentLang === 'es' ? 'es-ES' : 'en-US', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+                    return `
+                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                            <span class="text-gray-600">${i === 0 ? (currentLang === 'es' ? 'Último test' : 'Last test') : `Test #${testHistory.length - i}`}</span>
+                            <span class="text-gray-500">${dateStr}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                historyList.innerHTML = `<p class="text-sm text-gray-400">${currentLang === 'es' ? 'Este es su primer test' : 'This is your first test'}</p>`;
+            }
+
+            // Check if 7 days have passed since last test
+            const lastTest = testHistory[testHistory.length - 1];
+            const lastTestDate = lastTest ? new Date(lastTest.userA?.timestamp || lastTest.userB?.timestamp) : null;
+            const daysSinceLastTest = lastTestDate ? Math.floor((Date.now() - lastTestDate.getTime()) / (1000 * 60 * 60 * 24)) : 999;
+
+            if (daysSinceLastTest >= 7) {
+                // Can retest now
+                buttonContainer.innerHTML = `
+                    <button onclick="retakeTest()" class="px-8 py-4 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-all">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span data-i18n="retest_now_btn">${currentLang === 'es' ? 'Hacer el Test de Nuevo' : 'Retake the Test'}</span>
+                        </span>
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2">${currentLang === 'es' ? '¡Ya pasaron 7+ días!' : '7+ days have passed!'}</p>
+                `;
+            } else {
+                // Must wait
+                const daysRemaining = 7 - daysSinceLastTest;
+                buttonContainer.innerHTML = `
+                    <button disabled class="px-8 py-4 bg-gray-200 text-gray-500 font-semibold rounded-full cursor-not-allowed">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>${currentLang === 'es' ? `Esperar ${daysRemaining} día${daysRemaining !== 1 ? 's' : ''} más` : `Wait ${daysRemaining} more day${daysRemaining !== 1 ? 's' : ''}`}</span>
+                        </span>
+                    </button>
+                    <p class="text-xs text-gray-400 mt-2">${currentLang === 'es' ? 'Recomendamos esperar 7 días para ver cambios reales' : 'We recommend waiting 7 days to see real changes'}</p>
+                `;
+            }
+        }
+
         function showCopyFeedback() {
             const feedback = document.getElementById('copy-feedback');
             feedback.classList.remove('hidden');
@@ -4432,6 +4555,9 @@
 
             // Check for anniversary reminder
             checkAnniversaryReminder();
+
+            // Render retest section with 7-day check
+            renderRetestSection();
 
             // Save to test history for tracking
             saveTestToHistory(pairData);
@@ -5439,7 +5565,8 @@
 
             localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
 
-            // Sync to Supabase
+            // Sync to Supabase shared_context (primary) and achievements table (backup)
+            syncAchievementsToSharedContext(achievements);
             const newAchievement = achievements[achievements.length - 1];
             syncAchievementToSupabase(newAchievement);
 
@@ -5465,7 +5592,7 @@
             showToast('✓', 'success', currentLang === 'es' ? '¡Logro enviado para aprobar!' : 'Achievement sent for approval!');
         }
 
-        function approveAchievement(achievementId) {
+        async function approveAchievement(achievementId) {
             const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
             const index = achievements.findIndex(a => a.id === achievementId);
 
@@ -5474,6 +5601,9 @@
                 achievements[index].approvedBy = currentUser;
                 achievements[index].approvedAt = new Date().toISOString();
                 localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(achievements));
+
+                // Sync to Supabase shared_context
+                await syncAchievementsToSharedContext(achievements);
 
                 // Show toast
                 showToast('👍', 'success', translations[currentLang].approval_toast);
@@ -5607,6 +5737,30 @@
 
         function saveGoalsData(data) {
             localStorage.setItem(`us2_goals_${pairID}`, JSON.stringify(data));
+            // Sync to Supabase shared_context
+            syncGoalsToSharedContext(data);
+        }
+
+        async function syncGoalsToSharedContext(goals) {
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                const updatedContext = {
+                    ...currentContext,
+                    goals: goals,
+                    lastGoalsSync: new Date().toISOString()
+                };
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: updatedContext })
+                    .eq('pair_id', pairID);
+
+                console.log('✅ Goals synced to shared_context');
+            } catch (e) {
+                console.error('Goals sync error:', e);
+            }
         }
 
         function proposeGoal() {
@@ -5810,15 +5964,35 @@
         // ANNIVERSARY SYSTEM
         // ==========================================
 
+        function initAnniversaryDaySelect() {
+            const daySelect = document.getElementById('anniversary-day');
+            if (!daySelect) return;
+            // Clear existing options except first
+            daySelect.innerHTML = '<option value="">Día</option>';
+            for (let i = 1; i <= 31; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+        }
+
         function openAnniversaryModal() {
             const modal = document.getElementById('anniversary-modal');
-            const input = document.getElementById('anniversary-input');
+            const daySelect = document.getElementById('anniversary-day');
+            const monthSelect = document.getElementById('anniversary-month');
+
+            // Initialize day dropdown
+            initAnniversaryDaySelect();
+
+            // Load saved value
             const saved = localStorage.getItem(`us2_anniversary_${pairID}`);
             if (saved) {
                 const [m, d] = saved.split('-');
-                const year = new Date().getFullYear();
-                input.value = `${year}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+                if (monthSelect) monthSelect.value = m;
+                if (daySelect) daySelect.value = d;
             }
+
             modal.style.display = 'flex';
             SoundSystem.playClick();
         }
@@ -5828,11 +6002,13 @@
         }
 
         async function saveAnniversary() {
-            const input = document.getElementById('anniversary-input');
-            if (input.value) {
-                const date = new Date(input.value);
-                const month = date.getMonth() + 1;
-                const day = date.getDate();
+            const daySelect = document.getElementById('anniversary-day');
+            const monthSelect = document.getElementById('anniversary-month');
+
+            const day = daySelect ? daySelect.value : '';
+            const month = monthSelect ? monthSelect.value : '';
+
+            if (day && month) {
                 const anniversaryStr = `${month}-${day}`;
 
                 // Save locally
