@@ -122,16 +122,48 @@
 
         .option-btn {
             transition: all 0.2s ease;
+            position: relative;
         }
 
-        .option-btn:hover {
+        .option-btn:hover:not(.disabled) {
             transform: scale(1.02);
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
         }
 
         .option-btn.selected {
             background: linear-gradient(135deg, #b2d8d8 0%, #7fb3b3 100%);
             color: white;
             border-color: #7fb3b3;
+            transform: scale(1.03);
+            box-shadow: 0 4px 12px rgba(127, 179, 179, 0.4);
+            animation: selectPulse 0.4s ease;
+        }
+
+        .option-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: checkAppear 0.3s ease;
+        }
+
+        @keyframes selectPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1.03); }
+        }
+
+        @keyframes checkAppear {
+            0% { opacity: 0; transform: translateY(-50%) scale(0); }
+            50% { transform: translateY(-50%) scale(1.2); }
+            100% { opacity: 1; transform: translateY(-50%) scale(1); }
         }
 
         .radar-container {
@@ -731,31 +763,27 @@
                 <!-- Profiles Summary -->
                 <div class="grid md:grid-cols-2 gap-6 mb-12">
                     <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center gap-4">
                             <div id="avatar-a" class="w-12 h-12 bg-teal-soft rounded-full flex items-center justify-center text-white font-bold">A</div>
                             <div>
                                 <p id="name-a" class="text-sm text-gray-500" data-i18n="user_a_label">Usuario A</p>
                                 <p id="profile-a" class="text-lg font-semibold text-gray-800">Director/a de Orquesta</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl font-bold text-teal-dark" id="score-a">38</span>
-                            <span class="text-gray-400">/ 45 pts</span>
-                        </div>
+                        <!-- Score oculto para evitar fricción -->
+                        <span id="score-a" class="hidden">38</span>
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center gap-4">
                             <div id="avatar-b" class="w-12 h-12 bg-lavender rounded-full flex items-center justify-center text-gray-700 font-bold">B</div>
                             <div>
                                 <p id="name-b" class="text-sm text-gray-500" data-i18n="user_b_label">Usuario B</p>
                                 <p id="profile-b" class="text-lg font-semibold text-gray-800">Ejecutivo/a</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl font-bold text-purple-400" id="score-b">15</span>
-                            <span class="text-gray-400">/ 45 pts</span>
-                        </div>
+                        <!-- Score oculto para evitar fricción -->
+                        <span id="score-b" class="hidden">15</span>
                     </div>
                 </div>
 
@@ -780,6 +808,20 @@
                     </div>
                 </div>
 
+                <!-- ========== LOGROS INVISIBLES HIGHLIGHT ========== -->
+                <div id="invisible-highlight" class="bg-gradient-to-r from-teal-soft to-teal-dark p-6 rounded-2xl shadow-lg mb-12 text-white">
+                    <div class="flex items-center gap-4">
+                        <div class="text-4xl">👁️</div>
+                        <div class="flex-1">
+                            <h3 class="text-xl font-bold mb-1" data-i18n="invisible_highlight_title">¡Empezá a registrar Logros Invisibles!</h3>
+                            <p class="text-white/90 text-sm" data-i18n="invisible_highlight_desc">El feature favorito de los usuarios. Registrá las pequeñas acciones del día a día, tu pareja las aprueba, y visibilizás el trabajo que normalmente pasa desapercibido.</p>
+                        </div>
+                        <button onclick="document.getElementById('invisible-section').scrollIntoView({behavior: 'smooth'})" class="px-5 py-3 bg-white text-teal-dark font-semibold rounded-xl hover:bg-gray-100 transition-colors whitespace-nowrap">
+                            <span data-i18n="invisible_highlight_cta">Ir a Logros</span> →
+                        </button>
+                    </div>
+                </div>
+
                 <!-- ========== BADGES SECTION ========== -->
                 <div class="bg-white p-8 rounded-2xl shadow-sm mb-12">
                     <div class="flex items-center justify-between mb-6">
@@ -801,8 +843,8 @@
                     </div>
                 </div>
 
-                <!-- ========== WEEKLY CHALLENGE ========== -->
-                <div class="challenge-card p-8 rounded-2xl shadow-sm mb-12">
+                <!-- ========== WEEKLY CHALLENGE (se desbloquea con uso) ========== -->
+                <div id="challenge-section" class="challenge-card p-8 rounded-2xl shadow-sm mb-12 hidden">
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -867,13 +909,17 @@
                             </div>
                             <div>
                                 <p class="text-white/80 text-sm" data-i18n="level_label">Nivel de Pareja</p>
-                                <h3 id="level-name" class="text-2xl font-bold">Tripulación Nueva</h3>
+                                <h3 id="level-name" class="text-2xl font-bold">Equipo Principiante</h3>
                                 <p class="text-white/70 text-sm">Nivel <span id="level-number">1</span> / 5</p>
                             </div>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right relative group">
                             <p class="text-3xl font-bold" id="total-xp">0</p>
                             <p class="text-white/70 text-sm">XP</p>
+                            <!-- Tooltip explicativo -->
+                            <div class="absolute right-0 top-full mt-2 w-48 p-2 bg-white text-gray-800 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
+                                <p data-i18n="level_tooltip">Suben de nivel registrando logros y ganando badges</p>
+                            </div>
                         </div>
                     </div>
 
@@ -905,8 +951,8 @@
                     </div>
                 </div>
 
-                <!-- ========== REWARDS SYSTEM ========== -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm mb-12 border-2 border-dashed border-purple-200">
+                <!-- ========== REWARDS SYSTEM (se desbloquea con uso) ========== -->
+                <div id="rewards-section" class="bg-white p-8 rounded-2xl shadow-sm mb-12 border-2 border-dashed border-purple-200 hidden">
                     <div class="flex items-start justify-between mb-6">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -1007,6 +1053,62 @@
                     </div>
                 </div>
 
+                <!-- Mini-Test Re-evaluation Modal -->
+                <div id="minitest-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">
+                                        <span data-i18n="reeval_modal_title">Re-evaluar:</span>
+                                        <span id="minitest-category" class="text-teal-dark"></span>
+                                    </h3>
+                                    <p class="text-sm text-gray-500 mt-1" data-i18n="reeval_modal_subtitle">Respondan estas 3 preguntas para ver si mejoraron en esta área</p>
+                                </div>
+                                <button onclick="closeMiniTest()" class="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <!-- Question container -->
+                            <div id="minitest-question-container">
+                                <div class="mb-4">
+                                    <span class="text-sm text-gray-500">
+                                        <span data-i18n="reeval_question_prefix">Pregunta</span>
+                                        <span id="minitest-current-q">1</span>
+                                        <span data-i18n="reeval_of">de</span>
+                                        <span id="minitest-total-q">3</span>
+                                    </span>
+                                </div>
+                                <p id="minitest-question-text" class="text-lg font-medium text-gray-800 mb-6"></p>
+                                <div id="minitest-options" class="space-y-3">
+                                    <!-- Options will be inserted here -->
+                                </div>
+                            </div>
+
+                            <!-- Results container (hidden initially) -->
+                            <div id="minitest-results" class="hidden">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="reeval_result_title">Resultado de re-evaluación</h4>
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-4 rounded-xl text-center">
+                                        <p class="text-sm text-gray-500 mb-1" data-i18n="reeval_before">Antes</p>
+                                        <p id="minitest-before" class="text-2xl font-bold text-gray-400">0</p>
+                                    </div>
+                                    <div class="bg-teal-soft/20 p-4 rounded-xl text-center">
+                                        <p class="text-sm text-gray-500 mb-1" data-i18n="reeval_now">Ahora</p>
+                                        <p id="minitest-now" class="text-2xl font-bold text-teal-dark">0</p>
+                                    </div>
+                                </div>
+                                <div id="minitest-verdict" class="p-4 rounded-xl text-center mb-4">
+                                    <!-- Verdict will be inserted here -->
+                                </div>
+                                <button onclick="closeMiniTest()" class="w-full py-3 bg-teal-soft text-white rounded-xl hover:bg-teal-dark transition-colors font-medium" data-i18n="reeval_close">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- AdSense Post-Chart -->
                 <div class="adsense-placeholder mb-12 py-6">
                     <span>Ad Space - Post Chart</span>
@@ -1055,7 +1157,7 @@
                 </div>
 
                 <!-- ========== SECTION 1: LOGROS INVISIBLES ========== -->
-                <div class="bg-white p-8 rounded-2xl shadow-sm mb-8">
+                <div id="invisible-section" class="bg-white p-8 rounded-2xl shadow-sm mb-8 scroll-mt-4">
                     <div class="flex items-start justify-between mb-4">
                         <div>
                             <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -2137,9 +2239,17 @@
 
                 // Profiles
                 profile_passenger: "Pasajero/a",
+                profile_passenger_m: "Pasajero",
+                profile_passenger_f: "Pasajera",
                 profile_executive: "Ejecutivo/a",
+                profile_executive_m: "Ejecutivo",
+                profile_executive_f: "Ejecutiva",
                 profile_comanager: "Gestor/a Compartido/a",
+                profile_comanager_m: "Gestor Compartido",
+                profile_comanager_f: "Gestora Compartida",
                 profile_director: "Director/a de Orquesta",
+                profile_director_m: "Director de Orquesta",
+                profile_director_f: "Directora de Orquesta",
 
                 // Tips
                 tips_title: "Tips de Oro",
@@ -2242,6 +2352,21 @@
                 gap_explanation_medium: "Hay espacio para mejorar la distribución aquí.",
                 gap_explanation_balanced: "¡Bien hecho! Mantienen buen equilibrio en esta área.",
 
+                // Mini-test re-evaluación
+                reeval_btn: "Re-evaluar esta área",
+                reeval_modal_title: "Re-evaluar:",
+                reeval_modal_subtitle: "Respondan estas 3 preguntas para ver si mejoraron en esta área",
+                reeval_question_prefix: "Pregunta",
+                reeval_of: "de",
+                reeval_submit: "Ver resultados",
+                reeval_result_title: "Resultado de re-evaluación",
+                reeval_before: "Antes",
+                reeval_now: "Ahora",
+                reeval_improved: "¡Mejoraron! La diferencia bajó",
+                reeval_same: "Sin cambios significativos",
+                reeval_worse: "La diferencia aumentó. ¡Momento de conversar!",
+                reeval_close: "Cerrar",
+
                 // Badges Section
                 badges_title: "Insignias del Equipo",
                 badges_unlocked: "desbloqueadas",
@@ -2324,6 +2449,9 @@
                 invisible_title: "Logros Invisibles",
                 invisible_subtitle: "El trabajo que nadie ve, pero hace la diferencia",
                 invisible_help: "Registrá las pequeñas acciones del día a día. Tu pareja las aprueba y sumás puntos. Es una forma de visibilizar lo que normalmente pasa desapercibido.",
+                invisible_highlight_title: "¡Empezá a registrar Logros Invisibles!",
+                invisible_highlight_desc: "El feature favorito de los usuarios. Registrá las pequeñas acciones del día a día, tu pareja las aprueba, y visibilizás el trabajo que normalmente pasa desapercibido.",
+                invisible_highlight_cta: "Ir a Logros",
 
                 // Objetivos de Pareja Section
                 goals_title: "Objetivos de Pareja",
@@ -2489,11 +2617,12 @@
 
                 // Level System
                 level_label: "Nivel de Pareja",
-                level_1: "Tripulación Nueva",
-                level_2: "Compañeros de Vuelo",
-                level_3: "Equipo Coordinado",
-                level_4: "CoPilotos Expertos",
-                level_5: "Capitanes del Hogar",
+                level_1: "Equipo Principiante",
+                level_2: "Equipo en Progreso",
+                level_3: "Equipo Sincronizado",
+                level_4: "Equipo Experto",
+                level_5: "Equipo Legendario",
+                level_tooltip: "Suben de nivel registrando logros y ganando badges",
                 xp_to_next: "XP para siguiente nivel",
                 xp_achievements: "Logros",
                 xp_badges: "Badges",
@@ -2659,9 +2788,17 @@
 
                 // Profiles
                 profile_passenger: "Passenger",
+                profile_passenger_m: "Passenger",
+                profile_passenger_f: "Passenger",
                 profile_executive: "Executive",
+                profile_executive_m: "Executive",
+                profile_executive_f: "Executive",
                 profile_comanager: "Co-Manager",
+                profile_comanager_m: "Co-Manager",
+                profile_comanager_f: "Co-Manager",
                 profile_director: "Orchestra Director",
+                profile_director_m: "Orchestra Director",
+                profile_director_f: "Orchestra Director",
 
                 // Tips
                 tips_title: "Golden Tips",
@@ -2764,6 +2901,21 @@
                 gap_explanation_medium: "There's room to improve distribution here.",
                 gap_explanation_balanced: "Well done! You maintain good balance in this area.",
 
+                // Mini-test re-evaluation
+                reeval_btn: "Re-evaluate this area",
+                reeval_modal_title: "Re-evaluate:",
+                reeval_modal_subtitle: "Answer these 3 questions to see if you improved in this area",
+                reeval_question_prefix: "Question",
+                reeval_of: "of",
+                reeval_submit: "See results",
+                reeval_result_title: "Re-evaluation result",
+                reeval_before: "Before",
+                reeval_now: "Now",
+                reeval_improved: "You improved! The difference decreased",
+                reeval_same: "No significant changes",
+                reeval_worse: "The difference increased. Time to talk!",
+                reeval_close: "Close",
+
                 // Badges Section
                 badges_title: "Team Badges",
                 badges_unlocked: "unlocked",
@@ -2846,6 +2998,9 @@
                 invisible_title: "Invisible Achievements",
                 invisible_subtitle: "The work nobody sees, but makes the difference",
                 invisible_help: "Log the small daily actions. Your partner approves them and you earn points. It's a way to make visible what usually goes unnoticed.",
+                invisible_highlight_title: "Start logging Invisible Achievements!",
+                invisible_highlight_desc: "Users' favorite feature. Log daily small actions, your partner approves them, and you make visible the work that usually goes unnoticed.",
+                invisible_highlight_cta: "Go to Achievements",
 
                 // Couple Goals Section
                 goals_title: "Couple Goals",
@@ -3011,11 +3166,12 @@
 
                 // Level System
                 level_label: "Team Level",
-                level_1: "New Crew",
-                level_2: "Flight Partners",
-                level_3: "Coordinated Team",
-                level_4: "Expert CoPilots",
-                level_5: "Home Captains",
+                level_1: "Beginner Team",
+                level_2: "Team in Progress",
+                level_3: "Synchronized Team",
+                level_4: "Expert Team",
+                level_5: "Legendary Team",
+                level_tooltip: "Level up by logging achievements and earning badges",
                 xp_to_next: "XP to next level",
                 xp_achievements: "Achievements",
                 xp_badges: "Badges",
@@ -3601,9 +3757,9 @@
             document.getElementById('progress-text').textContent = `${index + 1}/${totalQuestions}`;
             document.getElementById('progress-bar').style.width = `${((index + 1) / totalQuestions) * 100}%`;
 
-            // Update answer buttons text
+            // Update answer buttons text and reset state
             document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.classList.remove('selected');
+                btn.classList.remove('selected', 'disabled');
                 const option = btn.getAttribute('data-option');
                 const span = btn.querySelector('span:last-child');
                 if (span) {
@@ -3631,12 +3787,20 @@
             // Save progress to localStorage
             saveTestProgress();
 
-            // Visual feedback
+            // Visual feedback with improved UX
             const buttons = document.querySelectorAll('.option-btn');
             const selectedIndex = 3 - points; // A=3, B=2, C=1, D=0
+
+            // Deshabilitar TODOS los botones inmediatamente para evitar doble click
+            buttons.forEach(btn => btn.classList.add('disabled'));
+
+            // Marcar el seleccionado con animación
             buttons[selectedIndex].classList.add('selected');
 
-            // Delay before next question
+            // Sonido de feedback
+            SoundSystem.playClick();
+
+            // Delay aumentado para que el usuario vea su selección
             setTimeout(() => {
                 currentQuestion++;
 
@@ -3645,7 +3809,7 @@
                 } else {
                     completeTest();
                 }
-            }, 300);
+            }, 500);
         }
 
         // ==========================================
@@ -3877,9 +4041,11 @@
             const nameA = dataA.context?.name || (currentLang === 'es' ? 'Usuario A' : 'User A');
             const nameB = dataB.context?.name || (currentLang === 'es' ? 'Usuario B' : 'User B');
 
-            // Get profiles
-            const profileA = getProfile(dataA.score);
-            const profileB = getProfile(dataB.score);
+            // Get profiles with gender inference
+            const genderA = inferGender(nameA);
+            const genderB = inferGender(nameB);
+            const profileA = getProfile(dataA.score, genderA);
+            const profileB = getProfile(dataB.score, genderB);
 
             // Calculate balance
             const diff = Math.abs(dataA.score - dataB.score);
@@ -3984,13 +4150,15 @@
             avatarA.textContent = nameA.charAt(0).toUpperCase();
             avatarB.textContent = nameB.charAt(0).toUpperCase();
 
-            // Update scores
+            // Update scores (hidden but kept for internal use)
             document.getElementById('score-a').textContent = userA.score;
             document.getElementById('score-b').textContent = userB.score;
 
-            // Update profiles
-            document.getElementById('profile-a').textContent = getProfile(userA.score);
-            document.getElementById('profile-b').textContent = getProfile(userB.score);
+            // Update profiles with gender inference
+            const genderA = inferGender(nameA);
+            const genderB = inferGender(nameB);
+            document.getElementById('profile-a').textContent = getProfile(userA.score, genderA);
+            document.getElementById('profile-b').textContent = getProfile(userB.score, genderB);
 
             // Create radar chart with names
             createRadarChart(userA.categoryScores, userB.categoryScores, nameA, nameB);
@@ -4382,11 +4550,85 @@
             }
         }
 
-        function getProfile(score) {
-            if (score <= 9) return translations[currentLang].profile_passenger;
-            if (score <= 19) return translations[currentLang].profile_executive;
-            if (score <= 34) return translations[currentLang].profile_comanager;
-            return translations[currentLang].profile_director;
+        // Base de datos de nombres comunes para inferir género
+        const namesDatabase = {
+            // Nombres masculinos comunes (ES/EN)
+            m: new Set([
+                // Español
+                'juan', 'jose', 'carlos', 'luis', 'miguel', 'antonio', 'francisco', 'pedro', 'manuel', 'diego',
+                'alejandro', 'andres', 'daniel', 'david', 'fernando', 'gabriel', 'gustavo', 'jorge', 'martin', 'pablo',
+                'rafael', 'ramon', 'ricardo', 'roberto', 'sergio', 'victor', 'alberto', 'adrian', 'agustin', 'alvaro',
+                'angel', 'arturo', 'bruno', 'camilo', 'cesar', 'cristian', 'eduardo', 'emilio', 'enrique', 'esteban',
+                'facundo', 'federico', 'felipe', 'gonzalo', 'guillermo', 'hector', 'hugo', 'ignacio', 'ivan', 'javier',
+                'joaquin', 'julian', 'leonardo', 'lucas', 'marco', 'marcos', 'mateo', 'matias', 'mauricio', 'maximo',
+                'nicolas', 'oscar', 'patricio', 'raul', 'rodrigo', 'ruben', 'salvador', 'samuel', 'santiago', 'sebastian',
+                'tomas', 'valentin', 'ezequiel', 'fabian', 'franco', 'german', 'hernan', 'horacio', 'leandro', 'lautaro',
+                'leonel', 'luciano', 'mariano', 'nahuel', 'nestor', 'ramiro', 'rolando', 'thiago', 'walter', 'xavier',
+                // Inglés
+                'james', 'john', 'robert', 'michael', 'william', 'david', 'richard', 'joseph', 'thomas', 'charles',
+                'christopher', 'daniel', 'matthew', 'anthony', 'mark', 'donald', 'steven', 'paul', 'andrew', 'joshua',
+                'kenneth', 'kevin', 'brian', 'george', 'timothy', 'ronald', 'edward', 'jason', 'jeffrey', 'ryan',
+                'jacob', 'gary', 'nicholas', 'eric', 'jonathan', 'stephen', 'larry', 'justin', 'scott', 'brandon',
+                'benjamin', 'samuel', 'raymond', 'gregory', 'frank', 'alexander', 'patrick', 'jack', 'dennis', 'jerry',
+                'tyler', 'aaron', 'jose', 'adam', 'nathan', 'henry', 'douglas', 'zachary', 'peter', 'kyle',
+                'noah', 'ethan', 'jeremy', 'walter', 'christian', 'keith', 'roger', 'terry', 'austin', 'sean',
+                'gerald', 'carl', 'dylan', 'harold', 'jordan', 'jesse', 'bryan', 'lawrence', 'arthur', 'gabriel',
+                'bruce', 'logan', 'albert', 'willie', 'alan', 'eugene', 'vincent', 'russell', 'elijah', 'randy',
+                'philip', 'harry', 'louis', 'howard', 'roy', 'bobby', 'johnny', 'wayne', 'connor', 'ian'
+            ]),
+            // Nombres femeninos comunes (ES/EN)
+            f: new Set([
+                // Español
+                'maria', 'ana', 'carmen', 'laura', 'lucia', 'paula', 'marta', 'elena', 'rosa', 'isabel',
+                'pilar', 'mercedes', 'cristina', 'dolores', 'teresa', 'raquel', 'beatriz', 'patricia', 'sara', 'monica',
+                'angeles', 'julia', 'rocio', 'irene', 'silvia', 'nuria', 'susana', 'andrea', 'eva', 'alicia',
+                'daniela', 'valentina', 'camila', 'sofia', 'carolina', 'claudia', 'diana', 'gabriela', 'veronica', 'natalia',
+                'alejandra', 'adriana', 'agustina', 'ximena', 'jimena', 'florencia', 'micaela', 'martina', 'catalina', 'fernanda',
+                'victoria', 'mariana', 'soledad', 'celeste', 'belen', 'lorena', 'silvana', 'marina', 'cecilia', 'romina',
+                'julieta', 'antonella', 'luciana', 'abril', 'agostina', 'brenda', 'carina', 'eliana', 'emilia', 'eugenia',
+                'gisela', 'guadalupe', 'ivana', 'josefina', 'karina', 'liliana', 'lourdes', 'macarena', 'magdalena', 'malena',
+                'marcela', 'margarita', 'mariela', 'melina', 'milagros', 'miriam', 'noelia', 'paola', 'pamela', 'priscila',
+                'renata', 'rosario', 'roxana', 'sabrina', 'samanta', 'sonia', 'tamara', 'vanesa', 'viviana', 'yanina',
+                // Inglés
+                'mary', 'patricia', 'jennifer', 'linda', 'barbara', 'elizabeth', 'susan', 'jessica', 'sarah', 'karen',
+                'lisa', 'nancy', 'betty', 'margaret', 'sandra', 'ashley', 'kimberly', 'emily', 'donna', 'michelle',
+                'dorothy', 'carol', 'amanda', 'melissa', 'deborah', 'stephanie', 'rebecca', 'sharon', 'laura', 'cynthia',
+                'kathleen', 'amy', 'angela', 'shirley', 'anna', 'brenda', 'pamela', 'emma', 'nicole', 'helen',
+                'samantha', 'katherine', 'christine', 'debra', 'rachel', 'carolyn', 'janet', 'catherine', 'maria', 'heather',
+                'diane', 'ruth', 'julie', 'olivia', 'joyce', 'virginia', 'victoria', 'kelly', 'lauren', 'christina',
+                'joan', 'evelyn', 'judith', 'megan', 'andrea', 'cheryl', 'hannah', 'jacqueline', 'martha', 'gloria',
+                'teresa', 'ann', 'sara', 'madison', 'frances', 'kathryn', 'janice', 'jean', 'abigail', 'alice',
+                'judy', 'sophia', 'grace', 'denise', 'amber', 'doris', 'marilyn', 'danielle', 'beverly', 'isabella',
+                'theresa', 'diana', 'natalie', 'brittany', 'charlotte', 'marie', 'kayla', 'alexis', 'lori', 'claire'
+            ])
+        };
+
+        // Infiere género basado en el nombre
+        function inferGender(name) {
+            if (!name) return 'neutral';
+            const firstName = name.trim().toLowerCase().split(' ')[0];
+            if (namesDatabase.m.has(firstName)) return 'm';
+            if (namesDatabase.f.has(firstName)) return 'f';
+            return 'neutral';
+        }
+
+        // Obtiene el perfil según el score y opcionalmente el género
+        function getProfile(score, gender = 'neutral') {
+            let profileKey;
+            if (score <= 9) profileKey = 'profile_passenger';
+            else if (score <= 19) profileKey = 'profile_executive';
+            else if (score <= 34) profileKey = 'profile_comanager';
+            else profileKey = 'profile_director';
+
+            // Si hay género específico, usar variante
+            if (gender === 'm' && translations[currentLang][profileKey + '_m']) {
+                return translations[currentLang][profileKey + '_m'];
+            }
+            if (gender === 'f' && translations[currentLang][profileKey + '_f']) {
+                return translations[currentLang][profileKey + '_f'];
+            }
+            // Si no hay género o no hay variante, usar versión neutra
+            return translations[currentLang][profileKey];
         }
 
         function createRadarChart(scoresA, scoresB, nameA, nameB) {
@@ -4475,6 +4717,122 @@
             });
         }
 
+        // Insights específicos por categoría para gap analysis
+        const categoryInsights = {
+            es: {
+                Hogar: {
+                    icon: '🏠',
+                    high: 'Las tareas del hogar como cocinar, ordenar y hacer compras requieren atención diaria. Conversen sobre cómo redistribuir estas responsabilidades.',
+                    medium: 'Hay margen para equilibrar mejor quién cocina, ordena o hace las compras del día a día.',
+                    balanced: 'Comparten bien las tareas domésticas cotidianas. ¡Sigan así!'
+                },
+                Social: {
+                    icon: '🎉',
+                    high: 'Recordar cumpleaños, organizar eventos y mantener relaciones sociales es trabajo invisible importante. Repartan esta carga.',
+                    medium: 'Pueden mejorar cómo se reparten la gestión social: regalos, eventos, contacto con familia y amigos.',
+                    balanced: 'Gestionan bien juntos la vida social y los eventos familiares.'
+                },
+                Salud: {
+                    icon: '💊',
+                    high: 'Coordinar citas médicas, vacunas y temas de salud familiar suele recaer en una persona. Es momento de compartirlo.',
+                    medium: 'La gestión de salud familiar puede distribuirse mejor entre ambos.',
+                    balanced: 'Comparten bien la responsabilidad sobre temas de salud.'
+                },
+                Admin: {
+                    icon: '📋',
+                    high: 'Facturas, impuestos, trámites y papeles son una carga mental significativa. Dividan esta responsabilidad.',
+                    medium: 'Hay espacio para compartir mejor la gestión administrativa del hogar.',
+                    balanced: 'La parte administrativa está bien repartida entre ambos.'
+                },
+                Cuidado: {
+                    icon: '👶',
+                    high: 'El cuidado de hijos o mascotas es una responsabilidad grande. Conversen sobre cómo equilibrarla.',
+                    medium: 'Pueden mejorar cómo se reparten las tareas de cuidado.',
+                    balanced: 'Comparten bien las responsabilidades de cuidado.'
+                },
+                Mantenimiento: {
+                    icon: '🔧',
+                    high: 'Reparaciones, mantenimiento del hogar y gestión de servicios suele concentrarse en una persona.',
+                    medium: 'El mantenimiento del hogar puede distribuirse de forma más equitativa.',
+                    balanced: 'El mantenimiento del hogar está bien repartido.'
+                },
+                Logística: {
+                    icon: '🗓️',
+                    high: 'Planificar viajes, reservas y coordinar agendas es trabajo invisible. Compartan esta carga mental.',
+                    medium: 'La logística familiar puede equilibrarse mejor entre ambos.',
+                    balanced: 'Gestionan bien juntos la logística y planificación.'
+                },
+                Limpieza: {
+                    icon: '🧹',
+                    high: 'La limpieza del hogar es una tarea constante. Definan estándares y repartan responsabilidades.',
+                    medium: 'Hay margen para mejorar cómo se distribuye la limpieza.',
+                    balanced: 'La limpieza está bien repartida. ¡Buen trabajo!'
+                },
+                Emocional: {
+                    icon: '💬',
+                    high: 'El trabajo emocional (escuchar, apoyar, mediar) es crucial. No debería recaer solo en una persona.',
+                    medium: 'El apoyo emocional mutuo puede fortalecerse.',
+                    balanced: 'Se apoyan emocionalmente de forma equilibrada.'
+                }
+            },
+            en: {
+                Hogar: {
+                    icon: '🏠',
+                    high: 'Household tasks like cooking, tidying, and shopping require daily attention. Discuss how to redistribute these responsibilities.',
+                    medium: 'There is room to better balance who cooks, tidies, or does daily shopping.',
+                    balanced: 'You share daily household tasks well. Keep it up!'
+                },
+                Social: {
+                    icon: '🎉',
+                    high: 'Remembering birthdays, organizing events, and maintaining social relationships is important invisible work. Share this load.',
+                    medium: 'You can improve how you share social management: gifts, events, contact with family and friends.',
+                    balanced: 'You manage social life and family events well together.'
+                },
+                Salud: {
+                    icon: '💊',
+                    high: 'Coordinating medical appointments, vaccines, and family health issues often falls on one person. Time to share it.',
+                    medium: 'Family health management can be better distributed between both.',
+                    balanced: 'You share health responsibilities well.'
+                },
+                Admin: {
+                    icon: '📋',
+                    high: 'Bills, taxes, paperwork are a significant mental load. Divide this responsibility.',
+                    medium: 'There is room to better share household administrative management.',
+                    balanced: 'Administrative tasks are well distributed between both.'
+                },
+                Cuidado: {
+                    icon: '👶',
+                    high: 'Caring for children or pets is a big responsibility. Discuss how to balance it.',
+                    medium: 'You can improve how you share care tasks.',
+                    balanced: 'You share care responsibilities well.'
+                },
+                Mantenimiento: {
+                    icon: '🔧',
+                    high: 'Repairs, home maintenance, and service management often concentrates on one person.',
+                    medium: 'Home maintenance can be more equitably distributed.',
+                    balanced: 'Home maintenance is well distributed.'
+                },
+                Logística: {
+                    icon: '🗓️',
+                    high: 'Planning trips, reservations, and coordinating schedules is invisible work. Share this mental load.',
+                    medium: 'Family logistics can be better balanced between both.',
+                    balanced: 'You manage logistics and planning well together.'
+                },
+                Limpieza: {
+                    icon: '🧹',
+                    high: 'Home cleaning is a constant task. Define standards and share responsibilities.',
+                    medium: 'There is room to improve how cleaning is distributed.',
+                    balanced: 'Cleaning is well distributed. Good job!'
+                },
+                Emocional: {
+                    icon: '💬',
+                    high: 'Emotional work (listening, supporting, mediating) is crucial. It should not fall on just one person.',
+                    medium: 'Mutual emotional support can be strengthened.',
+                    balanced: 'You support each other emotionally in a balanced way.'
+                }
+            }
+        };
+
         function generateGapAnalysis(scoresA, scoresB) {
             const container = document.getElementById('gap-analysis');
             container.innerHTML = '';
@@ -4489,34 +4847,262 @@
             gaps.sort((a, b) => b.diff - a.diff);
 
             gaps.forEach(gap => {
-                let level, explanation, bgColor;
+                let level, explanation, bgColor, levelType;
+                const catInsight = categoryInsights[currentLang][gap.category] || {};
+                const icon = catInsight.icon || '📊';
 
                 if (gap.diff >= 2) {
                     level = translations[currentLang].gap_high;
-                    explanation = translations[currentLang].gap_explanation_high;
+                    explanation = catInsight.high || translations[currentLang].gap_explanation_high;
                     bgColor = 'bg-red-50 border-red-200';
+                    levelType = 'high';
                 } else if (gap.diff >= 1) {
                     level = translations[currentLang].gap_medium;
-                    explanation = translations[currentLang].gap_explanation_medium;
+                    explanation = catInsight.medium || translations[currentLang].gap_explanation_medium;
                     bgColor = 'bg-yellow-50 border-yellow-200';
+                    levelType = 'medium';
                 } else {
                     level = translations[currentLang].gap_balanced;
-                    explanation = translations[currentLang].gap_explanation_balanced;
+                    explanation = catInsight.balanced || translations[currentLang].gap_explanation_balanced;
                     bgColor = 'bg-green-50 border-green-200';
+                    levelType = 'balanced';
                 }
 
                 const div = document.createElement('div');
                 div.className = `p-4 rounded-xl border ${bgColor}`;
+                div.dataset.category = gap.category;
+                div.dataset.levelType = levelType;
+
+                // Solo mostrar botón re-evaluar si hay diferencia significativa
+                const showReeval = levelType === 'high' || levelType === 'medium';
+                const reevalBtn = showReeval ? `
+                    <button onclick="startMiniTest('${gap.category}')" class="mt-3 px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-50 hover:border-teal-soft transition-colors flex items-center gap-2">
+                        <span>🔄</span>
+                        <span data-i18n="reeval_btn">${translations[currentLang].reeval_btn || 'Re-evaluar esta área'}</span>
+                    </button>
+                ` : '';
+
                 div.innerHTML = `
-                    <p class="font-medium text-gray-800">${level} <span class="text-teal-dark">${gap.category}</span></p>
-                    <p class="text-sm text-gray-600 mt-1">${explanation}</p>
-                    <div class="flex gap-4 mt-2 text-xs text-gray-500">
-                        <span>A: ${gap.scoreA.toFixed(1)}</span>
-                        <span>B: ${gap.scoreB.toFixed(1)}</span>
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">${icon}</span>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">${level} <span class="text-teal-dark">${gap.category}</span></p>
+                            <p class="text-sm text-gray-600 mt-1">${explanation}</p>
+                            ${reevalBtn}
+                        </div>
                     </div>
                 `;
                 container.appendChild(div);
             });
+        }
+
+        // ==========================================
+        // MINI-TEST RE-EVALUATION SYSTEM
+        // ==========================================
+
+        // Banco de preguntas adicionales por categoría para re-evaluación
+        const miniTestQuestions = {
+            es: {
+                Hogar: [
+                    { text: "¿Quién planifica las comidas de la semana?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién se encarga de que haya productos básicos en casa?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién ordena y organiza los espacios comunes?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Social: [
+                    { text: "¿Quién organiza los encuentros con amigos o familia?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién recuerda los cumpleaños y compra regalos?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién mantiene el contacto con la familia extendida?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Salud: [
+                    { text: "¿Quién agenda las citas médicas de la familia?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién se asegura de tener medicamentos y botiquín al día?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién lleva control de vacunas y chequeos?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Admin: [
+                    { text: "¿Quién se encarga de pagar facturas y servicios?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién gestiona trámites y papeleos?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién lleva control del presupuesto familiar?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Cuidado: [
+                    { text: "¿Quién coordina las actividades de hijos/mascotas?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién se levanta de noche si hay algún problema?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién gestiona necesidades especiales de cuidado?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Mantenimiento: [
+                    { text: "¿Quién detecta cuándo algo necesita reparación?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién coordina con técnicos y servicios?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién hace el mantenimiento preventivo del hogar?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Logística: [
+                    { text: "¿Quién planifica viajes y escapadas?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién coordina las agendas de la familia?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién gestiona reservas y bookings?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Limpieza: [
+                    { text: "¿Quién define cuándo y cómo se limpia?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién se encarga de la limpieza profunda?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién mantiene la limpieza diaria?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ],
+                Emocional: [
+                    { text: "¿Quién inicia conversaciones sobre cómo se sienten?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién media en conflictos familiares?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] },
+                    { text: "¿Quién está más atento al estado emocional del otro?", options: ["Principalmente yo", "Mi pareja", "Ambos por igual"] }
+                ]
+            },
+            en: {
+                Hogar: [
+                    { text: "Who plans the week's meals?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who makes sure there are basic products at home?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who tidies and organizes common spaces?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Social: [
+                    { text: "Who organizes gatherings with friends or family?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who remembers birthdays and buys gifts?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who keeps in touch with extended family?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Salud: [
+                    { text: "Who schedules family medical appointments?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who makes sure we have medicines and first aid kit updated?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who tracks vaccines and checkups?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Admin: [
+                    { text: "Who handles bills and service payments?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who manages paperwork and bureaucratic tasks?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who tracks the family budget?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Cuidado: [
+                    { text: "Who coordinates activities for kids/pets?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who gets up at night if there's a problem?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who manages special care needs?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Mantenimiento: [
+                    { text: "Who detects when something needs repair?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who coordinates with technicians and services?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who does preventive home maintenance?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Logística: [
+                    { text: "Who plans trips and getaways?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who coordinates family schedules?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who manages reservations and bookings?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Limpieza: [
+                    { text: "Who decides when and how to clean?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who does the deep cleaning?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who maintains daily cleanliness?", options: ["Mainly me", "My partner", "Both equally"] }
+                ],
+                Emocional: [
+                    { text: "Who initiates conversations about feelings?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who mediates family conflicts?", options: ["Mainly me", "My partner", "Both equally"] },
+                    { text: "Who is more attentive to the other's emotional state?", options: ["Mainly me", "My partner", "Both equally"] }
+                ]
+            }
+        };
+
+        // Estado del mini-test
+        let miniTestState = {
+            category: null,
+            currentQuestion: 0,
+            answers: [],
+            previousDiff: 0
+        };
+
+        function startMiniTest(category) {
+            // Obtener diferencia previa de los datos guardados
+            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+            const scoresA = pairData.userA?.categoryScores || {};
+            const scoresB = pairData.userB?.categoryScores || {};
+            const previousDiff = Math.abs((scoresA[category] || 0) - (scoresB[category] || 0));
+
+            miniTestState = {
+                category: category,
+                currentQuestion: 0,
+                answers: [],
+                previousDiff: previousDiff
+            };
+
+            document.getElementById('minitest-category').textContent = category;
+            document.getElementById('minitest-question-container').classList.remove('hidden');
+            document.getElementById('minitest-results').classList.add('hidden');
+            document.getElementById('minitest-modal').classList.remove('hidden');
+
+            showMiniTestQuestion();
+        }
+
+        function showMiniTestQuestion() {
+            const questions = miniTestQuestions[currentLang][miniTestState.category];
+            if (!questions || miniTestState.currentQuestion >= questions.length) {
+                showMiniTestResults();
+                return;
+            }
+
+            const q = questions[miniTestState.currentQuestion];
+            document.getElementById('minitest-current-q').textContent = miniTestState.currentQuestion + 1;
+            document.getElementById('minitest-total-q').textContent = questions.length;
+            document.getElementById('minitest-question-text').textContent = q.text;
+
+            const optionsEl = document.getElementById('minitest-options');
+            optionsEl.innerHTML = q.options.map((opt, idx) => `
+                <button onclick="answerMiniTest(${idx})" class="w-full p-4 text-left border-2 border-gray-200 rounded-xl hover:border-teal-soft hover:bg-teal-soft/10 transition-colors">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function answerMiniTest(optionIndex) {
+            // 0 = Principalmente yo (3 pts), 1 = Mi pareja (0 pts), 2 = Ambos (1.5 pts)
+            const points = optionIndex === 0 ? 3 : (optionIndex === 2 ? 1.5 : 0);
+            miniTestState.answers.push(points);
+            miniTestState.currentQuestion++;
+
+            const questions = miniTestQuestions[currentLang][miniTestState.category];
+            if (miniTestState.currentQuestion >= questions.length) {
+                showMiniTestResults();
+            } else {
+                showMiniTestQuestion();
+            }
+        }
+
+        function showMiniTestResults() {
+            document.getElementById('minitest-question-container').classList.add('hidden');
+            document.getElementById('minitest-results').classList.remove('hidden');
+
+            // Calcular nuevo score promedio
+            const avgScore = miniTestState.answers.reduce((a, b) => a + b, 0) / miniTestState.answers.length;
+            // Simular la diferencia actual (el usuario actual vs. estimación del otro)
+            // Para simplificar, asumimos que si el usuario responde mucho "yo", la diferencia aumenta
+            const newDiff = Math.abs(avgScore - 1.5); // 1.5 sería el punto de equilibrio
+
+            document.getElementById('minitest-before').textContent = miniTestState.previousDiff.toFixed(1);
+            document.getElementById('minitest-now').textContent = newDiff.toFixed(1);
+
+            const verdictEl = document.getElementById('minitest-verdict');
+            const diffChange = newDiff - miniTestState.previousDiff;
+
+            if (diffChange < -0.3) {
+                verdictEl.className = 'p-4 rounded-xl text-center mb-4 bg-green-50 text-green-700';
+                verdictEl.innerHTML = `<p class="text-lg font-medium">🎉 ${translations[currentLang].reeval_improved}</p>`;
+                triggerConfetti();
+            } else if (diffChange > 0.3) {
+                verdictEl.className = 'p-4 rounded-xl text-center mb-4 bg-red-50 text-red-700';
+                verdictEl.innerHTML = `<p class="text-lg font-medium">💬 ${translations[currentLang].reeval_worse}</p>`;
+            } else {
+                verdictEl.className = 'p-4 rounded-xl text-center mb-4 bg-yellow-50 text-yellow-700';
+                verdictEl.innerHTML = `<p class="text-lg font-medium">📊 ${translations[currentLang].reeval_same}</p>`;
+            }
+
+            // Guardar historial de re-evaluación
+            const history = JSON.parse(localStorage.getItem(`us2_reeval_${pairID}`) || '[]');
+            history.push({
+                category: miniTestState.category,
+                previousDiff: miniTestState.previousDiff,
+                newDiff: newDiff,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem(`us2_reeval_${pairID}`, JSON.stringify(history));
+        }
+
+        function closeMiniTest() {
+            document.getElementById('minitest-modal').classList.add('hidden');
         }
 
         // ==========================================
@@ -5359,7 +5945,26 @@
             return data;
         }
 
+        // Verifica si las features avanzadas están desbloqueadas
+        function areFeaturesUnlocked() {
+            const testHistory = JSON.parse(localStorage.getItem(`us2_test_history_${pairID}`) || '[]');
+            const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
+            // Desbloquear si: completaron el test 2+ veces O tienen 5+ logros
+            return testHistory.length >= 2 || achievements.length >= 5;
+        }
+
         function renderChallenge() {
+            const challengeSection = document.getElementById('challenge-section');
+
+            // Verificar si debe mostrarse
+            if (!areFeaturesUnlocked()) {
+                if (challengeSection) challengeSection.classList.add('hidden');
+                return;
+            }
+
+            // Mostrar si está desbloqueado
+            if (challengeSection) challengeSection.classList.remove('hidden');
+
             const data = calculateChallengeProgress();
             const challenge = weeklyChalllenges.find(c => c.id === data.challengeId);
             if (!challenge) return;
@@ -5549,6 +6154,17 @@
         }
 
         function renderRewardSystem() {
+            const rewardsSection = document.getElementById('rewards-section');
+
+            // Verificar si debe mostrarse
+            if (!areFeaturesUnlocked()) {
+                if (rewardsSection) rewardsSection.classList.add('hidden');
+                return;
+            }
+
+            // Mostrar si está desbloqueado
+            if (rewardsSection) rewardsSection.classList.remove('hidden');
+
             const data = getRewardData();
             const reward = getCurrentReward();
             const achievements = JSON.parse(localStorage.getItem(`us2_achievements_${pairID}`) || '[]');
