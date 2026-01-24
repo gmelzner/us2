@@ -1,9 +1,9 @@
 # US2 - Plan de SEO Internacional (EN)
 
 > Estrategia para posicionar US2 en mercados de habla inglesa.
-> **Estado**: EN PROGRESO
+> **Estado**: FASE 1 COMPLETADA ✅
 > **Aprobado**: Enero 2026
-> **Última actualización**: Enero 2026
+> **Última actualización**: 24 Enero 2026
 
 ---
 
@@ -30,7 +30,7 @@ Capturar tráfico orgánico de EEUU, UK, Canadá y Australia mediante contenido 
 
 ```
 us2.fun/                    → Landing ES (default)
-us2.fun/en/                 → Landing EN
+us2.fun/en/                 → Landing EN ✅
 us2.fun/blog/               → Blog ES
 us2.fun/en/blog/            → Blog EN (futuro)
 us2.fun/en/blog/[slug].html → Posts EN
@@ -46,14 +46,17 @@ us2.fun/en/blog/[slug].html → Posts EN
 
 ## 3. Roadmap de Implementación
 
-### Fase 1: Foundation (Semana 1) ✅ EN PROGRESO
+### Fase 1: Foundation ✅ COMPLETADA (24 Enero 2026)
 - [x] Documentar plan
-- [ ] Crear `/en/index.html` (landing en inglés)
-- [ ] Agregar hreflang tags a ambas landings
-- [ ] Actualizar sitemap.xml
-- [ ] Deploy y verificar en Search Console
+- [x] Crear `/en/index.html` (landing en inglés)
+- [x] Agregar hreflang tags a ambas landings
+- [x] Actualizar sitemap.xml con hreflang
+- [x] Deploy y verificar en Search Console (pendiente indexación)
+- [x] Flujo completo ES↔EN funcionando (parámetro `?lang=`)
+- [x] Link de invitación conserva idioma
+- [x] Social sharing usa OG tags correctos por idioma
 
-### Fase 2: Primer Contenido (Semanas 2-3)
+### Fase 2: Primer Contenido (Semanas 2-3) - PENDIENTE
 - [ ] Escribir 1er blog post pilar EN:
   - "The Mental Load Test: See How You Really Split Household Work"
   - ~1500 palabras, bien investigado
@@ -61,14 +64,14 @@ us2.fun/en/blog/[slug].html → Posts EN
 - [ ] Crear `/en/blog/index.html`
 - [ ] Actualizar sitemap
 
-### Fase 3: Expansión (Semanas 4-6)
+### Fase 3: Expansión (Semanas 4-6) - PENDIENTE
 - [ ] 2do blog post EN:
   - "5 Signs of Unequal Mental Load in Your Relationship"
 - [ ] 3er blog post EN:
   - "How to Talk to Your Partner About Mental Load (Without Fighting)"
 - [ ] Evaluar métricas y decidir siguiente paso
 
-### Fase 4: Optimización (Mes 2+)
+### Fase 4: Optimización (Mes 2+) - PENDIENTE
 - [ ] Analizar qué keywords están traccionando
 - [ ] Crear contenido adicional basado en datos
 - [ ] Considerar backlink outreach (blogs de relaciones, etc.)
@@ -78,7 +81,7 @@ us2.fun/en/blog/[slug].html → Posts EN
 
 ## 4. Especificaciones Técnicas
 
-### hreflang Implementation
+### hreflang Implementation ✅
 
 En `index.html` (ES):
 ```html
@@ -94,7 +97,7 @@ En `/en/index.html` (EN):
 <link rel="alternate" hreflang="x-default" href="https://us2.fun/">
 ```
 
-### Sitemap Updates
+### Sitemap ✅
 
 ```xml
 <!-- Homepage ES -->
@@ -102,6 +105,7 @@ En `/en/index.html` (EN):
     <loc>https://us2.fun/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/"/>
 </url>
 
 <!-- Homepage EN -->
@@ -109,10 +113,11 @@ En `/en/index.html` (EN):
     <loc>https://us2.fun/en/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/"/>
 </url>
 ```
 
-### Meta Tags para EN
+### Meta Tags EN ✅
 
 ```html
 <meta name="description" content="Free mental load test for couples. See how you really divide household responsibilities and have better conversations about balance.">
@@ -124,13 +129,13 @@ En `/en/index.html` (EN):
 
 ## 5. Contenido Planeado
 
-### Landing EN - Key Messages
+### Landing EN ✅ - Key Messages
 - **Hero**: "See how you really split the mental load"
 - **Value prop**: Free, anonymous, 3 minutes
 - **Social proof**: "Join X couples who've improved their balance"
 - **CTA**: "Start the Test"
 
-### Blog Posts EN (Ideas priorizadas)
+### Blog Posts EN (Ideas priorizadas) - PENDIENTE
 
 | Prioridad | Título | Keywords Target |
 |-----------|--------|-----------------|
@@ -166,25 +171,26 @@ En `/en/index.html` (EN):
 | Riesgo | Mitigación |
 |--------|------------|
 | Contenido de baja calidad | Escribir nativo, no traducir |
-| Duplicate content penalty | hreflang + canonicals correctos |
+| Duplicate content penalty | hreflang + canonicals correctos ✅ |
 | Canibalización de keywords | Diferentes keywords por idioma |
 | Dilución de esfuerzo | Empezar pequeño, escalar con datos |
 
 ---
 
-## 8. Checklist Pre-Launch
+## 8. Checklist Pre-Launch ✅ COMPLETADO
 
-- [ ] hreflang en ambas páginas
-- [ ] Canonicals correctos
-- [ ] Meta tags únicos (no copiados)
-- [ ] OG tags para social sharing
-- [ ] Sitemap actualizado
-- [ ] robots.txt permite /en/
-- [ ] Verificar en Google Search Console
-- [ ] Test de mobile-friendly
-- [ ] Test de velocidad (PageSpeed)
+- [x] hreflang en ambas páginas
+- [x] Canonicals correctos
+- [x] Meta tags únicos (no copiados)
+- [x] OG tags para social sharing
+- [x] Sitemap actualizado
+- [x] robots.txt permite /en/
+- [x] Verificar en Google Search Console (reenviado 24/01)
+- [x] Test de mobile-friendly
+- [ ] Test de velocidad (PageSpeed) - opcional
 
 ---
 
 *Documento creado: Enero 2026*
+*Fase 1 completada: 24 Enero 2026*
 *Próxima revisión: Febrero 2026*

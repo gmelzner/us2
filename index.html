@@ -1842,7 +1842,7 @@
                     <a href="contact.html" class="hover:text-teal-dark transition-colors" data-i18n="footer_contact">Contacto</a>
                 </div>
 
-                <p class="text-sm text-gray-400">© 2025 US2. <span data-i18n="footer_rights">Todos los derechos reservados.</span></p>
+                <p class="text-sm text-gray-400">© 2026 US2. <span data-i18n="footer_rights">Todos los derechos reservados.</span></p>
             </div>
         </div>
     </footer>
@@ -4270,6 +4270,15 @@
                 return;
             }
 
+            // Rate limit check
+            if (!rateLimiter.check('email_submit') || !rateLimiter.check('email_submit_daily')) {
+                const waitTime = rateLimiter.getRemainingTime('email_submit');
+                showToast('⏳', 'error', `Demasiados intentos. Esperá ${waitTime}s`);
+                return;
+            }
+            rateLimiter.record('email_submit');
+            rateLimiter.record('email_submit_daily');
+
             input.classList.remove('border-red-500');
 
             // Store email locally
@@ -5405,6 +5414,16 @@
                 errorEl.classList.remove('hidden');
                 return;
             }
+
+            // Rate limit check
+            if (!rateLimiter.check('email_submit') || !rateLimiter.check('email_submit_daily')) {
+                const waitTime = rateLimiter.getRemainingTime('email_submit');
+                errorEl.textContent = `Demasiados intentos. Esperá ${waitTime}s`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            rateLimiter.record('email_submit');
+            rateLimiter.record('email_submit_daily');
 
             errorEl.classList.add('hidden');
 
@@ -7760,6 +7779,15 @@
                 return;
             }
 
+            // Rate limit check
+            if (!rateLimiter.check('email_submit') || !rateLimiter.check('email_submit_daily')) {
+                const waitTime = rateLimiter.getRemainingTime('email_submit');
+                showToast('⏳', 'error', `Demasiados intentos. Esperá ${waitTime}s`);
+                return;
+            }
+            rateLimiter.record('email_submit');
+            rateLimiter.record('email_submit_daily');
+
             try {
                 // Save to newsletter_subscribers
                 const source = currentDateReminderType === 'anniversary' ? 'anniversary_reminder' : 'birthday_reminder';
@@ -8931,6 +8959,73 @@
         }
 
         // ==========================================
+        // RATE LIMITING
+        // ==========================================
+        const rateLimiter = {
+            // Track email submission attempts: { action: { count, lastReset } }
+            attempts: {},
+
+            // Config: max attempts per window (in ms)
+            limits: {
+                email_submit: { max: 5, windowMs: 60000 },      // 5 emails per minute
+                email_submit_daily: { max: 20, windowMs: 86400000 } // 20 emails per day
+            },
+
+            check(action) {
+                const now = Date.now();
+                const limit = this.limits[action];
+                if (!limit) return true;
+
+                // Load from localStorage for persistence
+                const stored = localStorage.getItem(`us2_rate_${action}`);
+                if (stored) {
+                    this.attempts[action] = JSON.parse(stored);
+                }
+
+                if (!this.attempts[action]) {
+                    this.attempts[action] = { count: 0, lastReset: now };
+                }
+
+                const attempt = this.attempts[action];
+
+                // Reset window if expired
+                if (now - attempt.lastReset > limit.windowMs) {
+                    attempt.count = 0;
+                    attempt.lastReset = now;
+                }
+
+                // Check if limit exceeded
+                if (attempt.count >= limit.max) {
+                    console.warn(`⚠️ Rate limit exceeded for ${action}`);
+                    return false;
+                }
+
+                return true;
+            },
+
+            record(action) {
+                const now = Date.now();
+                if (!this.attempts[action]) {
+                    this.attempts[action] = { count: 0, lastReset: now };
+                }
+                this.attempts[action].count++;
+
+                // Persist to localStorage
+                localStorage.setItem(`us2_rate_${action}`, JSON.stringify(this.attempts[action]));
+            },
+
+            getRemainingTime(action) {
+                const attempt = this.attempts[action];
+                const limit = this.limits[action];
+                if (!attempt || !limit) return 0;
+
+                const elapsed = Date.now() - attempt.lastReset;
+                const remaining = limit.windowMs - elapsed;
+                return Math.max(0, Math.ceil(remaining / 1000));
+            }
+        };
+
+        // ==========================================
         // TOAST NOTIFICATIONS
         // ==========================================
         function showToast(icon, type, message) {
@@ -9399,6 +9494,15 @@
                 showToast('⚠️', 'info', currentLang === 'es' ? 'Ingresá un email válido' : 'Enter a valid email');
                 return;
             }
+
+            // Rate limit check
+            if (!rateLimiter.check('email_submit') || !rateLimiter.check('email_submit_daily')) {
+                const waitTime = rateLimiter.getRemainingTime('email_submit');
+                showToast('⏳', 'error', `Demasiados intentos. Esperá ${waitTime}s`);
+                return;
+            }
+            rateLimiter.record('email_submit');
+            rateLimiter.record('email_submit_daily');
 
             // Store email locally (fallback)
             const subscribers = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
