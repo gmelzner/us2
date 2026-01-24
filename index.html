@@ -5419,6 +5419,7 @@
                 const currentContext = pairData?.shared_context || {};
                 currentContext.userA_email = email;
                 currentContext.userA_returnLink = returnLink;
+                currentContext.userA_lang = currentLang; // Save language for email localization
 
                 await supabaseClient
                     .from('pairs')
@@ -5456,14 +5457,15 @@
 
                 const userAEmail = pairData?.shared_context?.userA_email;
                 const userAReturnLink = pairData?.shared_context?.userA_returnLink;
+                const userALang = pairData?.shared_context?.userA_lang;
 
                 if (userAEmail || userAReturnLink) {
                     // Store the return link for WhatsApp message
                     window.partnerReturnLink = userAReturnLink || `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=A`;
 
-                    // If User A left email, send automatic notification
+                    // If User A left email, send automatic notification in their language
                     if (userAEmail) {
-                        sendPartnerCompletedEmail(userAEmail, window.partnerReturnLink);
+                        sendPartnerCompletedEmail(userAEmail, window.partnerReturnLink, userALang);
                     }
 
                     showNotifyPartnerModal();
@@ -5474,7 +5476,7 @@
         }
 
         // Send email notification via Edge Function
-        async function sendPartnerCompletedEmail(email, returnLink) {
+        async function sendPartnerCompletedEmail(email, returnLink, userLang) {
             try {
                 const response = await fetch('https://lcmooxztnwdvhmnhfwyu.supabase.co/functions/v1/send-scheduled-emails', {
                     method: 'POST',
@@ -5487,7 +5489,8 @@
                         email: email,
                         data: {
                             template: 'partner_completed',
-                            returnLink: returnLink
+                            returnLink: returnLink,
+                            lang: userLang || 'es' // Send in user's language
                         }
                     })
                 });
@@ -7768,7 +7771,8 @@
                         shared_context: {
                             ...currentContext,
                             userA_email: email,
-                            userA_returnLink: window.location.href
+                            userA_returnLink: window.location.href,
+                            userA_lang: currentLang // Save language for email localization
                         }
                     })
                     .eq('pair_id', pairID);
