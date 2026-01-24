@@ -1679,9 +1679,14 @@
                     </h3>
                     <div class="space-y-4">
                         <!-- Anniversary -->
-                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg" onclick="openAnniversaryModal()">
                             <span class="text-gray-600" data-i18n="anniversary_label">Aniversario</span>
                             <span id="profile-anniversary" class="font-medium text-gray-800">No configurado</span>
+                        </div>
+                        <!-- Partner Birthday -->
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg" onclick="openBirthdayModal()">
+                            <span class="text-gray-600" data-i18n="birthday_label">Cumple de tu pareja</span>
+                            <span id="profile-birthday" class="font-medium text-gray-800">No configurado</span>
                         </div>
                         <!-- Language -->
                         <div class="flex items-center justify-between py-2 border-b border-gray-100">
@@ -1992,6 +1997,75 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Reminder Email Modal (shared for anniversary & birthday) -->
+    <div id="date-reminder-modal" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-bounce-in">
+            <div class="text-center mb-4">
+                <span id="date-reminder-icon" class="text-4xl">💍</span>
+                <h3 id="date-reminder-title" class="text-xl font-bold text-gray-800 mt-2">¡Fecha guardada!</h3>
+                <p id="date-reminder-desc" class="text-gray-600 text-sm mt-2">¿Querés que te enviemos un recordatorio unos días antes?</p>
+            </div>
+            <div id="date-reminder-email-section">
+                <input type="email" id="date-reminder-email"
+                    placeholder="tu@email.com"
+                    class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none mb-4">
+                <div class="flex gap-3">
+                    <button onclick="closeDateReminderModal()" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium text-gray-600">
+                        No, gracias
+                    </button>
+                    <button onclick="saveDateReminder()" class="flex-1 px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors font-medium">
+                        Recordarme
+                    </button>
+                </div>
+            </div>
+            <div id="date-reminder-already-subscribed" class="hidden text-center">
+                <p class="text-green-600 mb-4">✓ Ya tenés recordatorios activados</p>
+                <button onclick="closeDateReminderModal()" class="px-6 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors font-medium">
+                    Perfecto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday Modal -->
+    <div id="birthday-modal" class="fixed inset-0 bg-black/50 z-50 items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                <span>🎂</span>
+                <span data-i18n="birthday_modal_title">Cumpleaños de tu Pareja</span>
+            </h3>
+            <p class="text-gray-600 text-sm mb-4" data-i18n="birthday_modal_desc">¿Cuándo cumple años tu pareja?</p>
+            <div class="flex gap-3 mb-4">
+                <select id="birthday-day" class="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none bg-white">
+                    <option value="" data-i18n="select_day">Día</option>
+                </select>
+                <select id="birthday-month" class="flex-1 p-3 border-2 border-gray-200 rounded-xl focus:border-purple-400 focus:outline-none bg-white">
+                    <option value="" data-i18n="select_month">Mes</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeBirthdayModal()" class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium" data-i18n="cancel_btn">
+                    Cancelar
+                </button>
+                <button onclick="saveBirthday()" class="flex-1 px-4 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors font-medium" data-i18n="save_btn">
+                    Guardar
                 </button>
             </div>
         </div>
@@ -3013,6 +3087,15 @@
                 anniversary_reminder_title: "¡Su aniversario se acerca!",
                 anniversary_days_left: "días",
                 anniversary_gift_cta: "Ver ideas de regalo",
+                anniversary_reminder_offer: "¿Querés que te enviemos un recordatorio unos días antes?",
+
+                // Birthday modal
+                birthday_modal_title: "Cumpleaños de tu Pareja",
+                birthday_modal_desc: "¿Cuándo cumple años tu pareja?",
+                birthday_saved: "¡Cumpleaños guardado!",
+                birthday_label: "Cumple de tu pareja",
+                birthday_reminder_offer: "¿Querés que te recordemos el cumple de tu pareja?",
+                reminder_activated: "¡Recordatorio activado!",
 
                 // Weekly Challenge
                 challenge_title: "Desafío de la Semana",
@@ -3692,6 +3775,15 @@
                 anniversary_reminder_title: "Your anniversary is coming!",
                 anniversary_days_left: "days",
                 anniversary_gift_cta: "See gift ideas",
+                anniversary_reminder_offer: "Would you like us to send you a reminder a few days before?",
+
+                // Birthday modal
+                birthday_modal_title: "Partner's Birthday",
+                birthday_modal_desc: "When is your partner's birthday?",
+                birthday_saved: "Birthday saved!",
+                birthday_label: "Partner's birthday",
+                birthday_reminder_offer: "Would you like us to remind you about your partner's birthday?",
+                reminder_activated: "Reminder activated!",
 
                 // Weekly Challenge
                 challenge_title: "Weekly Challenge",
@@ -7397,9 +7489,13 @@
                 try {
                     checkAndUnlockBadges({ checkSeasonal: true });
                     checkAnniversaryReminder();
+                    updateProfileInfo();
                 } catch (e) {
                     console.log('Badge/reminder check error:', e);
                 }
+
+                // Show date reminder modal to capture email
+                showDateReminderModal('anniversary', anniversaryData);
             }
         }
 
@@ -7474,6 +7570,219 @@
 
             // Save dismissal for today
             localStorage.setItem(`us2_anniversary_banner_dismissed_${pairID}`, new Date().toDateString());
+        }
+
+        // =========================================
+        // BIRTHDAY SYSTEM
+        // =========================================
+
+        function initBirthdayDaySelect() {
+            const daySelect = document.getElementById('birthday-day');
+            if (!daySelect) return;
+            daySelect.innerHTML = '<option value="">Día</option>';
+            for (let i = 1; i <= 31; i++) {
+                daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+        }
+
+        function openBirthdayModal() {
+            const modal = document.getElementById('birthday-modal');
+            const daySelect = document.getElementById('birthday-day');
+            const monthSelect = document.getElementById('birthday-month');
+
+            initBirthdayDaySelect();
+
+            // Load saved value
+            const saved = localStorage.getItem(`us2_birthday_${pairID}`);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (daySelect) daySelect.value = data.day || '';
+                    if (monthSelect) monthSelect.value = data.month || '';
+                } catch (e) {}
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeBirthdayModal() {
+            document.getElementById('birthday-modal').style.display = 'none';
+        }
+
+        async function saveBirthday() {
+            const daySelect = document.getElementById('birthday-day');
+            const monthSelect = document.getElementById('birthday-month');
+
+            const day = daySelect ? daySelect.value : '';
+            const month = monthSelect ? monthSelect.value : '';
+
+            closeBirthdayModal();
+
+            if (day && month) {
+                const birthdayData = { month: parseInt(month), day: parseInt(day) };
+                const birthdayStr = `${month}-${day}`;
+
+                // Save locally
+                localStorage.setItem(`us2_birthday_${pairID}`, JSON.stringify(birthdayData));
+
+                showToast('🎂', 'success', translations[currentLang].birthday_saved || 'Cumpleaños guardado');
+                SoundSystem.playSuccess();
+
+                // Save to Supabase
+                try {
+                    const pair = await db.getPair(pairID);
+                    const currentContext = pair?.shared_context || {};
+
+                    await supabaseClient
+                        .from('pairs')
+                        .update({
+                            shared_context: {
+                                ...currentContext,
+                                partnerBirthday: birthdayData
+                            }
+                        })
+                        .eq('pair_id', pairID);
+                    console.log('✅ Birthday synced to shared_context');
+                } catch (e) {
+                    console.log('Birthday save to Supabase failed, saved locally');
+                }
+
+                // Update profile display
+                updateProfileInfo();
+
+                // Show date reminder modal
+                showDateReminderModal('birthday', birthdayData);
+            }
+        }
+
+        function getBirthdayData() {
+            const localData = localStorage.getItem(`us2_birthday_${pairID}`);
+            if (!localData) return null;
+            try {
+                return JSON.parse(localData);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // =========================================
+        // DATE REMINDER EMAIL MODAL (shared)
+        // =========================================
+
+        let currentDateReminderType = null;
+        let currentDateReminderData = null;
+
+        async function checkIfEmailExists() {
+            // Check localStorage first for quick response
+            const emailSaved = localStorage.getItem(`us2_email_subscribed_${pairID}`);
+            if (emailSaved) return true;
+
+            // Check Supabase
+            try {
+                const { data } = await supabaseClient
+                    .from('newsletter_subscribers')
+                    .select('email')
+                    .eq('pair_id', pairID)
+                    .limit(1);
+                if (data && data.length > 0) {
+                    localStorage.setItem(`us2_email_subscribed_${pairID}`, 'true');
+                    return true;
+                }
+            } catch (e) {
+                console.log('Error checking email:', e);
+            }
+            return false;
+        }
+
+        async function showDateReminderModal(type, dateData) {
+            currentDateReminderType = type;
+            currentDateReminderData = dateData;
+
+            const modal = document.getElementById('date-reminder-modal');
+            const iconEl = document.getElementById('date-reminder-icon');
+            const titleEl = document.getElementById('date-reminder-title');
+            const descEl = document.getElementById('date-reminder-desc');
+            const emailSection = document.getElementById('date-reminder-email-section');
+            const alreadySection = document.getElementById('date-reminder-already-subscribed');
+
+            if (type === 'anniversary') {
+                iconEl.textContent = '💍';
+                titleEl.textContent = translations[currentLang].anniversary_saved || '¡Aniversario guardado!';
+                descEl.textContent = translations[currentLang].anniversary_reminder_offer || '¿Querés que te enviemos un recordatorio unos días antes?';
+            } else {
+                iconEl.textContent = '🎂';
+                titleEl.textContent = translations[currentLang].birthday_saved || '¡Cumpleaños guardado!';
+                descEl.textContent = translations[currentLang].birthday_reminder_offer || '¿Querés que te recordemos el cumple de tu pareja?';
+            }
+
+            // Check if we already have their email
+            const hasEmail = await checkIfEmailExists();
+
+            if (hasEmail) {
+                emailSection.classList.add('hidden');
+                alreadySection.classList.remove('hidden');
+            } else {
+                emailSection.classList.remove('hidden');
+                alreadySection.classList.add('hidden');
+                document.getElementById('date-reminder-email').value = '';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeDateReminderModal() {
+            document.getElementById('date-reminder-modal').style.display = 'none';
+            currentDateReminderType = null;
+            currentDateReminderData = null;
+        }
+
+        async function saveDateReminder() {
+            const emailInput = document.getElementById('date-reminder-email');
+            const email = emailInput?.value?.trim();
+
+            if (!email || !email.includes('@')) {
+                showToast('✉️', 'error', 'Por favor ingresá un email válido');
+                return;
+            }
+
+            try {
+                // Save to newsletter_subscribers
+                const source = currentDateReminderType === 'anniversary' ? 'anniversary_reminder' : 'birthday_reminder';
+
+                await supabaseClient
+                    .from('newsletter_subscribers')
+                    .upsert({
+                        email: email,
+                        source: source,
+                        pair_id: pairID,
+                        created_at: new Date().toISOString()
+                    }, { onConflict: 'email' });
+
+                // Also save email to shared_context for transactional emails
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({
+                        shared_context: {
+                            ...currentContext,
+                            userA_email: email,
+                            userA_returnLink: window.location.href
+                        }
+                    })
+                    .eq('pair_id', pairID);
+
+                localStorage.setItem(`us2_email_subscribed_${pairID}`, 'true');
+
+                showToast('✅', 'success', translations[currentLang].reminder_activated || '¡Recordatorio activado!');
+                SoundSystem.playSuccess();
+
+                closeDateReminderModal();
+            } catch (e) {
+                console.error('Error saving email:', e);
+                showToast('❌', 'error', 'Error al guardar. Intentá de nuevo.');
+            }
         }
 
         function renderBadges() {
@@ -8330,11 +8639,30 @@
                 }
             }
 
+            // Birthday
+            const birthdayEl = document.getElementById('profile-birthday');
+            if (birthdayEl) {
+                const birthday = getBirthdayData();
+                if (birthday && birthday.month && birthday.day) {
+                    const months = currentLang === 'es'
+                        ? ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+                        : ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    birthdayEl.textContent = `${birthday.day} de ${months[birthday.month]}`;
+                } else {
+                    birthdayEl.textContent = translations[currentLang].not_configured || 'No configurado';
+                }
+            }
+
             // Language
             const languageEl = document.getElementById('profile-language');
             if (languageEl) {
                 languageEl.textContent = currentLang === 'es' ? 'Español' : 'English';
             }
+        }
+
+        // Alias for updateProfileInfo
+        function updateProfileInfo() {
+            renderProfileSettings();
         }
 
         function confirmLogout() {
