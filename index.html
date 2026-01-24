@@ -4390,6 +4390,15 @@
                     localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(merged));
                     console.log('✅ Test history synced from shared_context');
                 }
+
+                // Sync scheduled reevals
+                if (ctx.scheduledReevals) {
+                    const localReevals = JSON.parse(localStorage.getItem(`us2_scheduled_reeval_${pairID}`) || '{}');
+                    // Merge: server data takes precedence for same categories
+                    const merged = { ...localReevals, ...ctx.scheduledReevals };
+                    localStorage.setItem(`us2_scheduled_reeval_${pairID}`, JSON.stringify(merged));
+                    console.log('✅ Scheduled reevals synced from shared_context');
+                }
             } catch (e) {
                 console.error('Sync from Supabase failed:', e);
             }
@@ -6324,14 +6333,34 @@
             previousDiff: 0
         };
 
-        function scheduleReeval(category, buttonElement) {
+        async function scheduleReeval(category, buttonElement) {
             // Guardar la categoría como agendada para seguimiento
             const scheduled = JSON.parse(localStorage.getItem(`us2_scheduled_reeval_${pairID}`) || '{}');
             scheduled[category] = {
                 scheduledAt: new Date().toISOString(),
-                category: category
+                category: category,
+                scheduledBy: currentUser
             };
             localStorage.setItem(`us2_scheduled_reeval_${pairID}`, JSON.stringify(scheduled));
+
+            // Sync to Supabase shared_context
+            try {
+                const pair = await db.getPair(pairID);
+                const currentContext = pair?.shared_context || {};
+                await supabaseClient
+                    .from('pairs')
+                    .update({
+                        shared_context: {
+                            ...currentContext,
+                            scheduledReevals: scheduled,
+                            lastReevalSync: new Date().toISOString()
+                        }
+                    })
+                    .eq('pair_id', pairID);
+                console.log('✅ Scheduled reeval synced to Supabase');
+            } catch (e) {
+                console.log('Scheduled reeval sync failed, saved locally');
+            }
 
             // Actualizar el botón a estado "agendado"
             const parent = buttonElement.parentElement;
