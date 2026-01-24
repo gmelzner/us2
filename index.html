@@ -19,6 +19,20 @@
     <meta name="twitter:title" content="US2 - Compartamos nuestro futuro">
     <meta name="twitter:description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="US2 - Somos un equipo" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#7fb3b3">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -132,6 +146,52 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
+        }
+
+        /* Bounce X animation for CTA arrow */
+        @keyframes bounce-x {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        .animate-bounce-x {
+            animation: bounce-x 1s ease-in-out infinite;
+        }
+
+        /* CTA button pulse glow */
+        .cta-pulse {
+            position: relative;
+        }
+
+        .cta-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(127, 179, 179, 0.3));
+            filter: blur(10px);
+            opacity: 0;
+            animation: ctaPulse 2s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes ctaPulse {
+            0%, 100% { opacity: 0; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Feature card hover effect */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Stats counter animation */
+        .counter {
+            display: inline-block;
         }
 
         /* Toast Notifications */
@@ -300,6 +360,11 @@
                     <button onclick="setLanguage('es')" id="lang-es" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all bg-white text-teal-dark shadow-sm">ES</button>
                     <button onclick="setLanguage('en')" id="lang-en" class="lang-btn px-3 py-1 rounded-full text-sm font-medium transition-all text-gray-500 hover:text-teal-dark">EN</button>
                 </div>
+
+                <!-- Sound Toggle -->
+                <button onclick="toggleSound()" id="sound-toggle" class="p-2 rounded-full hover:bg-gray-100 transition-colors" title="Toggle sounds">
+                    <span id="sound-icon">🔔</span>
+                </button>
             </nav>
         </div>
     </header>
@@ -345,7 +410,7 @@
 
                 <!-- Features -->
                 <div class="grid md:grid-cols-3 gap-8 mt-12">
-                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="feature-card bg-white p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all">
                         <div class="w-14 h-14 bg-teal-soft/30 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -356,7 +421,7 @@
                         <p class="text-gray-600" data-i18n="feature_1_desc">Descubre quién gestiona qué en tu hogar con un test rápido y revelador.</p>
                     </div>
 
-                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="feature-card bg-white p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all">
                         <div class="w-14 h-14 bg-lavender/50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -366,7 +431,7 @@
                         <p class="text-gray-600" data-i18n="feature_2_desc">Gráficos claros que muestran la perspectiva de cada uno, sin juicios.</p>
                     </div>
 
-                    <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    <div class="feature-card bg-white p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all">
                         <div class="w-14 h-14 bg-teal-soft/30 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-7 h-7 text-teal-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -400,6 +465,38 @@
                             <span class="text-gray-700" data-i18n="step_3">Ven resultados juntos</span>
                         </div>
                     </div>
+                </div>
+
+                <!-- Stats Counter -->
+                <div class="mt-16 py-10 px-6 bg-gradient-to-r from-teal-soft/20 via-lavender/20 to-teal-soft/20 rounded-3xl">
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-bold text-teal-dark" id="counter-pairs">
+                                <span class="counter" data-target="500">0</span>+
+                            </div>
+                            <p class="text-gray-600 text-sm mt-1" data-i18n="stat_pairs">Parejas activas</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-bold text-purple-500" id="counter-achievements">
+                                <span class="counter" data-target="2500">0</span>+
+                            </div>
+                            <p class="text-gray-600 text-sm mt-1" data-i18n="stat_achievements">Logros registrados</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl md:text-4xl font-bold text-teal-dark">
+                                3 <span class="text-lg">min</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mt-1" data-i18n="stat_time">Duración del test</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Testimonial -->
+                <div class="mt-12 bg-white p-8 rounded-2xl shadow-sm border-l-4 border-purple-400">
+                    <p class="text-gray-700 italic text-lg mb-4" data-i18n="testimonial_quote">
+                        "Pensé que hacíamos todo 50/50, pero el test me mostró que mi pareja gestionaba el 80% de la planificación. Ahora lo hablamos sin pelear."
+                    </p>
+                    <p class="text-gray-500 text-sm" data-i18n="testimonial_author">— Pareja usuaria de US2</p>
                 </div>
             </div>
         </section>
@@ -596,14 +693,23 @@
                     <h2 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="dashboard_title">¡Completaron US2!</h2>
                     <p class="text-gray-600 mb-6" data-i18n="dashboard_subtitle">Aquí está el mapa de su carga mental compartida</p>
 
-                    <!-- Share Button -->
-                    <div class="flex justify-center gap-3">
+                    <!-- Share Buttons -->
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <!-- WhatsApp Share (Primary) -->
+                        <button onclick="shareOnWhatsApp()" class="px-6 py-3 bg-green-500 text-white font-medium rounded-full shadow-md hover:shadow-lg hover:bg-green-600 transition-all hover:scale-105 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            <span data-i18n="share_whatsapp">Compartir en WhatsApp</span>
+                        </button>
+                        <!-- General Share -->
                         <button onclick="shareResults()" class="px-6 py-3 bg-gradient-to-r from-teal-soft to-teal-dark text-white font-medium rounded-full shadow-md hover:shadow-lg transition-all hover:scale-105 flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
                             </svg>
                             <span data-i18n="share_results">Compartir Resultados</span>
                         </button>
+                        <!-- Retake Test -->
                         <button onclick="retakeTest()" class="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-medium rounded-full hover:border-teal-soft hover:text-teal-dark transition-all flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -1354,6 +1460,56 @@
     <!-- Confetti Container -->
     <div id="confetti-container" class="confetti-container"></div>
 
+    <!-- Email Capture Modal -->
+    <div id="email-capture-modal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8 relative animate-slideUp">
+            <!-- Close button -->
+            <button onclick="closeEmailModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <!-- Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-teal-soft rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="text-3xl">📊</span>
+            </div>
+
+            <!-- Title -->
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-2" data-i18n="email_modal_title">
+                ¿Querés guardar tu análisis?
+            </h3>
+
+            <!-- Description -->
+            <p class="text-gray-600 text-center mb-6" data-i18n="email_modal_desc">
+                Recibí un PDF con tus resultados completos + 10 tips personalizados para tu situación.
+            </p>
+
+            <!-- Form -->
+            <div class="space-y-4">
+                <input
+                    type="email"
+                    id="email-capture-input"
+                    class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-teal-soft focus:outline-none transition-colors"
+                    placeholder="tu@email.com"
+                    data-i18n-placeholder="email_modal_placeholder"
+                >
+                <button
+                    onclick="submitEmailCapture()"
+                    class="w-full py-4 bg-gradient-to-r from-purple-500 to-teal-dark text-white font-bold rounded-xl hover:shadow-lg transition-all"
+                    data-i18n="email_modal_cta"
+                >
+                    Enviarme el PDF Gratis
+                </button>
+            </div>
+
+            <!-- Privacy note -->
+            <p class="text-xs text-gray-400 text-center mt-4" data-i18n="email_modal_privacy">
+                No spam. Solo contenido útil para parejas.
+            </p>
+        </div>
+    </div>
+
     <!-- ========== JAVASCRIPT ========== -->
     <script>
         // ==========================================
@@ -1624,6 +1780,125 @@
         }
 
         // ==========================================
+        // SOUND SYSTEM (Web Audio API)
+        // ==========================================
+        const SoundSystem = {
+            audioContext: null,
+            enabled: true,
+
+            init() {
+                // Lazy init on first user interaction
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return this.audioContext;
+            },
+
+            // Play a "ding" sound for test completion
+            playComplete() {
+                if (!this.enabled) return;
+                const ctx = this.init();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialDecayTo = 0.01;
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.4);
+            },
+
+            // Play a soft "check" sound for achievements
+            playAchievement() {
+                if (!this.enabled) return;
+                const ctx = this.init();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime); // A5
+                osc.frequency.setValueAtTime(1108.73, ctx.currentTime + 0.08); // C#6
+
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.15);
+            },
+
+            // Play a celebratory sound for badges/rewards
+            playBadge() {
+                if (!this.enabled) return;
+                const ctx = this.init();
+
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+
+                    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + i * 0.08 + 0.02);
+                    gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + i * 0.08 + 0.2);
+
+                    osc.start(ctx.currentTime + i * 0.08);
+                    osc.stop(ctx.currentTime + i * 0.08 + 0.25);
+                });
+            },
+
+            // Play a subtle click for UI interactions
+            playClick() {
+                if (!this.enabled) return;
+                const ctx = this.init();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.05);
+            },
+
+            toggle() {
+                this.enabled = !this.enabled;
+                localStorage.setItem('us2_sounds', this.enabled ? 'on' : 'off');
+                return this.enabled;
+            },
+
+            loadPreference() {
+                const pref = localStorage.getItem('us2_sounds');
+                this.enabled = pref !== 'off';
+            }
+        };
+
+        // Load sound preference on startup
+        SoundSystem.loadPreference();
+
+        // ==========================================
         // INTERNATIONALIZATION (i18n)
         // ==========================================
         const translations = {
@@ -1656,6 +1931,13 @@
                 step_1: "Completás el test",
                 step_2: "Invitás a tu pareja",
                 step_3: "Ven resultados juntos",
+
+                // Stats
+                stat_pairs: "Parejas activas",
+                stat_achievements: "Logros registrados",
+                stat_time: "Duración del test",
+                testimonial_quote: '"Pensé que hacíamos todo 50/50, pero el test me mostró que mi pareja gestionaba el 80% de la planificación. Ahora lo hablamos sin pelear."',
+                testimonial_author: "— Pareja usuaria de US2",
 
                 // Onboarding
                 onboarding_title: "Antes de comenzar...",
@@ -1729,8 +2011,10 @@
                 dashboard_title: "¡Completaron US2!",
                 dashboard_subtitle: "Aquí está el mapa de su carga mental compartida",
                 share_results: "Compartir Resultados",
+                share_whatsapp: "Compartir en WhatsApp",
                 retake_test: "Volver a Hacer el Test",
                 share_message: "Hicimos el test de US2 para ver cómo nos distribuimos la carga mental del hogar. ¡Te lo recomiendo!",
+                share_whatsapp_message: "{emoji} ¡Hicimos el test de US2!\n\n📊 Resultados:\n• {nameA}: {scoreA}/45 pts ({profileA})\n• {nameB}: {scoreB}/45 pts ({profileB})\n\n¿Cómo andan ustedes? Hagan el test gratis:",
                 user_a_label: "Usuario A",
                 user_b_label: "Usuario B",
                 radar_title: "Comparativa por Categorías",
@@ -2113,7 +2397,15 @@
                 reward_weekend_trip: "Escapada de Fin de Semana",
                 reward_weekend_trip_desc: "Una mini-vacación para reconectar",
                 reward_free_day: "Día Libre",
-                reward_free_day_desc: "Un día completo sin responsabilidades del hogar"
+                reward_free_day_desc: "Un día completo sin responsabilidades del hogar",
+
+                // Email Capture Modal
+                email_modal_title: "¿Querés guardar tu análisis?",
+                email_modal_desc: "Recibí un PDF con tus resultados completos + 10 tips personalizados para mejorar el equilibrio en tu hogar.",
+                email_modal_placeholder: "tu@email.com",
+                email_modal_cta: "Enviarme el PDF Gratis",
+                email_modal_privacy: "No spam. Solo contenido útil para parejas.",
+                email_modal_success: "¡Listo! Revisá tu casilla de correo."
             },
             en: {
                 // Logo
@@ -2144,6 +2436,13 @@
                 step_1: "Complete the test",
                 step_2: "Invite your partner",
                 step_3: "See results together",
+
+                // Stats
+                stat_pairs: "Active couples",
+                stat_achievements: "Achievements logged",
+                stat_time: "Test duration",
+                testimonial_quote: '"I thought we did everything 50/50, but the test showed me my partner managed 80% of the planning. Now we discuss it without fighting."',
+                testimonial_author: "— US2 user couple",
 
                 // Onboarding
                 onboarding_title: "Before we start...",
@@ -2217,8 +2516,10 @@
                 dashboard_title: "You completed US2!",
                 dashboard_subtitle: "Here's the map of your shared mental load",
                 share_results: "Share Results",
+                share_whatsapp: "Share on WhatsApp",
                 retake_test: "Retake Test",
                 share_message: "We took the US2 test to see how we share the mental load at home. I recommend it!",
+                share_whatsapp_message: "{emoji} We took the US2 test!\n\n📊 Results:\n• {nameA}: {scoreA}/45 pts ({profileA})\n• {nameB}: {scoreB}/45 pts ({profileB})\n\nHow about you two? Take the free test:",
                 user_a_label: "User A",
                 user_b_label: "User B",
                 radar_title: "Comparison by Categories",
@@ -2601,7 +2902,15 @@
                 reward_weekend_trip: "Weekend Getaway",
                 reward_weekend_trip_desc: "A mini-vacation to reconnect",
                 reward_free_day: "Free Day",
-                reward_free_day_desc: "A full day with no household responsibilities"
+                reward_free_day_desc: "A full day with no household responsibilities",
+
+                // Email Capture Modal
+                email_modal_title: "Want to save your analysis?",
+                email_modal_desc: "Get a PDF with your complete results + 10 personalized tips to improve balance in your home.",
+                email_modal_placeholder: "your@email.com",
+                email_modal_cta: "Send me the Free PDF",
+                email_modal_privacy: "No spam. Only useful content for couples.",
+                email_modal_success: "Done! Check your inbox."
             }
         };
 
@@ -2642,6 +2951,154 @@
 
             // Update HTML lang attribute
             document.documentElement.lang = lang;
+        }
+
+        function toggleSound() {
+            const enabled = SoundSystem.toggle();
+            const icon = document.getElementById('sound-icon');
+            icon.textContent = enabled ? '🔔' : '🔕';
+
+            // Play a quick sound to confirm it's on
+            if (enabled) {
+                SoundSystem.playClick();
+            }
+        }
+
+        function updateSoundIcon() {
+            const icon = document.getElementById('sound-icon');
+            if (icon) {
+                icon.textContent = SoundSystem.enabled ? '🔔' : '🔕';
+            }
+        }
+
+        // ==========================================
+        // EMAIL CAPTURE MODAL
+        // ==========================================
+        let emailModalShown = false;
+        let dashboardTimer = null;
+        let dashboardScrollHandler = null;
+
+        function showEmailModal() {
+            if (emailModalShown) return;
+
+            // Check if already dismissed this session
+            if (sessionStorage.getItem('us2_email_modal_dismissed')) return;
+
+            // Check if user already subscribed
+            const subscribers = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
+            const capturedEmails = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
+            if (subscribers.length > 0 || capturedEmails.length > 0) return;
+
+            emailModalShown = true;
+            const modal = document.getElementById('email-capture-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                SoundSystem.playClick();
+            }
+        }
+
+        function closeEmailModal() {
+            const modal = document.getElementById('email-capture-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            // Mark as dismissed for this session
+            sessionStorage.setItem('us2_email_modal_dismissed', 'true');
+            cleanupEmailModalTracking();
+        }
+
+        async function submitEmailCapture() {
+            const input = document.getElementById('email-capture-input');
+            const email = input ? input.value.trim() : '';
+
+            if (!email || !email.includes('@')) {
+                input.classList.add('border-red-500');
+                input.focus();
+                return;
+            }
+
+            input.classList.remove('border-red-500');
+
+            // Store email locally
+            const captures = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
+            if (!captures.includes(email)) {
+                captures.push(email);
+                localStorage.setItem('us2_email_captures', JSON.stringify(captures));
+            }
+
+            // Sync to Supabase
+            try {
+                await supabaseClient
+                    .from('newsletter_subscribers')
+                    .upsert({ email, source: 'pdf_capture' }, { onConflict: 'email' });
+                console.log('📧 PDF capture email synced to Supabase:', email);
+            } catch (err) {
+                console.warn('Email capture sync failed (offline?):', err);
+            }
+
+            // Show success
+            const modal = document.getElementById('email-capture-modal');
+            const content = modal.querySelector('div > div');
+            if (content) {
+                content.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-20 h-20 bg-gradient-to-br from-teal-soft to-teal-dark rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-4xl">✅</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="email_modal_success">${translations[currentLang].email_modal_success}</h3>
+                        <p class="text-gray-600 mb-6">📧 ${email}</p>
+                        <button onclick="closeEmailModal()" class="px-6 py-3 bg-teal-dark text-white font-semibold rounded-xl hover:bg-teal-700 transition-colors">
+                            OK
+                        </button>
+                    </div>
+                `;
+            }
+
+            SoundSystem.playAchievement();
+        }
+
+        function initEmailModalTracking() {
+            // Only track if on dashboard and both users completed
+            const dashboard = document.getElementById('dashboard');
+            if (!dashboard || dashboard.classList.contains('hidden')) return;
+
+            // Check both users completed
+            const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
+            const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
+            if (!dataA || !dataB) return;
+
+            // Already shown or dismissed?
+            if (emailModalShown || sessionStorage.getItem('us2_email_modal_dismissed')) return;
+
+            // Timer: 45 seconds
+            dashboardTimer = setTimeout(() => {
+                showEmailModal();
+            }, 45000);
+
+            // Scroll: 75% of dashboard
+            dashboardScrollHandler = () => {
+                const dashboardRect = dashboard.getBoundingClientRect();
+                const scrollPercent = Math.abs(dashboardRect.top) / (dashboardRect.height - window.innerHeight);
+
+                if (scrollPercent >= 0.75) {
+                    showEmailModal();
+                }
+            };
+
+            window.addEventListener('scroll', dashboardScrollHandler);
+        }
+
+        function cleanupEmailModalTracking() {
+            if (dashboardTimer) {
+                clearTimeout(dashboardTimer);
+                dashboardTimer = null;
+            }
+            if (dashboardScrollHandler) {
+                window.removeEventListener('scroll', dashboardScrollHandler);
+                dashboardScrollHandler = null;
+            }
         }
 
         // ==========================================
@@ -2707,6 +3164,9 @@
             if (savedLang) {
                 setLanguage(savedLang);
             }
+
+            // Update sound icon based on preference
+            updateSoundIcon();
 
             // Check URL parameters
             const urlParams = new URLSearchParams(window.location.search);
@@ -3149,6 +3609,9 @@
                 // Sync to Supabase
                 syncToSupabase('A', userData, pairData.sharedContext);
 
+                // Play completion sound
+                SoundSystem.playComplete();
+
                 showWaitingScreen();
             } else {
                 pairData.userB = userData;
@@ -3157,6 +3620,9 @@
 
                 // Sync to Supabase
                 syncToSupabase('B', userData, null);
+
+                // Play completion sound
+                SoundSystem.playComplete();
 
                 showDashboard(pairData);
             }
@@ -3214,6 +3680,46 @@
         function shareResultsWhatsApp(message) {
             const encodedMessage = encodeURIComponent(message);
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+        }
+
+        function shareOnWhatsApp() {
+            // Get user data
+            const dataA = JSON.parse(localStorage.getItem(`us2_${pairID}_A`) || 'null');
+            const dataB = JSON.parse(localStorage.getItem(`us2_${pairID}_B`) || 'null');
+
+            if (!dataA || !dataB) {
+                shareResults();
+                return;
+            }
+
+            // Get names
+            const nameA = dataA.context?.name || (currentLang === 'es' ? 'Usuario A' : 'User A');
+            const nameB = dataB.context?.name || (currentLang === 'es' ? 'Usuario B' : 'User B');
+
+            // Get profiles
+            const profileA = getProfile(dataA.score);
+            const profileB = getProfile(dataB.score);
+
+            // Calculate balance
+            const diff = Math.abs(dataA.score - dataB.score);
+            const balanceEmoji = diff <= 5 ? '⚖️' : (diff <= 15 ? '📊' : '🔥');
+
+            // Build message
+            const siteUrl = 'https://us2.fun';
+            const message = translations[currentLang].share_whatsapp_message
+                .replace('{nameA}', nameA)
+                .replace('{nameB}', nameB)
+                .replace('{scoreA}', dataA.score)
+                .replace('{scoreB}', dataB.score)
+                .replace('{profileA}', profileA)
+                .replace('{profileB}', profileB)
+                .replace('{emoji}', balanceEmoji)
+                + '\n\n' + siteUrl;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+
+            SoundSystem.playClick();
         }
 
         function retakeTest() {
@@ -3310,6 +3816,9 @@
 
             // Save to test history for tracking
             saveTestToHistory(pairData);
+
+            // Initialize email capture modal tracking (scroll/timer)
+            setTimeout(() => initEmailModalTracking(), 1000);
         }
 
         function saveTestToHistory(pairData) {
@@ -3856,6 +4365,9 @@
             // Reload achievements list
             loadAchievements();
 
+            // Play achievement sound
+            SoundSystem.playAchievement();
+
             // Show quick feedback
             showToast('✓', 'success', currentLang === 'es' ? '¡Logro enviado para aprobar!' : 'Achievement sent for approval!');
         }
@@ -3872,6 +4384,9 @@
 
                 // Show toast
                 showToast('👍', 'success', translations[currentLang].approval_toast);
+
+                // Play celebratory sound
+                SoundSystem.playBadge();
 
                 // Trigger confetti for approval
                 triggerConfetti();
@@ -4287,6 +4802,7 @@
                 const badge = badgesData.find(b => b.id === badgeId);
                 const name = translations[currentLang][`badge_${badgeId}`] || badgeId;
                 showToast(`${badge.icon} ${name}`, 'badge', translations[currentLang].toast_badge_unlocked);
+                SoundSystem.playBadge();
                 triggerConfetti();
             });
 
@@ -4844,6 +5360,47 @@
         }
 
         // ==========================================
+        // COUNTER ANIMATION
+        // ==========================================
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            const speed = 200; // Animation speed
+
+            counters.forEach(counter => {
+                const target = +counter.getAttribute('data-target');
+                const increment = target / speed;
+                let current = 0;
+
+                const updateCount = () => {
+                    current += increment;
+                    if (current < target) {
+                        counter.innerText = Math.ceil(current);
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+
+                // Start animation when element is visible
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            updateCount();
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(counter);
+            });
+        }
+
+        // Initialize counters on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(animateCounters, 500);
+        });
+
+        // ==========================================
         // CONFETTI ANIMATION
         // ==========================================
         function triggerConfetti() {
@@ -5234,21 +5791,33 @@
             }
         }
 
-        function subscribeNewsletter() {
-            const email = document.getElementById('newsletter-email').value.trim();
+        async function subscribeNewsletter(source = 'newsletter') {
+            const emailInput = document.getElementById('newsletter-email');
+            const email = emailInput ? emailInput.value.trim() : '';
+
             if (!email || !email.includes('@')) {
                 showToast('⚠️', 'info', currentLang === 'es' ? 'Ingresá un email válido' : 'Enter a valid email');
                 return;
             }
 
-            // Store email locally (for future export/integration)
+            // Store email locally (fallback)
             const subscribers = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
             if (!subscribers.includes(email)) {
                 subscribers.push(email);
                 localStorage.setItem('us2_newsletter', JSON.stringify(subscribers));
             }
 
-            document.getElementById('newsletter-email').value = '';
+            // Sync to Supabase
+            try {
+                await supabaseClient
+                    .from('newsletter_subscribers')
+                    .upsert({ email, source }, { onConflict: 'email' });
+                console.log('📧 Email synced to Supabase:', email);
+            } catch (err) {
+                console.warn('Newsletter sync failed (offline?):', err);
+            }
+
+            if (emailInput) emailInput.value = '';
             showToast('📧', 'success', translations[currentLang].newsletter_success);
         }
 
@@ -5360,6 +5929,32 @@
         // INITIALIZE APP
         // ==========================================
         document.addEventListener('DOMContentLoaded', init);
+
+        // ==========================================
+        // PWA SERVICE WORKER REGISTRATION
+        // ==========================================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('PWA: Service Worker registered', registration.scope);
+
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New version available
+                                    console.log('PWA: New version available');
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('PWA: Service Worker registration failed', error);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
