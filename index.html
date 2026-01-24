@@ -1807,32 +1807,91 @@
             }
         }
 
-        // Load data from Supabase on startup (merge with localStorage)
-        async function loadFromSupabase() {
+        // Load pair data from Supabase and convert to localStorage format
+        async function loadPairFromSupabase(pairId) {
             try {
                 // Get pair data
-                const pair = await db.getPair(pairID);
-                if (pair) {
-                    console.log('📥 Loaded pair from Supabase:', pair.pair_id);
+                const pair = await db.getPair(pairId);
+                if (!pair) {
+                    console.log('No pair found in Supabase for:', pairId);
+                    return null;
                 }
 
-                // Get tests
-                const tests = await db.getTests(pairID);
-                if (tests.length > 0) {
-                    console.log(`📥 Loaded ${tests.length} tests from Supabase`);
+                console.log('📥 Found pair in Supabase:', pair.pair_id);
+
+                // Get tests for this pair
+                const tests = await db.getTests(pairId);
+                console.log(`📥 Found ${tests.length} tests in Supabase`);
+
+                // Build pairData object in localStorage format
+                const pairData = {
+                    sharedContext: pair.shared_context || {}
+                };
+
+                // Find User A and User B tests
+                const testA = tests.find(t => t.user_role === 'A');
+                const testB = tests.find(t => t.user_role === 'B');
+
+                if (testA) {
+                    pairData.userA = {
+                        score: testA.score,
+                        categoryScores: testA.category_scores,
+                        answers: testA.answers,
+                        context: { name: 'Usuario A' }
+                    };
                 }
 
-                // Get achievements
-                const achievements = await db.getAchievements(pairID);
+                if (testB) {
+                    pairData.userB = {
+                        score: testB.score,
+                        categoryScores: testB.category_scores,
+                        answers: testB.answers,
+                        context: { name: 'Usuario B' }
+                    };
+                }
+
+                // Try to get user names
+                try {
+                    const { data: users } = await supabaseClient
+                        .from('users')
+                        .select('role, name')
+                        .eq('pair_id', pairId);
+
+                    if (users) {
+                        const userA = users.find(u => u.role === 'A');
+                        const userB = users.find(u => u.role === 'B');
+                        if (userA && pairData.userA) pairData.userA.context.name = userA.name;
+                        if (userB && pairData.userB) pairData.userB.context.name = userB.name;
+                    }
+                } catch (e) {
+                    console.log('Could not load user names');
+                }
+
+                // Load achievements
+                const achievements = await db.getAchievements(pairId);
                 if (achievements.length > 0) {
+                    localStorage.setItem(`us2_achievements_${pairId}`, JSON.stringify(
+                        achievements.map(a => ({
+                            id: a.id,
+                            text: a.text,
+                            category: a.category,
+                            date: a.created_at,
+                            user: a.user_role
+                        }))
+                    ));
                     console.log(`📥 Loaded ${achievements.length} achievements from Supabase`);
                 }
 
-                return { pair, tests, achievements };
+                return pairData;
             } catch (e) {
                 console.error('Load from Supabase error:', e);
-                return { pair: null, tests: [], achievements: [] };
+                return null;
             }
+        }
+
+        // Load data from Supabase on startup (merge with localStorage) - DEPRECATED
+        async function loadFromSupabase() {
+            return await loadPairFromSupabase(pairID);
         }
 
         // ==========================================
@@ -3248,7 +3307,7 @@
         // ==========================================
         // INITIALIZATION
         // ==========================================
-        function init() {
+        async function init() {
             // Check saved language
             const savedLang = localStorage.getItem('us2_lang');
             if (savedLang) {
@@ -3268,8 +3327,25 @@
                 pairID = urlPairID;
                 currentUser = 'B';
 
-                // Check if User A has completed
-                const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+                // First check localStorage
+                let pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+
+                // If no local data, try to load from Supabase (different device)
+                if (!pairData.userA) {
+                    console.log('📡 User B on new device, loading from Supabase...');
+                    try {
+                        const cloudData = await loadPairFromSupabase(pairID);
+                        if (cloudData && cloudData.userA) {
+                            pairData = cloudData;
+                            // Cache in localStorage for this session
+                            localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                            console.log('✅ Loaded pair data from Supabase');
+                        }
+                    } catch (e) {
+                        console.error('Failed to load from Supabase:', e);
+                    }
+                }
+
                 if (pairData.userA) {
                     // Check if User B already completed
                     if (pairData.userB) {
@@ -3287,12 +3363,27 @@
                     }
                 } else {
                     // Invalid or expired link
+                    console.log('❌ No data found for pairID:', pairID);
                     showSection('home');
                 }
             } else if (urlPairID) {
                 // Returning user with pairID
                 pairID = urlPairID;
-                const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+                let pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+
+                // Try Supabase if no local data
+                if (!pairData.userA || !pairData.userB) {
+                    try {
+                        const cloudData = await loadPairFromSupabase(pairID);
+                        if (cloudData) {
+                            pairData = cloudData;
+                            localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                        }
+                    } catch (e) {
+                        console.error('Failed to load from Supabase:', e);
+                    }
+                }
+
                 if (pairData.userA && pairData.userB) {
                     showDashboard(pairData);
                 } else {
@@ -3840,14 +3931,33 @@
             }, 2000);
         }
 
-        function checkPartnerStatus() {
-            const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+        async function checkPartnerStatus() {
+            // First check localStorage
+            let pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+
+            // If partner hasn't completed locally, check Supabase
+            if (!pairData.userB) {
+                showToast('🔄', 'info', currentLang === 'es' ? 'Verificando...' : 'Checking...');
+
+                try {
+                    const cloudData = await loadPairFromSupabase(pairID);
+                    if (cloudData && cloudData.userB) {
+                        // Partner completed! Update localStorage
+                        pairData = cloudData;
+                        localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                        console.log('✅ Partner data found in Supabase!');
+                    }
+                } catch (e) {
+                    console.error('Failed to check Supabase:', e);
+                }
+            }
+
             if (pairData.userA && pairData.userB) {
                 showDashboard(pairData);
             } else {
-                alert(currentLang === 'es'
-                    ? 'Tu pareja aún no ha completado el test. ¡Comparte el link!'
-                    : 'Your partner hasn\'t completed the test yet. Share the link!');
+                showToast('⏳', 'info', currentLang === 'es'
+                    ? 'Tu pareja aún no completó el test'
+                    : 'Your partner hasn\'t completed yet');
             }
         }
 
