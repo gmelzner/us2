@@ -9104,7 +9104,11 @@
         // SOCIAL SHARING
         // ==========================================
         function getShareUrl() {
-            return window.location.origin + window.location.pathname;
+            // Share /en/ URL when in English so OG tags are correct
+            if (currentLang === 'en') {
+                return window.location.origin + '/en/';
+            }
+            return window.location.origin + '/';
         }
 
         function getShareMessage() {
