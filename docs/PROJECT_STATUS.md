@@ -1,13 +1,13 @@
 # US2 - Estado del Proyecto
 
 > **Última actualización**: 26 Enero 2026
-> **Estado general**: Listo para testing con parejas reales
+> **Estado general**: Producción - Operativo
 
 ---
 
 ## Resumen Ejecutivo
 
-US2 es una webapp para parejas que visualiza la distribución de carga mental en el hogar. La app está completamente funcional en español e inglés, con sistema de emails automatizados y gamificación.
+US2 es una webapp para parejas que visualiza la distribución de carga mental en el hogar. La app está completamente funcional en español e inglés, con sistema de emails automatizados, gamificación y CRON job diario.
 
 ---
 
@@ -19,12 +19,14 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 - **Archivos principales**:
   - `index.html` - App principal (ES/EN)
   - `en/index.html` - Landing SEO en inglés
+  - `api/cron.js` - Serverless function para CRON
 
 ### Backend
 - **Database**: Supabase (PostgreSQL)
 - **Auth**: Anónimo con pair_id
 - **Edge Functions**: Deno/TypeScript en Supabase
 - **Emails**: Resend API
+- **CRON**: Vercel Cron (12:00 UTC diario)
 
 ### Tablas Supabase
 | Tabla | Descripción | RLS |
@@ -34,6 +36,8 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 | `tests` | Resultados de tests | ✅ |
 | `achievements` | Logros semanales | ✅ |
 | `newsletter_subscribers` | Suscripciones email | ✅ |
+
+Ver [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) para documentación detallada del esquema.
 
 ---
 
@@ -45,15 +49,17 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 - [x] Gap analysis con sugerencias personalizadas
 - [x] Sistema de invitación por link (preserva idioma)
 - [x] Soporte bilingüe ES/EN completo
+- [x] Banner de usuario recurrente ("Ver mis resultados")
+- [x] Compartir resultados con URL única
 
 ### Gamificación
 - [x] Sistema de logros semanales
-- [x] Badges desbloqueables
-- [x] Niveles de equipo
+- [x] Badges desbloqueables (19 badges)
+- [x] Niveles de equipo (5 niveles)
 - [x] Celebraciones con confetti
 
 ### Emails Automatizados
-- [x] Recordatorio de retest (7 días sin test)
+- [x] Recordatorio de retest (14 días sin test)
 - [x] Notificación cuando partner completa
 - [x] Recordatorio de aniversario (7 días antes)
 - [x] Recordatorio de cumpleaños (7 días antes)
@@ -75,52 +81,32 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 ### Seguridad
 - [x] RLS en todas las tablas
 - [x] Rate limiting en emails (5/min, 20/día)
-- [x] Sin credenciales expuestas
+- [x] DEBUG flag para console.logs (desactivado en producción)
 - [x] Sin vulnerabilidades XSS
 
 ---
 
-## Pendientes / Próximos Pasos
+## Configuración Actual
 
-### Corto plazo
-- [x] ~~Confirmar indexación de sitemap en Search Console~~ (2 páginas indexadas)
-- [ ] Testear con 2-3 parejas reales
-- [ ] Monitorear errores en producción
-- [ ] Optimizar peso de OG images (~7MB → <500KB)
-
-### SEO (Fase 2) - Blog EN ✅ COMPLETADO
-- [x] Crear `/en/blog/` index
-- [x] Escribir blog EN: "Mental Load" (`/en/blog/mental-load.html`)
-- [x] Escribir blog EN: "50/50 Myth" (`/en/blog/50-50-myth.html`)
-- [ ] Backlink outreach a blogs de relaciones (futuro)
-
-### Email Marketing (mejoras futuras)
-- [ ] Email de bienvenida cuando ambos completan
-- [ ] Email de racha (7 días consecutivos)
-- [ ] Email de inactividad (14 días)
-- [ ] Dashboard interno de métricas
-
-### Features futuras (ideas)
-- [ ] Sugerencias de logros basadas en gaps
-- [ ] Modal de novedades al partner
-- [ ] Push notifications (PWA)
-- [ ] Sistema de reviews para aggregateRating
-
----
-
-## Configuración Requerida
-
-### Variables de entorno (en Supabase)
-```
-RESEND_API_KEY=re_xxx...
+### Vercel CRON
+```json
+// vercel.json
+{
+  "crons": [{
+    "path": "/api/cron",
+    "schedule": "0 12 * * *"  // 12:00 UTC = 9:00 AM Argentina
+  }]
+}
 ```
 
-### Cron Jobs (pg_cron en Supabase)
-```sql
--- Ejecuta diariamente a las 9:00 UTC (6:00 Argentina)
--- Job name: daily-email-check
--- Schedule: 0 9 * * *
-```
+### Secrets en Supabase Edge Functions
+| Secret | Descripción |
+|--------|-------------|
+| `RESEND_API_KEY` | API key de Resend para enviar emails |
+| `SUPABASE_URL` | URL del proyecto Supabase |
+| `SUPABASE_ANON_KEY` | Anon key (público) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key (privado) |
+| `SUPABASE_DB_URL` | Connection string de la DB |
 
 ### Google
 - Search Console verificado
@@ -128,19 +114,52 @@ RESEND_API_KEY=re_xxx...
 
 ---
 
+## Archivos de Documentación
+
+| Archivo | Contenido |
+|---------|-----------|
+| `docs/PROJECT_STATUS.md` | Este archivo - estado general |
+| `docs/DATABASE_SCHEMA.md` | Esquema de tablas y campos |
+| `docs/EMAIL_MARKETING_PLAN.md` | Plan de email marketing |
+| `docs/INTERNATIONAL_SEO_PLAN.md` | Estrategia SEO internacional |
+| `.env.example` | Template de variables de entorno |
+| `CLAUDE.md` | Guía para Claude sobre formato de blog |
+
+---
+
+## Pendientes / Próximos Pasos
+
+### Corto plazo
+- [ ] Testear con 2-3 parejas reales
+- [ ] Monitorear errores en producción
+- [ ] Optimizar peso de OG images (~7MB → <500KB)
+
+### Email Marketing (mejoras futuras)
+- [ ] Email de bienvenida cuando ambos completan
+- [ ] Email de racha (7 días consecutivos)
+- [ ] Dashboard interno de métricas
+
+### Features futuras (ideas)
+- [ ] Sugerencias de logros basadas en gaps
+- [ ] Push notifications (PWA)
+- [ ] Sistema de reviews para aggregateRating
+
+---
+
 ## Cómo Retomar
 
 1. **Para cambios de código**: Editar archivos, push a GitHub → auto-deploy en Vercel
 
-2. **Para ver emails programados**:
-   ```sql
-   SELECT * FROM pairs
-   WHERE shared_context->>'scheduled_emails' IS NOT NULL;
+2. **Para probar CRON manualmente**:
+   ```bash
+   curl -X POST "https://us2.fun/api/cron"
    ```
 
-3. **Para debuggear emails**: Ver logs en Supabase Dashboard → Edge Functions → Logs
+3. **Para ver logs de emails**: Supabase Dashboard → Edge Functions → Logs
 
-4. **Para SEO**: Revisar Search Console → Sitemaps y verificar indexación
+4. **Para activar debug logs**: En `index.html`, cambiar `const DEBUG = false;` a `true`
+
+5. **Para SEO**: Revisar Search Console → Sitemaps y verificar indexación
 
 ---
 
