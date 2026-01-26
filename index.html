@@ -2439,7 +2439,7 @@
                     userData.answers
                 );
 
-                console.log(`✅ Synced ${role} data to Supabase`);
+                DEBUG && console.log(`✅ Synced ${role} data to Supabase`);
             } catch (e) {
                 console.error('Sync error:', e);
                 // Continue without blocking - localStorage already has the data
@@ -2463,7 +2463,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Achievements synced to shared_context');
+                DEBUG && console.log('✅ Achievements synced to shared_context');
             } catch (e) {
                 console.error('Achievements sync error:', e);
             }
@@ -2493,7 +2493,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Badges synced to shared_context for', userType);
+                DEBUG && console.log('✅ Badges synced to shared_context for', userType);
             } catch (e) {
                 console.error('Badges sync error:', e);
             }
@@ -2516,7 +2516,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Streak synced to shared_context');
+                DEBUG && console.log('✅ Streak synced to shared_context');
             } catch (e) {
                 console.error('Streak sync error:', e);
             }
@@ -2539,7 +2539,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Test history synced to shared_context');
+                DEBUG && console.log('✅ Test history synced to shared_context');
             } catch (e) {
                 console.error('Test history sync error:', e);
             }
@@ -2569,7 +2569,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Level synced to shared_context for', userType);
+                DEBUG && console.log('✅ Level synced to shared_context for', userType);
             } catch (e) {
                 console.error('Level sync error:', e);
             }
@@ -2585,7 +2585,7 @@
                     achievement.category,
                     achievement.status || 'pending'
                 );
-                console.log('✅ Achievement synced to table');
+                DEBUG && console.log('✅ Achievement synced to table');
             } catch (e) {
                 console.error('Achievement sync error:', e);
             }
@@ -2597,15 +2597,15 @@
                 // Get pair data
                 const pair = await db.getPair(pairId);
                 if (!pair) {
-                    console.log('No pair found in Supabase for:', pairId);
+                    DEBUG && console.log('No pair found in Supabase for:', pairId);
                     return null;
                 }
 
-                console.log('📥 Found pair in Supabase:', pair.pair_id);
+                DEBUG && console.log('📥 Found pair in Supabase:', pair.pair_id);
 
                 // Get tests for this pair
                 const tests = await db.getTests(pairId);
-                console.log(`📥 Found ${tests.length} tests in Supabase`);
+                DEBUG && console.log(`📥 Found ${tests.length} tests in Supabase`);
 
                 // Build pairData object in localStorage format
                 const pairData = {
@@ -2648,7 +2648,7 @@
                         if (userB && pairData.userB) pairData.userB.context.name = userB.name;
                     }
                 } catch (e) {
-                    console.log('Could not load user names');
+                    DEBUG && console.log('Could not load user names');
                 }
 
                 // Load achievements
@@ -2663,7 +2663,7 @@
                             user: a.user_role
                         }))
                     ));
-                    console.log(`📥 Loaded ${achievements.length} achievements from Supabase`);
+                    DEBUG && console.log(`📥 Loaded ${achievements.length} achievements from Supabase`);
                 }
 
                 // Load badges, streak, testHistory from shared_context
@@ -2672,13 +2672,13 @@
                 // Load achievements from shared_context (primary source, overwrites table data)
                 if (ctx.achievements && ctx.achievements.length > 0) {
                     localStorage.setItem(`us2_achievements_${pairId}`, JSON.stringify(ctx.achievements));
-                    console.log(`📥 Loaded ${ctx.achievements.length} achievements from shared_context`);
+                    DEBUG && console.log(`📥 Loaded ${ctx.achievements.length} achievements from shared_context`);
                 }
 
                 // Load goals
                 if (ctx.goals) {
                     localStorage.setItem(`us2_goals_${pairId}`, JSON.stringify(ctx.goals));
-                    console.log('📥 Loaded goals from shared_context');
+                    DEBUG && console.log('📥 Loaded goals from shared_context');
                 }
 
                 // Load badges (per user - need to know current user)
@@ -2688,26 +2688,26 @@
                     const userBadges = ctx.badges[currentUserType] || [];
                     if (userBadges.length > 0) {
                         localStorage.setItem(`us2_badges_${pairId}`, JSON.stringify(userBadges));
-                        console.log(`📥 Loaded ${userBadges.length} badges from shared_context`);
+                        DEBUG && console.log(`📥 Loaded ${userBadges.length} badges from shared_context`);
                     }
                 }
 
                 // Load streak
                 if (ctx.streak) {
                     localStorage.setItem(`us2_streak_${pairId}`, JSON.stringify(ctx.streak));
-                    console.log('📥 Loaded streak from shared_context');
+                    DEBUG && console.log('📥 Loaded streak from shared_context');
                 }
 
                 // Load test history
                 if (ctx.testHistory && ctx.testHistory.length > 0) {
                     localStorage.setItem(`us2_test_history_${pairId}`, JSON.stringify(ctx.testHistory));
-                    console.log(`📥 Loaded ${ctx.testHistory.length} test history entries from shared_context`);
+                    DEBUG && console.log(`📥 Loaded ${ctx.testHistory.length} test history entries from shared_context`);
                 }
 
                 // Load anniversary
                 if (ctx.anniversary) {
                     localStorage.setItem(`us2_anniversary_${pairId}`, JSON.stringify(ctx.anniversary));
-                    console.log('📥 Loaded anniversary from shared_context');
+                    DEBUG && console.log('📥 Loaded anniversary from shared_context');
                 }
 
                 return pairData;
@@ -4407,7 +4407,7 @@
                         .update({ email })
                         .eq('pair_id', pairID)
                         .eq('role', currentUser);
-                    console.log(`📧 User ${currentUser} email updated in users table`);
+                    DEBUG && console.log(`📧 User ${currentUser} email updated in users table`);
                 }
 
                 // 3. Also save to pair's shared_context for email features
@@ -4425,7 +4425,7 @@
 
                     currentContext[emailField] = email;
                     currentContext[langField] = currentLang;
-                    currentContext[returnLinkField] = `${window.location.origin}/?pair=${pairID}`;
+                    currentContext[returnLinkField] = `${window.location.origin}/?pairID=${pairID}`;
 
                     await supabaseClient
                         .from('pairs')
@@ -4433,7 +4433,7 @@
                         .eq('pair_id', pairID);
                 }
 
-                console.log('📧 PDF capture email synced to Supabase:', email, 'pair_id:', pairID);
+                DEBUG && console.log('📧 PDF capture email synced to Supabase:', email, 'pair_id:', pairID);
             } catch (err) {
                 console.warn('Email capture sync failed (offline?):', err);
             }
@@ -4460,33 +4460,33 @@
         }
 
         function initEmailModalTracking() {
-            console.log('📧 Email modal tracking: starting checks...');
+            DEBUG && console.log('📧 Email modal tracking: starting checks...');
 
             // Check 1: Dashboard visible?
             const dashboard = document.getElementById('section-dashboard');
             if (!dashboard || dashboard.classList.contains('hidden')) {
-                console.log('📧 ❌ Dashboard not visible');
+                DEBUG && console.log('📧 ❌ Dashboard not visible');
                 return;
             }
-            console.log('📧 ✓ Dashboard visible');
+            DEBUG && console.log('📧 ✓ Dashboard visible');
 
             // Check 2: Both users completed?
             const pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
             if (!pairData.userA || !pairData.userB) {
-                console.log('📧 ❌ Not both users completed', { userA: !!pairData.userA, userB: !!pairData.userB });
+                DEBUG && console.log('📧 ❌ Not both users completed', { userA: !!pairData.userA, userB: !!pairData.userB });
                 return;
             }
-            console.log('📧 ✓ Both users completed');
+            DEBUG && console.log('📧 ✓ Both users completed');
 
             // Check 3: Already shown this page load?
             if (emailModalShown) {
-                console.log('📧 ❌ Already shown this session (JS var)');
+                DEBUG && console.log('📧 ❌ Already shown this session (JS var)');
                 return;
             }
 
             // Check 4: Dismissed this session?
             if (sessionStorage.getItem('us2_email_modal_dismissed')) {
-                console.log('📧 ❌ Dismissed this session (sessionStorage)');
+                DEBUG && console.log('📧 ❌ Dismissed this session (sessionStorage)');
                 return;
             }
 
@@ -4494,15 +4494,15 @@
             const capturedEmails = JSON.parse(localStorage.getItem('us2_email_captures') || '[]');
             const newsletter = JSON.parse(localStorage.getItem('us2_newsletter') || '[]');
             if (capturedEmails.length > 0 || newsletter.length > 0) {
-                console.log('📧 ❌ Email already captured');
+                DEBUG && console.log('📧 ❌ Email already captured');
                 return;
             }
 
-            console.log('📧 ✓ All checks passed! Setting up timer (15s) and scroll listener...');
+            DEBUG && console.log('📧 ✓ All checks passed! Setting up timer (15s) and scroll listener...');
 
             // Timer: 15 seconds
             dashboardTimer = setTimeout(() => {
-                console.log('📧 ⏰ Timer fired! Showing modal...');
+                DEBUG && console.log('📧 ⏰ Timer fired! Showing modal...');
                 showEmailModal();
             }, 15000);
 
@@ -4510,7 +4510,7 @@
             dashboardScrollHandler = () => {
                 const scrollY = window.scrollY || window.pageYOffset;
                 if (scrollY >= 400) {
-                    console.log('📧 📜 Scroll trigger fired! Showing modal...');
+                    DEBUG && console.log('📧 📜 Scroll trigger fired! Showing modal...');
                     showEmailModal();
                 }
             };
@@ -4621,7 +4621,7 @@
                     }
                 }
             } catch (e) {
-                console.log('Polling check failed:', e);
+                DEBUG && console.log('Polling check failed:', e);
             }
         }
 
@@ -4788,7 +4788,7 @@
             try {
                 const pair = await db.getPair(pairID);
                 if (!pair || !pair.shared_context) {
-                    console.log('No shared_context to sync');
+                    DEBUG && console.log('No shared_context to sync');
                     return;
                 }
 
@@ -4805,7 +4805,7 @@
                     // Server achievements + any local-only ones (edge case during sync)
                     const merged = [...ctx.achievements, ...localOnly];
                     localStorage.setItem(`us2_achievements_${pairID}`, JSON.stringify(merged));
-                    console.log('✅ Achievements synced from shared_context');
+                    DEBUG && console.log('✅ Achievements synced from shared_context');
                 }
 
                 // Sync goals
@@ -4821,7 +4821,7 @@
                     // Merge: union of local and server badges
                     const mergedBadges = [...new Set([...localBadges, ...serverBadges])];
                     localStorage.setItem(`us2_badges_${pairID}`, JSON.stringify(mergedBadges));
-                    console.log('✅ Badges synced from shared_context');
+                    DEBUG && console.log('✅ Badges synced from shared_context');
                 }
 
                 // Sync challenge history
@@ -4832,7 +4832,7 @@
                 // Sync streak
                 if (ctx.streak) {
                     localStorage.setItem(`us2_streak_${pairID}`, JSON.stringify(ctx.streak));
-                    console.log('✅ Streak synced from shared_context');
+                    DEBUG && console.log('✅ Streak synced from shared_context');
                 }
 
                 // Sync test history
@@ -4843,7 +4843,7 @@
                     const serverOnly = ctx.testHistory.filter(h => !localDates.has(h.savedAt));
                     const merged = [...localHistory, ...serverOnly].slice(-10); // Keep last 10
                     localStorage.setItem(`us2_test_history_${pairID}`, JSON.stringify(merged));
-                    console.log('✅ Test history synced from shared_context');
+                    DEBUG && console.log('✅ Test history synced from shared_context');
                 }
 
                 // Sync scheduled reevals
@@ -4852,7 +4852,7 @@
                     // Merge: server data takes precedence for same categories
                     const merged = { ...localReevals, ...ctx.scheduledReevals };
                     localStorage.setItem(`us2_scheduled_reeval_${pairID}`, JSON.stringify(merged));
-                    console.log('✅ Scheduled reevals synced from shared_context');
+                    DEBUG && console.log('✅ Scheduled reevals synced from shared_context');
                 }
             } catch (e) {
                 console.error('Sync from Supabase failed:', e);
@@ -4961,6 +4961,8 @@
         // ==========================================
         // STATE MANAGEMENT
         // ==========================================
+        const DEBUG = false; // Set to true to enable console.log debugging
+
         let currentQuestion = 0;
         let answers = [];
         let pairID = null;
@@ -5010,14 +5012,14 @@
 
                 // If no local data, try to load from Supabase (different device)
                 if (!pairData.userA) {
-                    console.log('📡 User B on new device, loading from Supabase...');
+                    DEBUG && console.log('📡 User B on new device, loading from Supabase...');
                     try {
                         const cloudData = await loadPairFromSupabase(pairID);
                         if (cloudData && cloudData.userA) {
                             pairData = cloudData;
                             // Cache in localStorage for this session
                             localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
-                            console.log('✅ Loaded pair data from Supabase');
+                            DEBUG && console.log('✅ Loaded pair data from Supabase');
                         }
                     } catch (e) {
                         console.error('Failed to load from Supabase:', e);
@@ -5041,7 +5043,7 @@
                     }
                 } else {
                     // Invalid or expired link
-                    console.log('❌ No data found for pairID:', pairID);
+                    DEBUG && console.log('❌ No data found for pairID:', pairID);
                     showSection('home');
                 }
             } else if (urlPairID) {
@@ -5116,7 +5118,7 @@
 
             // Try to load fresh data from Supabase
             try {
-                const cloudData = await loadPairDataFromSupabase(pairID);
+                const cloudData = await loadPairFromSupabase(pairID);
                 if (cloudData) {
                     pairData = cloudData;
                     localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
@@ -5638,7 +5640,7 @@
                 // 3. Save locally too
                 localStorage.setItem(`us2_waiting_email_${pairID}`, email);
 
-                console.log('📧 Waiting notification email saved:', email);
+                DEBUG && console.log('📧 Waiting notification email saved:', email);
 
                 // Show success, hide form
                 document.getElementById('waiting-email-section').classList.add('hidden');
@@ -5724,7 +5726,7 @@
                 // 3. Save locally
                 localStorage.setItem(`us2_monthly_email_${pairID}_${currentUser}`, email);
 
-                console.log(`📧 Monthly achievements email saved for User ${currentUser}:`, email);
+                DEBUG && console.log(`📧 Monthly achievements email saved for User ${currentUser}:`, email);
 
                 // Show success, hide form
                 formEl.classList.add('hidden');
@@ -5776,7 +5778,7 @@
                     successEl.classList.remove('hidden');
                 }
             } catch (e) {
-                console.log('Error checking monthly email status:', e);
+                DEBUG && console.log('Error checking monthly email status:', e);
             }
         }
 
@@ -5851,7 +5853,7 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    console.log('📧 Partner notification email sent to:', email);
+                    DEBUG && console.log('📧 Partner notification email sent to:', email);
                 } else {
                     console.warn('Failed to send partner notification:', result);
                 }
@@ -5885,7 +5887,7 @@
         function shareResults() {
             // Build URL with pair_id so recipients can see results
             const baseUrl = window.location.origin;
-            const resultsUrl = pairID ? `${baseUrl}/?pair=${pairID}` : baseUrl;
+            const resultsUrl = pairID ? `${baseUrl}/?pairID=${pairID}` : baseUrl;
             const message = translations[currentLang].share_message;
 
             // Try native share API first
@@ -6065,7 +6067,7 @@
                         // Partner completed! Update localStorage
                         pairData = cloudData;
                         localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
-                        console.log('✅ Partner data found in Supabase!');
+                        DEBUG && console.log('✅ Partner data found in Supabase!');
                     }
                 } catch (e) {
                     console.error('Failed to check Supabase:', e);
@@ -7222,9 +7224,9 @@
                         }
                     })
                     .eq('pair_id', pairID);
-                console.log('✅ Scheduled reeval synced to Supabase');
+                DEBUG && console.log('✅ Scheduled reeval synced to Supabase');
             } catch (e) {
-                console.log('Scheduled reeval sync failed, saved locally');
+                DEBUG && console.log('Scheduled reeval sync failed, saved locally');
             }
 
             // Actualizar el botón a estado "agendado"
@@ -7561,7 +7563,7 @@
                     .update({ shared_context: updatedContext })
                     .eq('pair_id', pairID);
 
-                console.log('✅ Goals synced to shared_context');
+                DEBUG && console.log('✅ Goals synced to shared_context');
             } catch (e) {
                 console.error('Goals sync error:', e);
             }
@@ -7844,9 +7846,9 @@
                             }
                         })
                         .eq('pair_id', pairID);
-                    console.log('✅ Anniversary synced to shared_context');
+                    DEBUG && console.log('✅ Anniversary synced to shared_context');
                 } catch (e) {
-                    console.log('Anniversary save to Supabase failed, saved locally');
+                    DEBUG && console.log('Anniversary save to Supabase failed, saved locally');
                 }
 
                 // Run these after sync (non-blocking)
@@ -7855,7 +7857,7 @@
                     checkAnniversaryReminder();
                     updateProfileInfo();
                 } catch (e) {
-                    console.log('Badge/reminder check error:', e);
+                    DEBUG && console.log('Badge/reminder check error:', e);
                 }
 
                 // Show date reminder modal to capture email
@@ -8006,9 +8008,9 @@
                             }
                         })
                         .eq('pair_id', pairID);
-                    console.log('✅ Birthday synced to shared_context');
+                    DEBUG && console.log('✅ Birthday synced to shared_context');
                 } catch (e) {
-                    console.log('Birthday save to Supabase failed, saved locally');
+                    DEBUG && console.log('Birthday save to Supabase failed, saved locally');
                 }
 
                 // Update profile display
@@ -8053,7 +8055,7 @@
                     return true;
                 }
             } catch (e) {
-                console.log('Error checking email:', e);
+                DEBUG && console.log('Error checking email:', e);
             }
             return false;
         }
@@ -8138,7 +8140,7 @@
                         .update({ email })
                         .eq('pair_id', pairID)
                         .eq('role', currentUser);
-                    console.log(`📧 User ${currentUser} email updated in users table`);
+                    DEBUG && console.log(`📧 User ${currentUser} email updated in users table`);
                 }
 
                 // Also save email to shared_context for transactional emails
@@ -8155,7 +8157,7 @@
                         shared_context: {
                             ...currentContext,
                             [emailField]: email,
-                            [returnLinkField]: `${window.location.origin}/?pair=${pairID}`,
+                            [returnLinkField]: `${window.location.origin}/?pairID=${pairID}`,
                             [langField]: currentLang
                         }
                     })
@@ -9855,12 +9857,16 @@
                 localStorage.setItem('us2_newsletter', JSON.stringify(subscribers));
             }
 
-            // Sync to Supabase
+            // Sync to Supabase (include pair_id if user has completed test)
             try {
+                const data = { email, source };
+                if (pairID) {
+                    data.pair_id = pairID;
+                }
                 await supabaseClient
                     .from('newsletter_subscribers')
-                    .upsert({ email, source }, { onConflict: 'email' });
-                console.log('📧 Email synced to Supabase:', email);
+                    .upsert(data, { onConflict: 'email' });
+                DEBUG && console.log('📧 Email synced to Supabase:', email, 'pair_id:', pairID || 'none');
             } catch (err) {
                 console.warn('Newsletter sync failed (offline?):', err);
             }
@@ -9985,7 +9991,7 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
-                        console.log('PWA: Service Worker registered', registration.scope);
+                        DEBUG && console.log('PWA: Service Worker registered', registration.scope);
 
                         // Check for updates
                         registration.addEventListener('updatefound', () => {
@@ -9993,13 +9999,13 @@
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New version available
-                                    console.log('PWA: New version available');
+                                    DEBUG && console.log('PWA: New version available');
                                 }
                             });
                         });
                     })
                     .catch((error) => {
-                        console.log('PWA: Service Worker registration failed', error);
+                        DEBUG && console.log('PWA: Service Worker registration failed', error);
                     });
             });
         }
