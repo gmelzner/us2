@@ -69,7 +69,8 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 - [x] OG images por idioma (og-image.png, og-image-en.png)
 - [x] Schema.org JSON-LD (WebSite, Organization, WebApplication)
 - [x] Flujo completo ES↔EN
-- [x] Blog con 6 artículos SEO (español)
+- [x] Blog ES con 6 artículos SEO
+- [x] Blog EN con 2 artículos (`/en/blog/`)
 
 ### Seguridad
 - [x] RLS en todas las tablas
@@ -87,10 +88,11 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 - [ ] Monitorear errores en producción
 - [ ] Optimizar peso de OG images (~7MB → <500KB)
 
-### SEO (Fase 2) - Blog EN
-- [ ] Escribir primer blog post EN: "The Mental Load Test"
-- [ ] Crear `/en/blog/` index
-- [ ] Backlink outreach a blogs de relaciones
+### SEO (Fase 2) - Blog EN ✅ COMPLETADO
+- [x] Crear `/en/blog/` index
+- [x] Escribir blog EN: "Mental Load" (`/en/blog/mental-load.html`)
+- [x] Escribir blog EN: "50/50 Myth" (`/en/blog/50-50-myth.html`)
+- [ ] Backlink outreach a blogs de relaciones (futuro)
 
 ### Email Marketing (mejoras futuras)
 - [ ] Email de bienvenida cuando ambos completan

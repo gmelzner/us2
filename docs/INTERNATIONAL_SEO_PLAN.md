@@ -1,9 +1,9 @@
 # US2 - Plan de SEO Internacional (EN)
 
 > Estrategia para posicionar US2 en mercados de habla inglesa.
-> **Estado**: FASE 1 COMPLETADA ✅
+> **Estado**: FASE 2 COMPLETADA ✅
 > **Aprobado**: Enero 2026
-> **Última actualización**: 24 Enero 2026
+> **Última actualización**: 26 Enero 2026
 
 ---
 
@@ -32,7 +32,7 @@ Capturar tráfico orgánico de EEUU, UK, Canadá y Australia mediante contenido 
 us2.fun/                    → Landing ES (default)
 us2.fun/en/                 → Landing EN ✅
 us2.fun/blog/               → Blog ES
-us2.fun/en/blog/            → Blog EN (futuro)
+us2.fun/en/blog/            → Blog EN ✅
 us2.fun/en/blog/[slug].html → Posts EN
 ```
 
@@ -56,13 +56,12 @@ us2.fun/en/blog/[slug].html → Posts EN
 - [x] Link de invitación conserva idioma
 - [x] Social sharing usa OG tags correctos por idioma
 
-### Fase 2: Primer Contenido (Semanas 2-3) - PENDIENTE
-- [ ] Escribir 1er blog post pilar EN:
-  - "The Mental Load Test: See How You Really Split Household Work"
-  - ~1500 palabras, bien investigado
-  - Incluir estadísticas de estudios (Pew Research, etc.)
-- [ ] Crear `/en/blog/index.html`
-- [ ] Actualizar sitemap
+### Fase 2: Primer Contenido ✅ COMPLETADA (26 Enero 2026)
+- [x] Crear `/en/blog/index.html`
+- [x] Escribir blog post EN: "Mental Load: Why You Feel Like You Do More Than Your Partner"
+- [x] Escribir blog post EN: "The 50/50 Myth: Why Equality Isn't Always Equity"
+- [x] Actualizar sitemap con hreflang
+- [x] Agregar hreflang a posts ES conectándolos con EN
 
 ### Fase 3: Expansión (Semanas 4-6) - PENDIENTE
 - [ ] 2do blog post EN:
@@ -135,15 +134,19 @@ En `/en/index.html` (EN):
 - **Social proof**: "Join X couples who've improved their balance"
 - **CTA**: "Start the Test"
 
-### Blog Posts EN (Ideas priorizadas) - PENDIENTE
+### Blog Posts EN
 
+| Estado | Título | URL |
+|--------|--------|-----|
+| ✅ | Mental Load: Why You Feel Like You Do More | `/en/blog/mental-load.html` |
+| ✅ | The 50/50 Myth: Why Equality Isn't Always Equity | `/en/blog/50-50-myth.html` |
+
+#### Ideas para futuros posts:
 | Prioridad | Título | Keywords Target |
 |-----------|--------|-----------------|
-| 1 | The Mental Load Test: See How You Really Split Household Work | mental load test, household labor quiz |
-| 2 | 5 Signs of Unequal Mental Load in Your Relationship | signs of mental load, unfair housework |
-| 3 | How to Talk to Your Partner About Mental Load | mental load conversation, discuss chores |
-| 4 | Mental Load vs Physical Labor: Why Both Matter | mental load explained |
-| 5 | The 50/50 Myth: Why Equal Isn't Always Fair | equal housework myth |
+| 1 | 5 Signs of Unequal Mental Load in Your Relationship | signs of mental load, unfair housework |
+| 2 | How to Talk to Your Partner About Mental Load | mental load conversation, discuss chores |
+| 3 | Mental Load vs Physical Labor: Why Both Matter | mental load explained |
 
 ---
 
@@ -193,4 +196,5 @@ En `/en/index.html` (EN):
 
 *Documento creado: Enero 2026*
 *Fase 1 completada: 24 Enero 2026*
+*Fase 2 completada: 26 Enero 2026*
 *Próxima revisión: Febrero 2026*
