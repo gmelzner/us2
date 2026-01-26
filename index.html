@@ -150,6 +150,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .animate-pulse-once {
+            animation: pulseOnce 2s ease-in-out;
+        }
+
+        @keyframes pulseOnce {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
+            50% { box-shadow: 0 0 0 8px rgba(147, 51, 234, 0.3); }
+        }
+
         .progress-bar {
             transition: width 0.5s ease-in-out;
         }
@@ -477,6 +486,20 @@
                     <p class="text-lg text-gray-600 mb-8 leading-relaxed" data-i18n="home_subtitle">
                         US2 te ayuda a visibilizar la gestión invisible del hogar. Porque cuando ambos ven, ambos pueden actuar.
                     </p>
+                </div>
+
+                <!-- Returning User Banner (hidden by default) -->
+                <div id="returning-user-banner" class="hidden mb-8 bg-gradient-to-r from-purple-50 to-teal-50 border-2 border-purple-200 rounded-2xl p-6 text-center animate-pulse-once">
+                    <p class="text-gray-700 mb-3">
+                        <span class="text-2xl mr-2">👋</span>
+                        <span data-i18n="returning_user_message">¡Hola de nuevo! Ya hicieron el test.</span>
+                    </p>
+                    <button onclick="goToSavedResults()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-teal-dark text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center gap-2 mx-auto">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span data-i18n="returning_user_cta">Ver mis resultados</span>
+                    </button>
                 </div>
 
                 <!-- CTA Buttons -->
@@ -2837,6 +2860,8 @@
                 home_subtitle: "US2 te ayuda a visibilizar la gestión invisible del hogar.<br>Porque cuando ambos ven, ambos pueden actuar.",
                 home_cta_start: "Comenzar el Test",
                 home_cta_learn: "Conocer Más",
+                returning_user_message: "¡Hola de nuevo! Ya hicieron el test.",
+                returning_user_cta: "Ver mis resultados",
 
                 // Features
                 feature_1_title: "Visibiliza",
@@ -3051,7 +3076,7 @@
                 share_title: "¿Te gustó US2? ¡Compartilo!",
                 share_whatsapp: "Compartir",
                 share_copy_link: "Copiar link",
-                share_message: "¡Probé US2 con mi pareja! Una herramienta genial para visibilizar la carga mental del hogar. ¿La probamos juntos?",
+                share_message: "Mirá nuestros resultados del test de carga mental en US2 👀",
                 link_copied: "¡Link copiado!",
 
                 // Blog
@@ -3533,6 +3558,8 @@
                 home_subtitle: "US2 helps you visualize the invisible management of your home.<br>Because when both see, both can act.",
                 home_cta_start: "Start the Test",
                 home_cta_learn: "Learn More",
+                returning_user_message: "Welcome back! You've already taken the test.",
+                returning_user_cta: "See my results",
 
                 // Features
                 feature_1_title: "Visualize",
@@ -3747,7 +3774,7 @@
                 share_title: "Did you like US2? Share it!",
                 share_whatsapp: "Share",
                 share_copy_link: "Copy link",
-                share_message: "I tried US2 with my partner! A great tool to visualize the mental load at home. Want to try it together?",
+                share_message: "Check out our mental load test results on US2 👀",
                 link_copied: "Link copied!",
 
                 // Blog
@@ -5008,7 +5035,8 @@
                     const pairData = JSON.parse(localStorage.getItem(`us2_pair_${savedPairID}`) || '{}');
                     if (pairData.userA && pairData.userB) {
                         pairID = savedPairID;
-                        // Show home but allow quick access to dashboard
+                        // Show returning user banner
+                        showReturningUserBanner();
                     }
                 }
                 showSection('home');
@@ -5025,6 +5053,43 @@
         function savePairIDForReturn() {
             if (pairID) {
                 localStorage.setItem('us2_last_pairID', pairID);
+            }
+        }
+
+        // Show returning user banner
+        function showReturningUserBanner() {
+            const banner = document.getElementById('returning-user-banner');
+            if (banner) {
+                banner.classList.remove('hidden');
+            }
+        }
+
+        // Go to saved results (for returning users)
+        async function goToSavedResults() {
+            const savedPairID = localStorage.getItem('us2_last_pairID');
+            if (!savedPairID) {
+                showNotification('No se encontró sesión guardada', 'error');
+                return;
+            }
+
+            pairID = savedPairID;
+            let pairData = JSON.parse(localStorage.getItem(`us2_pair_${pairID}`) || '{}');
+
+            // Try to load fresh data from Supabase
+            try {
+                const cloudData = await loadPairDataFromSupabase(pairID);
+                if (cloudData) {
+                    pairData = cloudData;
+                    localStorage.setItem(`us2_pair_${pairID}`, JSON.stringify(pairData));
+                }
+            } catch (e) {
+                console.error('Failed to load from Supabase:', e);
+            }
+
+            if (pairData.userA && pairData.userB) {
+                showDashboard(pairData);
+            } else {
+                showNotification('No se encontraron resultados completos', 'error');
             }
         }
 
@@ -5779,27 +5844,30 @@
         }
 
         function shareResults() {
-            const siteUrl = window.location.origin + window.location.pathname;
-            const message = translations[currentLang].share_message + '\n\n' + siteUrl;
+            // Build URL with pair_id so recipients can see results
+            const baseUrl = window.location.origin;
+            const resultsUrl = pairID ? `${baseUrl}/?pair=${pairID}` : baseUrl;
+            const message = translations[currentLang].share_message;
 
             // Try native share API first
             if (navigator.share) {
                 navigator.share({
-                    title: 'US2 - Somos un equipo',
+                    title: 'US2 - Nuestros resultados',
                     text: message,
-                    url: siteUrl
+                    url: resultsUrl
                 }).catch(() => {
                     // Fallback to WhatsApp
-                    shareResultsWhatsApp(message);
+                    shareResultsWhatsApp(message, resultsUrl);
                 });
             } else {
                 // Fallback to WhatsApp
-                shareResultsWhatsApp(message);
+                shareResultsWhatsApp(message, resultsUrl);
             }
         }
 
-        function shareResultsWhatsApp(message) {
-            const encodedMessage = encodeURIComponent(message);
+        function shareResultsWhatsApp(message, url) {
+            const fullMessage = message + '\n\n' + url;
+            const encodedMessage = encodeURIComponent(fullMessage);
             window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
         }
 
