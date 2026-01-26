@@ -56,6 +56,14 @@ const emailTemplates = {
       note: 'Recuerden: no se trata de culpas, sino de entenderse mejor como equipo.'
     },
 
+    monthly_achievements: {
+      subject: '📊 Tu resumen mensual de logros en pareja',
+      title: '¡Así les fue este mes! 🎉',
+      body: 'Acá está el resumen de logros que sumaron juntos en {month}.',
+      cta: 'Ver todos los logros',
+      note: 'Cada pequeño logro cuenta. ¡Sigan construyendo juntos!'
+    },
+
     categories: {
       cat_limpieza: 'Limpieza',
       cat_hogar: 'Hogar',
@@ -113,6 +121,14 @@ const emailTemplates = {
       note: "Remember: it's not about blame, but about understanding each other better as a team."
     },
 
+    monthly_achievements: {
+      subject: '📊 Your monthly couple achievements summary',
+      title: "Here's how you did this month! 🎉",
+      body: "Here's the summary of achievements you added together in {month}.",
+      cta: 'See all achievements',
+      note: 'Every small achievement counts. Keep building together!'
+    },
+
     categories: {
       cat_limpieza: 'Cleaning',
       cat_hogar: 'Home',
@@ -128,7 +144,7 @@ const emailTemplates = {
 }
 
 type Lang = 'es' | 'en'
-type TemplateKey = 'retest_reminder' | 'scheduled_followup' | 'anniversary' | 'birthday' | 'partner_completed'
+type TemplateKey = 'retest_reminder' | 'scheduled_followup' | 'anniversary' | 'birthday' | 'partner_completed' | 'monthly_achievements'
 
 // Get language or default to Spanish
 function getLang(lang?: string): Lang {
@@ -318,7 +334,11 @@ async function checkScheduledFollowups() {
       const evalData = reeval as any
       const scheduledDate = new Date(evalData.scheduledAt)
 
-      if (scheduledDate <= now && !evalData.reminderSent) {
+      // Add 30 days to the scheduled date for the follow-up reminder
+      const followupDate = new Date(scheduledDate)
+      followupDate.setDate(followupDate.getDate() + 30)
+
+      if (followupDate <= now && !evalData.reminderSent) {
         const categoryName = categories[catKey] || catKey
         const subject = getSubject('scheduled_followup', lang, { category: categoryName })
         const html = generateEmailHtml('scheduled_followup', lang, returnLink, { category: categoryName })
@@ -469,6 +489,285 @@ async function checkBirthdayReminders() {
   return results
 }
 
+// Generate HTML for monthly achievements summary email
+function generateMonthlyAchievementsHtml(
+  lang: Lang,
+  returnLink: string,
+  achievements: Array<{ text: string; user: string; category: string; approvedAt: string }>,
+  userName: string,
+  partnerName: string,
+  month: string
+): string {
+  const t = emailTemplates[lang]
+  const template = t.monthly_achievements as any
+
+  const baseStyle = 'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'
+
+  // Category icons
+  const categoryIcons: Record<string, string> = {
+    hogar: '🏠',
+    limpieza: '🧹',
+    admin: '📋',
+    cuidado: '👶',
+    emocional: '💬',
+    social: '👥',
+    salud: '🏥',
+    mant: '🔧',
+    logistica: '🚗',
+    general: '✓'
+  }
+
+  // Group achievements by user
+  const userAAchievements = achievements.filter(a => a.user === 'A')
+  const userBAchievements = achievements.filter(a => a.user === 'B')
+
+  // Generate achievements list HTML
+  const generateAchievementsList = (items: typeof achievements, color: string) => {
+    if (items.length === 0) {
+      return `<p style="color: #888; font-style: italic; padding: 10px 0;">${lang === 'es' ? 'Sin logros este mes' : 'No achievements this month'}</p>`
+    }
+
+    return items.map(a => `
+      <div style="padding: 10px 15px; background: ${color}15; border-left: 3px solid ${color}; margin-bottom: 8px; border-radius: 0 8px 8px 0;">
+        <span style="margin-right: 8px;">${categoryIcons[a.category] || '✓'}</span>
+        <span style="color: #333;">${a.text}</span>
+      </div>
+    `).join('')
+  }
+
+  const title = template.title
+  const body = template.body.replace('{month}', month)
+
+  return `
+    <div style="${baseStyle}">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #14b8a6; margin: 0;">US2</h1>
+        <p style="color: #666; margin: 5px 0;">${t.tagline}</p>
+      </div>
+
+      <h2 style="color: #333; text-align: center;">${title}</h2>
+      <p style="color: #555; line-height: 1.6; text-align: center; margin-bottom: 30px;">${body}</p>
+
+      <!-- Stats Summary -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+        <tr>
+          <td align="center" style="padding: 10px;">
+            <div style="text-align: center; padding: 15px 25px; background: #f8f8f8; border-radius: 12px; display: inline-block;">
+              <div style="font-size: 28px; font-weight: bold; color: #7fb3b3;">${userAAchievements.length}</div>
+              <div style="font-size: 12px; color: #666;">${userName || 'Usuario A'}</div>
+            </div>
+          </td>
+          <td align="center" style="padding: 10px;">
+            <div style="text-align: center; padding: 15px 25px; background: #f8f8f8; border-radius: 12px; display: inline-block;">
+              <div style="font-size: 28px; font-weight: bold; color: #a78bbd;">${userBAchievements.length}</div>
+              <div style="font-size: 12px; color: #666;">${partnerName || 'Usuario B'}</div>
+            </div>
+          </td>
+          <td align="center" style="padding: 10px;">
+            <div style="text-align: center; padding: 15px 25px; background: linear-gradient(135deg, #7fb3b315, #a78bbd15); border-radius: 12px; display: inline-block;">
+              <div style="font-size: 28px; font-weight: bold; color: #333;">${achievements.length}</div>
+              <div style="font-size: 12px; color: #666;">Total</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- User A Achievements -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="color: #7fb3b3; font-size: 16px; margin-bottom: 10px;">
+          <span style="width: 24px; height: 24px; background: #7fb3b3; border-radius: 50%; display: inline-block; text-align: center; color: white; font-size: 12px; line-height: 24px; margin-right: 8px;">A</span>
+          ${userName || 'Usuario A'}
+        </h3>
+        ${generateAchievementsList(userAAchievements, '#7fb3b3')}
+      </div>
+
+      <!-- User B Achievements -->
+      <div style="margin-bottom: 25px;">
+        <h3 style="color: #a78bbd; font-size: 16px; margin-bottom: 10px;">
+          <span style="width: 24px; height: 24px; background: #a78bbd; border-radius: 50%; display: inline-block; text-align: center; color: #333; font-size: 12px; line-height: 24px; margin-right: 8px;">B</span>
+          ${partnerName || 'Usuario B'}
+        </h3>
+        ${generateAchievementsList(userBAchievements, '#a78bbd')}
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${returnLink}" style="background: linear-gradient(135deg, #14b8a6, #0d9488); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: bold; display: inline-block;">
+          ${template.cta}
+        </a>
+      </div>
+
+      <p style="color: #888; font-size: 14px; text-align: center;">${template.note}</p>
+
+      <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+      <p style="color: #999; font-size: 12px; text-align: center;">
+        ${t.footer}<br>
+        <a href="https://us2.fun" style="color: #14b8a6;">us2.fun</a>
+      </p>
+    </div>
+  `
+}
+
+// Check and send monthly achievements summaries (runs on 1st of each month)
+async function checkMonthlyAchievementsSummaries() {
+  const now = new Date()
+
+  // Only run on the 1st of the month
+  if (now.getUTCDate() !== 1) {
+    return { sent: 0, errors: [], skipped: 'Not the 1st of the month' }
+  }
+
+  // Get previous month info
+  const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  const monthNames = {
+    es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  }
+
+  const { data: pairs, error } = await supabase
+    .from('pairs')
+    .select('pair_id, shared_context')
+
+  if (error || !pairs) return { sent: 0, errors: [] }
+
+  const results = { sent: 0, errors: [] as string[] }
+
+  for (const pair of pairs) {
+    const ctx = pair.shared_context || {}
+    const achievements = ctx.achievements || []
+
+    // Filter approved achievements from last month
+    const startOfPrevMonth = new Date(prevMonth.getFullYear(), prevMonth.getMonth(), 1)
+    const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
+
+    const lastMonthAchievements = achievements.filter((a: any) => {
+      if (a.status !== 'approved' || !a.approvedAt) return false
+      const approvedDate = new Date(a.approvedAt)
+      return approvedDate >= startOfPrevMonth && approvedDate <= endOfPrevMonth
+    })
+
+    // Skip if no achievements last month
+    if (lastMonthAchievements.length === 0) continue
+
+    // Get user names from users table (more reliable than shared_context)
+    const { data: usersData } = await supabase
+      .from('users')
+      .select('role, name')
+      .eq('pair_id', pair.pair_id)
+
+    const userAFromDb = usersData?.find(u => u.role === 'A')
+    const userBFromDb = usersData?.find(u => u.role === 'B')
+
+    const userAName = userAFromDb?.name || ctx.userAName || ctx.userName || (ctx.userA_lang === 'en' ? 'User A' : 'Usuario A')
+    const userBName = userBFromDb?.name || ctx.userBName || ctx.partnerName || (ctx.userB_lang === 'en' ? 'User B' : 'Usuario B')
+
+    // Send to User A if subscribed
+    if (ctx.userA_email && ctx.userA_monthlySubscribed) {
+      const lang = getLang(ctx.userA_lang)
+      const monthName = monthNames[lang][prevMonth.getMonth()]
+      const returnLink = ctx.userA_returnLink || `https://us2.fun?pairID=${pair.pair_id}&user=A`
+
+      // Check if already sent this month
+      const lastMonthlySent = ctx.userA_lastMonthlySent
+      if (lastMonthlySent) {
+        const lastSentDate = new Date(lastMonthlySent)
+        if (lastSentDate.getMonth() === now.getMonth() && lastSentDate.getFullYear() === now.getFullYear()) {
+          continue // Already sent this month
+        }
+      }
+
+      const subject = (emailTemplates[lang].monthly_achievements as any).subject
+      const html = generateMonthlyAchievementsHtml(
+        lang,
+        returnLink,
+        lastMonthAchievements,
+        userAName,
+        userBName,
+        monthName
+      )
+
+      const result = await sendEmail(ctx.userA_email, subject, html)
+
+      if (result.success) {
+        await supabase
+          .from('pairs')
+          .update({
+            shared_context: {
+              ...ctx,
+              userA_lastMonthlySent: now.toISOString()
+            }
+          })
+          .eq('pair_id', pair.pair_id)
+        results.sent++
+
+        // Re-fetch context for User B
+        const { data: freshPair } = await supabase
+          .from('pairs')
+          .select('shared_context')
+          .eq('pair_id', pair.pair_id)
+          .single()
+
+        if (freshPair) {
+          Object.assign(ctx, freshPair.shared_context)
+        }
+      } else {
+        results.errors.push(`Failed to send monthly to User A ${ctx.userA_email}: ${JSON.stringify(result.data)}`)
+      }
+    }
+
+    // Send to User B if subscribed
+    if (ctx.userB_email && ctx.userB_monthlySubscribed) {
+      const lang = getLang(ctx.userB_lang)
+      const monthName = monthNames[lang][prevMonth.getMonth()]
+      const returnLink = ctx.userB_returnLink || `https://us2.fun?pairID=${pair.pair_id}&user=B`
+
+      // Check if already sent this month
+      const lastMonthlySent = ctx.userB_lastMonthlySent
+      if (lastMonthlySent) {
+        const lastSentDate = new Date(lastMonthlySent)
+        if (lastSentDate.getMonth() === now.getMonth() && lastSentDate.getFullYear() === now.getFullYear()) {
+          continue // Already sent this month
+        }
+      }
+
+      const subject = (emailTemplates[lang].monthly_achievements as any).subject
+      const html = generateMonthlyAchievementsHtml(
+        lang,
+        returnLink,
+        lastMonthAchievements,
+        userBName, // Swap names for User B perspective
+        userAName,
+        monthName
+      )
+
+      const result = await sendEmail(ctx.userB_email, subject, html)
+
+      if (result.success) {
+        // Re-fetch to avoid overwriting User A update
+        const { data: freshPair } = await supabase
+          .from('pairs')
+          .select('shared_context')
+          .eq('pair_id', pair.pair_id)
+          .single()
+
+        await supabase
+          .from('pairs')
+          .update({
+            shared_context: {
+              ...freshPair?.shared_context,
+              userB_lastMonthlySent: now.toISOString()
+            }
+          })
+          .eq('pair_id', pair.pair_id)
+        results.sent++
+      } else {
+        results.errors.push(`Failed to send monthly to User B ${ctx.userB_email}: ${JSON.stringify(result.data)}`)
+      }
+    }
+  }
+
+  return results
+}
+
 // Main handler
 Deno.serve(async (req) => {
   // Handle CORS
@@ -517,13 +816,15 @@ Deno.serve(async (req) => {
       const followupResults = await checkScheduledFollowups()
       const anniversaryResults = await checkAnniversaryReminders()
       const birthdayResults = await checkBirthdayReminders()
+      const monthlyResults = await checkMonthlyAchievementsSummaries()
 
-      const totalSent = retestResults.sent + followupResults.sent + anniversaryResults.sent + birthdayResults.sent
+      const totalSent = retestResults.sent + followupResults.sent + anniversaryResults.sent + birthdayResults.sent + monthlyResults.sent
       const allErrors = [
         ...retestResults.errors,
         ...followupResults.errors,
         ...anniversaryResults.errors,
         ...birthdayResults.errors,
+        ...monthlyResults.errors,
       ]
 
       return new Response(JSON.stringify({
@@ -533,6 +834,7 @@ Deno.serve(async (req) => {
           scheduled_followups: followupResults.sent,
           anniversary_reminders: anniversaryResults.sent,
           birthday_reminders: birthdayResults.sent,
+          monthly_achievements: monthlyResults.sent,
           total_sent: totalSent,
         },
         errors: allErrors,

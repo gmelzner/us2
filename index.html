@@ -33,6 +33,44 @@
     <meta name="twitter:title" content="US2 - Compartamos nuestro futuro">
     <meta name="twitter:description" content="Visibiliza la carga mental del hogar. Herramienta para parejas que quieren ser equipo.">
 
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "@id": "https://us2.fun/#website",
+                "url": "https://us2.fun/",
+                "name": "US2",
+                "description": "Test de carga mental para parejas. Visualiza cómo se reparten las tareas del hogar.",
+                "inLanguage": ["es", "en"]
+            },
+            {
+                "@type": "Organization",
+                "@id": "https://us2.fun/#organization",
+                "name": "US2",
+                "url": "https://us2.fun/",
+                "logo": "https://us2.fun/apple-touch-icon.png",
+                "sameAs": []
+            },
+            {
+                "@type": "WebApplication",
+                "name": "US2 - Test de Carga Mental",
+                "url": "https://us2.fun/",
+                "applicationCategory": "LifestyleApplication",
+                "operatingSystem": "Web",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "description": "Herramienta gratuita para parejas que quieren visualizar y equilibrar la carga mental del hogar."
+            }
+        ]
+    }
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -828,6 +866,26 @@
                     <h3 class="text-xl font-semibold text-gray-800 mb-6 text-center" data-i18n="radar_title">Comparativa por Categorías</h3>
                     <div class="radar-container">
                         <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Monthly Achievements Email Subscription -->
+                <div id="monthly-email-section" class="bg-gradient-to-br from-purple-50 to-teal-soft/20 p-6 rounded-2xl shadow-sm mb-12 border border-purple-100">
+                    <div class="flex items-start gap-4">
+                        <div class="text-3xl">📬</div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-1" data-i18n="monthly_email_title">Recibí un resumen mensual de logros</h3>
+                            <p class="text-sm text-gray-600 mb-4" data-i18n="monthly_email_desc">Te enviamos cada mes un resumen de los logros que van sumando como pareja.</p>
+                            <div id="monthly-email-form" class="flex flex-col sm:flex-row gap-2">
+                                <input type="email" id="monthly-email-input" placeholder="tu@email.com" class="flex-1 p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:border-transparent" data-i18n-placeholder="email_modal_placeholder">
+                                <button onclick="saveMonthlyEmail()" id="monthly-email-btn" class="px-5 py-3 font-medium rounded-lg transition-colors whitespace-nowrap" data-i18n="monthly_email_btn">Suscribirme</button>
+                            </div>
+                            <div id="monthly-email-success" class="hidden flex items-center gap-3 p-3 bg-green-50 rounded-lg mt-2">
+                                <span class="text-xl">✅</span>
+                                <p class="text-sm text-green-700" data-i18n="monthly_email_saved">¡Listo! Vas a recibir el resumen mensual de logros.</p>
+                            </div>
+                            <p id="monthly-email-error" class="hidden text-sm text-red-500 mt-2"></p>
+                        </div>
                     </div>
                 </div>
 
@@ -3296,6 +3354,14 @@
 
                 newsletter_success: "¡Gracias por suscribirte!",
 
+                // Monthly Achievements Email
+                monthly_email_title: "Recibí un resumen mensual de logros",
+                monthly_email_desc: "Te enviamos cada mes un resumen de los logros que van sumando como pareja.",
+                monthly_email_btn: "Suscribirme",
+                monthly_email_saved: "¡Listo! Vas a recibir el resumen mensual de logros.",
+                monthly_email_invalid: "Por favor ingresá un email válido",
+                monthly_email_error: "Error al guardar. Intentá de nuevo.",
+
                 // Level System
                 level_label: "Nivel de Pareja",
                 level_1: "Equipo Principiante",
@@ -3983,6 +4049,14 @@
                 article_4_cta_desc: "The first step is always the most important.",
 
                 newsletter_success: "Thanks for subscribing!",
+
+                // Monthly Achievements Email
+                monthly_email_title: "Get a monthly achievements summary",
+                monthly_email_desc: "We'll send you a monthly summary of the achievements you're adding as a couple.",
+                monthly_email_btn: "Subscribe",
+                monthly_email_saved: "Done! You'll receive the monthly achievements summary.",
+                monthly_email_invalid: "Please enter a valid email",
+                monthly_email_error: "Error saving. Please try again.",
 
                 // Level System
                 level_label: "Team Level",
@@ -5473,6 +5547,151 @@
             }
         }
 
+        // ==========================================
+        // MONTHLY ACHIEVEMENTS EMAIL SUBSCRIPTION
+        // ==========================================
+
+        async function saveMonthlyEmail() {
+            const emailInput = document.getElementById('monthly-email-input');
+            const email = emailInput.value.trim().toLowerCase();
+            const errorEl = document.getElementById('monthly-email-error');
+            const formEl = document.getElementById('monthly-email-form');
+            const successEl = document.getElementById('monthly-email-success');
+
+            // Validate email
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                errorEl.textContent = translations[currentLang].monthly_email_invalid || 'Por favor ingresá un email válido';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            // Rate limit check
+            if (!rateLimiter.check('email_submit') || !rateLimiter.check('email_submit_daily')) {
+                const waitTime = rateLimiter.getRemainingTime('email_submit');
+                errorEl.textContent = `Demasiados intentos. Esperá ${waitTime}s`;
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            rateLimiter.record('email_submit');
+            rateLimiter.record('email_submit_daily');
+
+            errorEl.classList.add('hidden');
+
+            // Determine which field to update based on currentUser
+            const emailField = currentUser === 'A' ? 'userA_email' : 'userB_email';
+            const langField = currentUser === 'A' ? 'userA_lang' : 'userB_lang';
+            const returnLinkField = currentUser === 'A' ? 'userA_returnLink' : 'userB_returnLink';
+            const monthlySubField = currentUser === 'A' ? 'userA_monthlySubscribed' : 'userB_monthlySubscribed';
+            const monthlySubDateField = currentUser === 'A' ? 'userA_monthlySubDate' : 'userB_monthlySubDate';
+
+            const returnLink = `${window.location.origin}${window.location.pathname}?pairID=${pairID}&user=${currentUser}`;
+
+            try {
+                // 1. Save to newsletter_subscribers table
+                await supabaseClient
+                    .from('newsletter_subscribers')
+                    .upsert({
+                        email,
+                        source: 'monthly_achievements',
+                        pair_id: pairID
+                    }, { onConflict: 'email' });
+
+                // 2. Update pair's shared_context
+                const { data: pairData } = await supabaseClient
+                    .from('pairs')
+                    .select('shared_context')
+                    .eq('pair_id', pairID)
+                    .single();
+
+                const currentContext = pairData?.shared_context || {};
+
+                // Set email, lang, returnLink for current user
+                currentContext[emailField] = email;
+                currentContext[langField] = currentLang;
+                currentContext[returnLinkField] = returnLink;
+                currentContext[monthlySubField] = true;
+                currentContext[monthlySubDateField] = new Date().toISOString();
+
+                await supabaseClient
+                    .from('pairs')
+                    .update({ shared_context: currentContext })
+                    .eq('pair_id', pairID);
+
+                // 3. Save locally
+                localStorage.setItem(`us2_monthly_email_${pairID}_${currentUser}`, email);
+
+                console.log(`📧 Monthly achievements email saved for User ${currentUser}:`, email);
+
+                // Show success, hide form
+                formEl.classList.add('hidden');
+                successEl.classList.remove('hidden');
+
+                // Play success sound if available
+                if (typeof SoundSystem !== 'undefined' && SoundSystem.playSuccess) {
+                    SoundSystem.playSuccess();
+                }
+
+            } catch (err) {
+                console.error('Error saving monthly email:', err);
+                errorEl.textContent = translations[currentLang].monthly_email_error || 'Error al guardar. Intentá de nuevo.';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        // Check if current user already subscribed to monthly emails
+        async function checkMonthlyEmailStatus() {
+            const formEl = document.getElementById('monthly-email-form');
+            const successEl = document.getElementById('monthly-email-success');
+            const sectionEl = document.getElementById('monthly-email-section');
+
+            if (!formEl || !successEl || !sectionEl) return;
+
+            // Check localStorage first for instant response
+            const savedEmail = localStorage.getItem(`us2_monthly_email_${pairID}_${currentUser}`);
+            if (savedEmail) {
+                formEl.classList.add('hidden');
+                successEl.classList.remove('hidden');
+                return;
+            }
+
+            // Check Supabase shared_context for cross-device sync
+            try {
+                const { data: pairData } = await supabaseClient
+                    .from('pairs')
+                    .select('shared_context')
+                    .eq('pair_id', pairID)
+                    .single();
+
+                const ctx = pairData?.shared_context || {};
+                const emailField = currentUser === 'A' ? 'userA_email' : 'userB_email';
+                const monthlySubField = currentUser === 'A' ? 'userA_monthlySubscribed' : 'userB_monthlySubscribed';
+
+                if (ctx[emailField] && ctx[monthlySubField]) {
+                    localStorage.setItem(`us2_monthly_email_${pairID}_${currentUser}`, ctx[emailField]);
+                    formEl.classList.add('hidden');
+                    successEl.classList.remove('hidden');
+                }
+            } catch (e) {
+                console.log('Error checking monthly email status:', e);
+            }
+        }
+
+        // Apply user-specific colors to monthly email section
+        function styleMonthlyEmailSection() {
+            const btn = document.getElementById('monthly-email-btn');
+            const input = document.getElementById('monthly-email-input');
+
+            if (!btn || !input) return;
+
+            if (currentUser === 'A') {
+                btn.classList.add('bg-teal-dark', 'text-white', 'hover:bg-teal-700');
+                input.classList.add('focus:ring-teal-soft');
+            } else {
+                btn.classList.add('bg-purple-500', 'text-white', 'hover:bg-purple-600');
+                input.classList.add('focus:ring-purple-300');
+            }
+        }
+
         // Notify partner functions (shown to User B when they complete)
         async function checkAndShowNotifyPartner() {
             // Only for User B
@@ -5824,6 +6043,10 @@
 
             // Initialize email capture modal tracking (scroll/timer)
             setTimeout(() => initEmailModalTracking(), 1000);
+
+            // Initialize monthly email subscription section
+            styleMonthlyEmailSection();
+            checkMonthlyEmailStatus();
 
             // Show refresh FAB and start polling
             showRefreshFAB();
