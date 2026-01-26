@@ -4389,12 +4389,51 @@
                 localStorage.setItem('us2_email_captures', JSON.stringify(captures));
             }
 
-            // Sync to Supabase
+            // Sync to Supabase with pair_id
             try {
+                // 1. Save to newsletter_subscribers with pair_id
                 await supabaseClient
                     .from('newsletter_subscribers')
-                    .upsert({ email, source: 'pdf_capture' }, { onConflict: 'email' });
-                console.log('📧 PDF capture email synced to Supabase:', email);
+                    .upsert({
+                        email,
+                        source: 'pdf_capture',
+                        pair_id: pairID || null
+                    }, { onConflict: 'email' });
+
+                // 2. Update the user's email in the users table if we have pairID and currentUser
+                if (pairID && currentUser) {
+                    await supabaseClient
+                        .from('users')
+                        .update({ email })
+                        .eq('pair_id', pairID)
+                        .eq('role', currentUser);
+                    console.log(`📧 User ${currentUser} email updated in users table`);
+                }
+
+                // 3. Also save to pair's shared_context for email features
+                if (pairID) {
+                    const { data: pairData } = await supabaseClient
+                        .from('pairs')
+                        .select('shared_context')
+                        .eq('pair_id', pairID)
+                        .single();
+
+                    const currentContext = pairData?.shared_context || {};
+                    const emailField = currentUser === 'B' ? 'userB_email' : 'userA_email';
+                    const langField = currentUser === 'B' ? 'userB_lang' : 'userA_lang';
+                    const returnLinkField = currentUser === 'B' ? 'userB_returnLink' : 'userA_returnLink';
+
+                    currentContext[emailField] = email;
+                    currentContext[langField] = currentLang;
+                    currentContext[returnLinkField] = `${window.location.origin}/?pair=${pairID}`;
+
+                    await supabaseClient
+                        .from('pairs')
+                        .update({ shared_context: currentContext })
+                        .eq('pair_id', pairID);
+                }
+
+                console.log('📧 PDF capture email synced to Supabase:', email, 'pair_id:', pairID);
             } catch (err) {
                 console.warn('Email capture sync failed (offline?):', err);
             }
@@ -8092,18 +8131,32 @@
                         created_at: new Date().toISOString()
                     }, { onConflict: 'email' });
 
+                // Update the user's email in the users table
+                if (pairID && currentUser) {
+                    await supabaseClient
+                        .from('users')
+                        .update({ email })
+                        .eq('pair_id', pairID)
+                        .eq('role', currentUser);
+                    console.log(`📧 User ${currentUser} email updated in users table`);
+                }
+
                 // Also save email to shared_context for transactional emails
+                // Use currentUser to determine which field to update
                 const pair = await db.getPair(pairID);
                 const currentContext = pair?.shared_context || {};
+                const emailField = currentUser === 'B' ? 'userB_email' : 'userA_email';
+                const langField = currentUser === 'B' ? 'userB_lang' : 'userA_lang';
+                const returnLinkField = currentUser === 'B' ? 'userB_returnLink' : 'userA_returnLink';
 
                 await supabaseClient
                     .from('pairs')
                     .update({
                         shared_context: {
                             ...currentContext,
-                            userA_email: email,
-                            userA_returnLink: window.location.href,
-                            userA_lang: currentLang // Save language for email localization
+                            [emailField]: email,
+                            [returnLinkField]: `${window.location.origin}/?pair=${pairID}`,
+                            [langField]: currentLang
                         }
                     })
                     .eq('pair_id', pairID);
