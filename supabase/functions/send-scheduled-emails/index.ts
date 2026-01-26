@@ -18,7 +18,7 @@ const emailTemplates = {
 
     retest_reminder: {
       subject: '📊 ¿Cómo va el equilibrio? Es hora de re-evaluar',
-      title: '¡Pasaron 7 días desde su último test!',
+      title: '¡Pasaron 2 semanas desde su último test!',
       body: 'Es un buen momento para revisar cómo va el equilibrio en casa. ¿Notaron cambios? ¿Hay algo que mejorar?',
       cta: 'Hacer el test de seguimiento',
       note: 'El progreso se construye con pequeñas acciones consistentes.'
@@ -83,7 +83,7 @@ const emailTemplates = {
 
     retest_reminder: {
       subject: '📊 How is the balance going? Time to re-evaluate',
-      title: "It's been 7 days since your last test!",
+      title: "It's been 2 weeks since your last test!",
       body: "It's a good time to review how the balance is going at home. Have you noticed changes? Is there something to improve?",
       cta: 'Take the follow-up test',
       note: 'Progress is built with small consistent actions.'
@@ -283,7 +283,7 @@ async function checkRetestReminders() {
     const lastTestDate = new Date(lastTest.savedAt || lastTest.userA?.timestamp)
     const daysSinceTest = Math.floor((Date.now() - lastTestDate.getTime()) / (1000 * 60 * 60 * 24))
 
-    if (daysSinceTest >= 7 && daysSinceTest < 14) {
+    if (daysSinceTest >= 14 && daysSinceTest < 21) {
       const lastReminderSent = ctx.lastRetestReminderSent
       if (lastReminderSent && new Date(lastReminderSent) > lastTestDate) continue
 
