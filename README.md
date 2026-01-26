@@ -32,20 +32,25 @@ US2 es una herramienta gratuita para parejas que ayuda a visualizar la "carga me
 
 ```
 US2/
-├── index.html          # App principal (single-file)
+├── index.html          # App principal ES
+├── en/index.html       # Landing EN
 ├── about.html          # Sobre nosotros
 ├── privacy.html        # Politica de privacidad
 ├── contact.html        # Contacto + FAQ
-├── blog/               # Articulos SEO
+├── blog/               # Articulos SEO (6 posts)
 │   ├── index.html
 │   ├── carga-mental.html
 │   ├── 5-conversaciones-clave.html
 │   ├── mito-50-50.html
-│   └── como-usar-us2.html
+│   ├── como-usar-us2.html
+│   ├── hola-guapa-micromachismos.html
+│   └── no-me-di-cuenta.html
+├── supabase/functions/ # Edge Functions (emails)
+├── docs/               # Documentacion interna
 ├── manifest.json       # PWA
 ├── sw.js               # Service Worker
-├── sitemap.xml         # SEO
-└── icons/              # PWA icons
+├── sitemap.xml         # SEO + hreflang
+└── og-image*.png       # Social sharing images
 ```
 
 ---
@@ -75,8 +80,10 @@ git push origin main
 - [x] Sistema de badges (19 badges)
 - [x] Badges estacionales (Valentine, Christmas, etc)
 - [x] PWA (funciona offline)
-- [x] i18n (ES/EN)
-- [x] Blog con 4 articulos SEO
+- [x] i18n completo (ES/EN)
+- [x] Blog con 6 articulos SEO
+- [x] Emails automatizados (Resend + Supabase Edge Functions)
+- [x] SEO internacional (hreflang, Schema.org, OG images)
 
 ---
 

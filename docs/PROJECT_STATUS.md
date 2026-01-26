@@ -1,6 +1,6 @@
 # US2 - Estado del Proyecto
 
-> **Última actualización**: 24 Enero 2026
+> **Última actualización**: 26 Enero 2026
 > **Estado general**: Listo para testing con parejas reales
 
 ---
@@ -40,11 +40,11 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 ## Features Implementadas
 
 ### Core
-- [x] Test de carga mental (11 categorías)
-- [x] Visualización comparativa (gráficos)
-- [x] Gap analysis con sugerencias
-- [x] Sistema de invitación por link
-- [x] Soporte bilingüe ES/EN
+- [x] Test de carga mental (9 categorías, 15 preguntas)
+- [x] Visualización comparativa (radar chart)
+- [x] Gap analysis con sugerencias personalizadas
+- [x] Sistema de invitación por link (preserva idioma)
+- [x] Soporte bilingüe ES/EN completo
 
 ### Gamificación
 - [x] Sistema de logros semanales
@@ -53,18 +53,23 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 - [x] Celebraciones con confetti
 
 ### Emails Automatizados
-- [x] Recordatorio de retest (14 días)
+- [x] Recordatorio de retest (7 días sin test)
 - [x] Notificación cuando partner completa
-- [x] Recordatorio de aniversario
-- [x] Recordatorio de cumpleaños
+- [x] Recordatorio de aniversario (7 días antes)
+- [x] Recordatorio de cumpleaños (7 días antes)
+- [x] Seguimiento programado por categoría (30 días)
+- [x] Resumen mensual de logros (1° de cada mes)
 - [x] Emails bilingües (ES/EN según preferencia)
+- [x] Click tracking habilitado (Resend)
 
 ### SEO Internacional
 - [x] Landing EN optimizada (`/en/`)
-- [x] hreflang tags correctos
+- [x] hreflang tags correctos (ES/EN/x-default)
 - [x] Sitemap con alternates
-- [x] OG tags por idioma
+- [x] OG images por idioma (og-image.png, og-image-en.png)
+- [x] Schema.org JSON-LD (WebSite, Organization, WebApplication)
 - [x] Flujo completo ES↔EN
+- [x] Blog con 6 artículos SEO (español)
 
 ### Seguridad
 - [x] RLS en todas las tablas
@@ -77,20 +82,27 @@ US2 es una webapp para parejas que visualiza la distribución de carga mental en
 ## Pendientes / Próximos Pasos
 
 ### Corto plazo
-- [ ] Confirmar indexación de sitemap en Search Console
+- [x] ~~Confirmar indexación de sitemap en Search Console~~ (2 páginas indexadas)
 - [ ] Testear con 2-3 parejas reales
 - [ ] Monitorear errores en producción
+- [ ] Optimizar peso de OG images (~7MB → <500KB)
 
-### SEO (Fase 2)
-- [ ] Escribir primer blog post EN
+### SEO (Fase 2) - Blog EN
+- [ ] Escribir primer blog post EN: "The Mental Load Test"
 - [ ] Crear `/en/blog/` index
-- [ ] Backlink outreach
+- [ ] Backlink outreach a blogs de relaciones
+
+### Email Marketing (mejoras futuras)
+- [ ] Email de bienvenida cuando ambos completan
+- [ ] Email de racha (7 días consecutivos)
+- [ ] Email de inactividad (14 días)
+- [ ] Dashboard interno de métricas
 
 ### Features futuras (ideas)
 - [ ] Sugerencias de logros basadas en gaps
 - [ ] Modal de novedades al partner
-- [ ] Celebración cuando ambos aprueban logro
 - [ ] Push notifications (PWA)
+- [ ] Sistema de reviews para aggregateRating
 
 ---
 
@@ -103,8 +115,9 @@ RESEND_API_KEY=re_xxx...
 
 ### Cron Jobs (pg_cron en Supabase)
 ```sql
--- Ejecuta cada hora para enviar emails programados
-SELECT cron.schedule('send-emails', '0 * * * *', ...);
+-- Ejecuta diariamente a las 9:00 UTC (6:00 Argentina)
+-- Job name: daily-email-check
+-- Schedule: 0 9 * * *
 ```
 
 ### Google
@@ -139,4 +152,4 @@ SELECT cron.schedule('send-emails', '0 * * * *', ...);
 
 ---
 
-*Documento actualizado: 24 Enero 2026*
+*Documento actualizado: 26 Enero 2026*

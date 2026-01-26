@@ -192,7 +192,7 @@ SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
 
 ## 8. Pendientes para Futuras Mejoras
 
-- [ ] Agregar tracking de opens/clicks (Resend lo soporta)
+- [x] ~~Agregar tracking de opens/clicks~~ Click tracking habilitado (26 Ene 2026)
 - [ ] Email de bienvenida cuando ambos completan primer test
 - [ ] Email de racha (streak de 7 días)
 - [ ] Email de inactividad (14 días sin actividad)
@@ -209,5 +209,6 @@ SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
 
 ---
 
-*Documento actualizado: Enero 2026*
+*Documento actualizado: 26 Enero 2026*
 *Sistema implementado y operativo*
+*Click tracking habilitado en Resend*
