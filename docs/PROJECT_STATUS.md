@@ -1,6 +1,6 @@
 # US2 - Estado del Proyecto
 
-> **Última actualización**: 26 Enero 2026
+> **Última actualización**: 28 Enero 2026
 > **Estado general**: Producción - Operativo
 
 ---
@@ -76,7 +76,7 @@ Ver [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) para documentación detallada del
 - [x] Schema.org JSON-LD (WebSite, Organization, WebApplication)
 - [x] Flujo completo ES↔EN
 - [x] Blog ES con 6 artículos SEO
-- [x] Blog EN con 2 artículos (`/en/blog/`)
+- [x] Blog EN con 6 artículos (`/en/blog/`) - Paridad completa con ES
 
 ### Seguridad
 - [x] RLS en todas las tablas
