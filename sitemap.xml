@@ -172,6 +172,48 @@
         <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/blog/no-me-di-cuenta.html"/>
     </url>
 
+    <!-- Mankeeping ES / Mankeeping EN -->
+    <url>
+        <loc>https://us2.fun/blog/mankeeping.html</loc>
+        <lastmod>2026-02-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/blog/mankeeping.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/blog/mankeeping.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/blog/mankeeping.html"/>
+    </url>
+
+    <url>
+        <loc>https://us2.fun/en/blog/mankeeping.html</loc>
+        <lastmod>2026-02-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/blog/mankeeping.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/blog/mankeeping.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/blog/mankeeping.html"/>
+    </url>
+
+    <!-- Test Carga Mental ES / Mental Load Test EN -->
+    <url>
+        <loc>https://us2.fun/blog/test-carga-mental-parejas.html</loc>
+        <lastmod>2026-02-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/blog/test-carga-mental-parejas.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/blog/mental-load-test-couples.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/blog/test-carga-mental-parejas.html"/>
+    </url>
+
+    <url>
+        <loc>https://us2.fun/en/blog/mental-load-test-couples.html</loc>
+        <lastmod>2026-02-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://us2.fun/blog/test-carga-mental-parejas.html"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://us2.fun/en/blog/mental-load-test-couples.html"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://us2.fun/blog/test-carga-mental-parejas.html"/>
+    </url>
+
     <!-- Legal & Info -->
     <url>
         <loc>https://us2.fun/privacy.html</loc>
