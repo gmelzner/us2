@@ -5536,8 +5536,14 @@
             displayQuestion(0);
         }
 
+        // The pair code is the only key to a pair's data and travels inside the
+        // link, so it has to be impossible to guess: 16 random characters from
+        // the browser's cryptographic generator (about 80 bits). Older 6-character
+        // codes keep working.
         function generatePairID() {
-            return 'US2-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const bytes = crypto.getRandomValues(new Uint8Array(16));
+            return 'US2-' + Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('');
         }
 
         function displayQuestion(index) {
