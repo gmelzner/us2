@@ -6054,11 +6054,20 @@
             }
         }
 
-        // Partner notification email. The emails were sent by a Supabase function
-        // that no longer exists; they come back in a second stage (see README).
-        // Until then the partner is notified through the WhatsApp modal only.
-        async function sendPartnerCompletedEmail(email, returnLink, userLang) {
-            DEBUG && console.log('📧 Partner emails are paused; WhatsApp link only');
+        // "Your partner completed the test" email to person A. The page only says
+        // which pair; the server checks both tests are in and sends it once.
+        async function sendPartnerCompletedEmail() {
+            try {
+                const response = await fetch('/api/notify-partner', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pairId: pairID }),
+                });
+                const result = await response.json();
+                DEBUG && console.log('📧 Partner notification:', result);
+            } catch (err) {
+                console.warn('Error sending partner notification email:', err);
+            }
         }
 
         function showNotifyPartnerModal() {

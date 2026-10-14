@@ -50,7 +50,11 @@ US2/
 ├── lib/db.js           # Conexión a Postgres (TLS con la CA propia)
 ├── db/migrations/      # Estructura de la base (npm run db:migrate)
 ├── tests/              # npm test: reglas de api/db.js
-├── supabase/functions/ # Mails de la versión anterior (referencia para la etapa 2)
+├── api/cron.js         # Mails programados, una vez por día (Vercel Cron, 12:00 UTC)
+├── api/notify-partner.js # "Tu pareja completó el test" (lo decide el servidor)
+├── lib/scheduled-emails.js # Qué mail, a quién y cuándo
+├── lib/email-templates.js  # Textos ES/EN y HTML de los mails
+├── supabase/functions/ # Versión anterior de los mails (solo referencia)
 ├── docs/               # Documentacion interna
 ├── manifest.json       # PWA
 ├── sw.js               # Service Worker
@@ -68,6 +72,25 @@ Hasta 2026 la página le hablaba directo a Supabase desde el navegador. Ese proy
 - `api/db.js` acepta solo las tablas, columnas y acciones que usa la app, y toda lectura o cambio tiene que nombrar su pareja (`pair_id`). Nadie puede listar una tabla entera.
 - Variables en Vercel: `DATABASE_URL` y `DATABASE_CA_CERTIFICATE_BASE64` (no poner `sslmode` en la URL).
 - Backup diario 04:40 y respaldo externo 05:00 junto con Mis Estrellas y Padel; chequeo diario 09:05 de `/api/health`.
+
+## Mails
+
+Rehechos en octubre de 2026 a partir de la función que tenía Supabase, con las mismas reglas:
+
+| Mail | Cuándo | A quién |
+|---|---|---|
+| Re-test | 14 a 20 días después del último test | Persona A |
+| Seguimiento agendado | 30 días después de agendarlo, por categoría | Persona A |
+| Aniversario | 7 días antes | Persona A |
+| Cumpleaños de la pareja | 7 días antes | Persona A |
+| Resumen mensual de logros | El día 1, logros aprobados del mes anterior | A y B, si se suscribieron |
+| Tu pareja completó el test | Cuando están los dos tests, una sola vez | Persona A |
+
+Diferencias con la versión vieja: los links de los mails los arma el servidor (nunca los que guardó la página), lo que escribe la gente se escapa en el HTML, "faltan 7 días" cuenta días de calendario (antes salía 8 días antes) y lo ya enviado se marca en claves que la página no pisa. El aviso a la pareja ya no acepta destinatario ni link desde el navegador.
+
+Variables en Vercel: `RESEND_API_KEY` (clave `us2-vercel`, solo puede enviar desde us2.fun) y `CRON_SECRET` (Vercel lo manda solo al llamar al cron).
+
+Pruebas con base real: `TEST_DATABASE_URL=postgres://... npm test` (borra las tablas: nunca apuntarla a producción).
 
 ## Desarrollo
 
@@ -99,7 +122,7 @@ git push origin main
 - [x] PWA (funciona offline)
 - [x] i18n completo (ES/EN)
 - [x] Blog con 6 articulos SEO
-- [ ] Emails automatizados: pausados desde 2026-10 (se borró Supabase, que los mandaba). Etapa 2: rehacerlos con Resend desde una función de Vercel
+- [x] Emails automatizados (Resend, desde `hola@us2.fun`): ver "Mails" más abajo
 - [x] SEO internacional (hreflang, Schema.org, OG images)
 
 ---
